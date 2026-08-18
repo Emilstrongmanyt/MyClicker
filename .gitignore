@@ -105,3 +105,15 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# Local import/bootstrap scratch
+/[Aa]ssets/MyClicker/Editor/import-log.txt
+/[Aa]ssets/MyClicker/Editor/import-log.txt.meta
+/[Aa]ssets/MyClicker/Editor/import-state.json
+/[Aa]ssets/MyClicker/Editor/import-state.json.meta
+/[Aa]ssets/MyClicker/Editor/bootstrap.done
+/[Aa]ssets/MyClicker/Editor/bootstrap.done.meta
+/[Aa]ssets/MyClicker/Editor/download-info-*.json
+/[Aa]ssets/MyClicker/Editor/download-info-*.json.meta
+/[Aa]ssets/MyClicker/Editor/purchases.json
+/[Aa]ssets/MyClicker/Editor/purchases.json.meta
