@@ -145,10 +145,15 @@ jobs:
           p12-password: ${{ secrets.IOS_P12_PASSWORD }}
           keychain: build
 
-      - name: Install provisioning profile
+      - name: Install provisioning profile if provided
         env:
           IOS_MOBILEPROVISION_BASE64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
         run: |
+          if [ -z "${IOS_MOBILEPROVISION_BASE64:-}" ]; then
+            echo "No IOS_MOBILEPROVISION_BASE64 set; using automatic signing"
+            echo "USE_AUTOMATIC_SIGNING=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
           PROFILE_PATH=$RUNNER_TEMP/MyClicker.mobileprovision
           printf '%s' "$IOS_MOBILEPROVISION_BASE64" | base64 --decode > "$PROFILE_PATH"
           PROFILE_PLIST=$(security cms -D -i "$PROFILE_PATH")
@@ -156,6 +161,7 @@ jobs:
           PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' /dev/stdin <<< "$PROFILE_PLIST")
           echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
           echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+          echo "USE_AUTOMATIC_SIGNING=0" >> "$GITHUB_ENV"
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp "$PROFILE_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"$PROFILE_UUID".mobileprovision
 
@@ -165,6 +171,10 @@ jobs:
           BUNDLE_ID: ${{ env.BUNDLE_ID }}
           PROFILE_NAME: ${{ env.PROFILE_NAME }}
           PROFILE_UUID: ${{ env.PROFILE_UUID }}
+          USE_AUTOMATIC_SIGNING: ${{ env.USE_AUTOMATIC_SIGNING }}
+          APPLE_CONNECT_KEY: ${{ secrets.APPLE_CONNECT_KEY }}
+          APPLE_CONNECT_KEY_ID: ${{ secrets.APPLE_CONNECT_KEY_ID }}
+          APPLE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_CONNECT_ISSUER_ID }}
         run: |
           XCODE_DIR=$(find build/iOS -name Unity-iPhone.xcodeproj -print -quit | xargs dirname)
           if [ -z "$XCODE_DIR" ]; then
@@ -175,20 +185,24 @@ jobs:
           echo "Using Xcode project at $XCODE_DIR"
           export XCODE_DIR
           find "$XCODE_DIR" -type f \( -name "*.sh" -o -name "usymtool*" \) -exec chmod +x {} \;
+          AUTH_KEY=$RUNNER_TEMP/AuthKey.p8
+          printf '%s' "$APPLE_CONNECT_KEY" | base64 --decode > "$AUTH_KEY"
           EXPORT_PLIST=$RUNNER_TEMP/ExportOptions.plist
           python3 - <<'PY'
           import os, plistlib
           path = os.path.join(os.environ["RUNNER_TEMP"], "ExportOptions.plist")
+          automatic = os.environ.get("USE_AUTOMATIC_SIGNING") == "1"
           payload = {
               "method": "app-store-connect",
               "teamID": os.environ["APPLE_TEAM_ID"],
-              "signingStyle": "manual",
-              "provisioningProfiles": {os.environ["BUNDLE_ID"]: os.environ["PROFILE_NAME"]},
+              "signingStyle": "automatic" if automatic else "manual",
               "uploadSymbols": True,
           }
+          if not automatic:
+              payload["provisioningProfiles"] = {os.environ["BUNDLE_ID"]: os.environ.get("PROFILE_NAME", "")}
           with open(path, "wb") as f:
               plistlib.dump(payload, f)
-          print(f"Wrote {path}")
+          print(f"Wrote {path} automatic={automatic}")
           PY
           security find-identity -v -p codesigning
           python3 - <<'PY'
@@ -196,10 +210,11 @@ jobs:
           path = os.path.join(os.environ["XCODE_DIR"], "Unity-iPhone.xcodeproj/project.pbxproj")
           text = open(path, encoding="utf-8").read()
           team = os.environ["APPLE_TEAM_ID"]
-          uuid = os.environ["PROFILE_UUID"]
-          name = os.environ["PROFILE_NAME"]
+          uuid = os.environ.get("PROFILE_UUID") or ""
+          name = os.environ.get("PROFILE_NAME") or ""
           identity = "iPhone Distribution: EMIL VON LILLIENSKJOLD JENSEN"
           bundle = os.environ["BUNDLE_ID"]
+          automatic = os.environ.get("USE_AUTOMATIC_SIGNING") == "1"
 
           def ensure_setting(block, key, value):
               if key in block:
@@ -216,16 +231,27 @@ jobs:
               if f"PRODUCT_BUNDLE_IDENTIFIER = {bundle};" not in block:
                   return block
               block = block.replace('DEVELOPMENT_TEAM = "";', f'DEVELOPMENT_TEAM = {team};')
+              if automatic:
+                  block = block.replace('CODE_SIGN_STYLE = Manual;', 'CODE_SIGN_STYLE = Automatic;')
+                  if "CODE_SIGN_STYLE" not in block:
+                      block = block.replace(
+                          "\t\t\tbuildSettings = {\n",
+                          "\t\t\tbuildSettings = {\n\t\t\t\tCODE_SIGN_STYLE = Automatic;\n",
+                          1,
+                      )
+                  return block
               block = block.replace('CODE_SIGN_IDENTITY = "iPhone Developer";', f'CODE_SIGN_IDENTITY = "{identity}";')
               block = block.replace(
                   '"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";',
                   f'"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "{identity}";',
               )
-              block = block.replace('PROVISIONING_PROFILE_APP = "";', f'PROVISIONING_PROFILE_APP = {uuid};')
-              block = block.replace(
-                  'PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_APP)";',
-                  f'PROVISIONING_PROFILE_SPECIFIER = "{name}";',
-              )
+              if uuid:
+                  block = block.replace('PROVISIONING_PROFILE_APP = "";', f'PROVISIONING_PROFILE_APP = {uuid};')
+              if name:
+                  block = block.replace(
+                      'PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_APP)";',
+                      f'PROVISIONING_PROFILE_SPECIFIER = "{name}";',
+                  )
               if "CODE_SIGN_STYLE" not in block:
                   block = block.replace(
                       "\t\t\tbuildSettings = {\n",
@@ -244,7 +270,7 @@ jobs:
               print("No Unity-iPhone signing blocks were patched", file=sys.stderr)
               sys.exit(1)
           open(path, "w", encoding="utf-8").write(patched)
-          print(f"Patched Unity-iPhone signing in {path}")
+          print(f"Patched Unity-iPhone signing in {path} automatic={automatic}")
           PY
           ICON_SET="$XCODE_DIR/Unity-iPhone/Images.xcassets/AppIcon.appiconset"
           if [ ! -d "$ICON_SET" ]; then
@@ -280,26 +306,47 @@ jobs:
           cd "$XCODE_DIR"
           ARCHIVE_LOG=$RUNNER_TEMP/xcodebuild-archive.log
           set +e
-          xcodebuild -allowProvisioningUpdates \
-            -scheme Unity-iPhone \
-            -configuration Release \
-            -destination 'generic/platform=iOS' \
-            -archivePath $RUNNER_TEMP/MyClicker.xcarchive \
-            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-            ENABLE_USER_SCRIPT_SANDBOXING=NO \
-            Unity-iPhone_CODE_SIGN_STYLE=Manual \
-            Unity-iPhone_CODE_SIGN_IDENTITY="iPhone Distribution: EMIL VON LILLIENSKJOLD JENSEN" \
-            Unity-iPhone_DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-            Unity-iPhone_PROVISIONING_PROFILE="$PROFILE_UUID" \
-            Unity-iPhone_PROVISIONING_PROFILE_APP="$PROFILE_UUID" \
-            Unity-iPhone_PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
-            Unity-iPhone_PROVISIONING_PROFILE_SPECIFIER_APP="$PROFILE_NAME" \
-            UnityFramework_CODE_SIGN_STYLE=Automatic \
-            UnityFramework_DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-            GameAssembly_CODE_SIGNING_ALLOWED=NO \
-            GameAssembly_CODE_SIGN_STYLE=Manual \
-            GameAssembly_DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-            archive 2>&1 | tee "$ARCHIVE_LOG"
+          if [ "${USE_AUTOMATIC_SIGNING:-0}" = "1" ]; then
+            xcodebuild -allowProvisioningUpdates \
+              -authenticationKeyPath "$AUTH_KEY" \
+              -authenticationKeyID "$APPLE_CONNECT_KEY_ID" \
+              -authenticationKeyIssuerID "$APPLE_CONNECT_ISSUER_ID" \
+              -scheme Unity-iPhone \
+              -configuration Release \
+              -destination 'generic/platform=iOS' \
+              -archivePath $RUNNER_TEMP/MyClicker.xcarchive \
+              DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+              ENABLE_USER_SCRIPT_SANDBOXING=NO \
+              CODE_SIGN_STYLE=Automatic \
+              Unity-iPhone_CODE_SIGN_STYLE=Automatic \
+              Unity-iPhone_DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+              UnityFramework_CODE_SIGN_STYLE=Automatic \
+              UnityFramework_DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+              GameAssembly_CODE_SIGNING_ALLOWED=NO \
+              GameAssembly_DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+              archive 2>&1 | tee "$ARCHIVE_LOG"
+          else
+            xcodebuild -allowProvisioningUpdates \
+              -scheme Unity-iPhone \
+              -configuration Release \
+              -destination 'generic/platform=iOS' \
+              -archivePath $RUNNER_TEMP/MyClicker.xcarchive \
+              DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+              ENABLE_USER_SCRIPT_SANDBOXING=NO \
+              Unity-iPhone_CODE_SIGN_STYLE=Manual \
+              Unity-iPhone_CODE_SIGN_IDENTITY="iPhone Distribution: EMIL VON LILLIENSKJOLD JENSEN" \
+              Unity-iPhone_DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+              Unity-iPhone_PROVISIONING_PROFILE="$PROFILE_UUID" \
+              Unity-iPhone_PROVISIONING_PROFILE_APP="$PROFILE_UUID" \
+              Unity-iPhone_PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+              Unity-iPhone_PROVISIONING_PROFILE_SPECIFIER_APP="$PROFILE_NAME" \
+              UnityFramework_CODE_SIGN_STYLE=Automatic \
+              UnityFramework_DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+              GameAssembly_CODE_SIGNING_ALLOWED=NO \
+              GameAssembly_CODE_SIGN_STYLE=Manual \
+              GameAssembly_DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+              archive 2>&1 | tee "$ARCHIVE_LOG"
+          fi
           ARCHIVE_STATUS=${PIPESTATUS[0]}
           set -e
           if [ "$ARCHIVE_STATUS" -ne 0 ]; then
