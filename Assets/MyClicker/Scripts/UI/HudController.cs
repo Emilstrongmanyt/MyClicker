@@ -28,6 +28,8 @@ namespace MyClicker.UI
         Button _fury;
         Button _sweep;
         StoneUi.TooltipView _tip;
+        CanvasGroup _hintFade;
+        float _hintAge;
         Image _goldIcon;
         Image _dustIcon;
         TapCombatController _battle;
@@ -99,6 +101,10 @@ namespace MyClicker.UI
 
             _hint = StoneUi.Label(parent, "Hint", "Tap anywhere to strike", 24, TextAnchor.LowerCenter);
             StoneUi.Place(_hint, 0.08f, 0.112f, 0.92f, 0.155f);
+            _hintFade = _hint.gameObject.AddComponent<CanvasGroup>();
+            _hintFade.blocksRaycasts = false;
+            if (services.Save.Profile.seenTapHint)
+                _hintFade.alpha = 0f;
             _banner = StoneUi.Banner(parent, "Toast", skin);
             StoneUi.Place(_banner.root.GetComponent<RectTransform>(), 0.07f, 0.41f, 0.93f, 0.59f);
 
@@ -134,7 +140,36 @@ namespace MyClicker.UI
                 GameServices.Instance.ProfileChanged -= Refresh;
         }
 
-        void Update() => Refresh();
+        void Update()
+        {
+            TickHint();
+            Refresh();
+        }
+
+        void TickHint()
+        {
+            if (_hintFade == null || GameServices.Instance == null)
+                return;
+            if (GameServices.Instance.Save.Profile.seenTapHint)
+            {
+                _hintFade.alpha = 0f;
+                return;
+            }
+
+            _hintAge += Time.unscaledDeltaTime;
+            if (_hintAge < 30f)
+            {
+                _hintFade.alpha = 1f;
+                return;
+            }
+
+            _hintFade.alpha = Mathf.MoveTowards(_hintFade.alpha, 0f, Time.unscaledDeltaTime / 1.2f);
+            if (_hintFade.alpha > 0.01f)
+                return;
+            _hintFade.alpha = 0f;
+            GameServices.Instance.Save.Profile.seenTapHint = true;
+            GameServices.Instance.Save.MarkDirty();
+        }
 
         void Refresh()
         {

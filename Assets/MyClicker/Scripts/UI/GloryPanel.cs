@@ -84,15 +84,27 @@ namespace MyClicker.UI
             var economy = services.Economy;
             if (_summary != null)
             {
+                int pending = economy.PendingGlory;
+                int bosses = economy.RunBosses;
+                string pendingLine = bosses > 0
+                    ? "This run: " + bosses + (bosses == 1 ? " boss, +" : " bosses, +") + pending + " Glory on ascend."
+                    : "Beat bosses this run to bank Glory for your next ascend.";
                 _summary.text = "Glory  " + profile.glory + "    Ascensions  " + profile.ascendCount +
-                                "\nUnspent Glory still helps offline gold. Ascend resets the run and keeps relics.";
+                                "\n" + pendingLine + " Unspent Glory still helps offline gold. Relics stay.";
             }
 
             if (_ascend != null)
             {
                 var label = _ascend.GetComponentInChildren<Text>();
                 if (label != null)
-                    label.text = economy.CanAscend() ? "Ascend — keep relics, reset run" : "Beat a boss to ascend";
+                {
+                    if (!economy.CanAscend())
+                        label.text = "Beat a boss to ascend";
+                    else if (economy.PendingGlory > 0)
+                        label.text = "Ascend — +" + economy.PendingGlory + " Glory, keep relics";
+                    else
+                        label.text = "Ascend — keep relics, reset run";
+                }
                 _ascend.interactable = economy.CanAscend();
             }
 
@@ -129,6 +141,9 @@ namespace MyClicker.UI
             if (services == null || !services.Economy.TryAscend())
                 return;
             var battle = Object.FindFirstObjectByType<TapCombatController>();
+            int gained = services.Economy.LastAscendGlory;
+            if (gained > 0)
+                battle?.Announce("Ascended — +" + gained + " Glory", 3.2f);
             battle?.RestartRun();
             Hide();
         }

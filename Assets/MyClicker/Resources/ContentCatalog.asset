@@ -1559,7 +1559,7 @@ MonoBehaviour:
   - id: fury
     displayName: Fury
     description: Critical hits hit even harder.
-    icon: {fileID: 21300000, guid: 1b53dfc22589a4d21aedd16a434996b6, type: 3}
+    icon: {fileID: 21300000, guid: 8ed2157a4a0e143bf8d2b41e9715ff97, type: 3}
     baseCost: 90
     costGrowth: 1.26
     perLevel: 0.25

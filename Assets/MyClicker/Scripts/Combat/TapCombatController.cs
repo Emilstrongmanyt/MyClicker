@@ -276,6 +276,11 @@ namespace MyClicker.Combat
             _strikeAnimLock = 0.16f;
         }
 
+        public void Announce(string message, float life = 3f)
+        {
+            ShowToast(message, life);
+        }
+
         void ShowToast(string message, float life)
         {
             _toast = message;

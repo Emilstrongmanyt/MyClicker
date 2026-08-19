@@ -362,7 +362,7 @@ namespace MyClicker.Editor
                     id = ContentIds.Fury,
                     displayName = "Fury",
                     description = "Critical hits hit even harder.",
-                    icon = icons.heart != null ? icons.heart : icons.crit,
+                    icon = SpriteNamed("Icon_PictoIcon_Fire") ?? SpriteNamed("Icon_PictoIcon_Battle") ?? icons.crit,
                     baseCost = 90,
                     costGrowth = 1.26f,
                     perLevel = 0.25f,

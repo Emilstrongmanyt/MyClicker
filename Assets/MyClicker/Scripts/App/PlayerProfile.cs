@@ -15,6 +15,8 @@ namespace MyClicker.App
         public int wave = 1;
         public int kills;
         public int bossesSlain;
+        public int runBosses;
+        public int pendingGlory;
         public float tapDamage = 12f;
         public int mightLevel;
         public int fortuneLevel;
@@ -39,6 +41,7 @@ namespace MyClicker.App
         public float mightBuffLeft;
         public float swiftBuffLeft;
         public float goldBuffLeft;
+        public bool seenTapHint;
         public long lastSeenUnix;
         public string heroJson;
         public string[] unlockedGear = new string[0];

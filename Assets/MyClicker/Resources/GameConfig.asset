@@ -1008,11 +1008,11 @@ MonoBehaviour:
     offlineGoldFactor: 0.55
     harvestGearPerLevel: 0.0025
     gloryPerBoss: 2
-    gloryPerBossPerZone: 1
+    gloryPerBossPerZone: 0.5
     mutationPerDecade: 0.85
     mutationSwiftPerDecade: 0.55
     unspentGloryOffline: 0.035
-    focusFurySeconds: 5
-    focusFuryBonus: 0.5
-    slamDamageMul: 2.6
-    sweepDamageMul: 1.25
+    focusFurySeconds: 8
+    focusFuryBonus: 1.25
+    slamDamageMul: 5.5
+    sweepDamageMul: 3

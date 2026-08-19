@@ -60,19 +60,13 @@ namespace MyClicker.UI
         {
             var frame = Panel(parent, name, skin);
             frame.raycastTarget = false;
-            if (skin != null && skin.bannerVictory != null)
-            {
-                frame.sprite = skin.bannerVictory;
-                frame.type = Image.Type.Sliced;
-                frame.color = Color.white;
-            }
-            else
-                frame.color = new Color(0.10f, 0.07f, 0.05f, 0.94f);
+            frame.color = new Color(0.10f, 0.07f, 0.05f, 0.94f);
 
-            var text = Label(frame.transform, "Text", "", 42, TextAnchor.MiddleCenter);
+            var text = Label(frame.transform, "Text", "", 48, TextAnchor.MiddleCenter);
             Place(text, 0.06f, 0.10f, 0.94f, 0.90f);
-            text.resizeTextMinSize = 18;
-            text.resizeTextMaxSize = 44;
+            text.fontStyle = FontStyle.Bold;
+            text.resizeTextMinSize = 22;
+            text.resizeTextMaxSize = 52;
             var outline = text.gameObject.AddComponent<Outline>();
             outline.effectColor = new Color(0.04f, 0.02f, 0.01f, 1f);
             outline.effectDistance = new Vector2(2.6f, -2.6f);

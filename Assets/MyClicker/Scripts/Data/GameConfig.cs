@@ -128,14 +128,14 @@ namespace MyClicker.Data
             public float offlineGoldFactor = 0.55f;
             public float harvestGearPerLevel = 0.0025f;
             public int gloryPerBoss = 2;
-            public float gloryPerBossPerZone = 1f;
+            public float gloryPerBossPerZone = 0.5f;
             public float mutationPerDecade = 0.85f;
             public float mutationSwiftPerDecade = 0.55f;
             public float unspentGloryOffline = 0.035f;
-            public float focusFurySeconds = 5f;
-            public float focusFuryBonus = 0.5f;
-            public float slamDamageMul = 2.6f;
-            public float sweepDamageMul = 1.25f;
+            public float focusFurySeconds = 8f;
+            public float focusFuryBonus = 1.25f;
+            public float slamDamageMul = 5.5f;
+            public float sweepDamageMul = 3f;
         }
     }
 }

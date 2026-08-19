@@ -147,13 +147,9 @@ namespace MyClicker.Economy
                 if (!Profile.UnlockGear(id))
                     continue;
 
-                bool firstRelic = _hero.WearingStarter(slot);
-                if (firstRelic)
-                    _hero.EquipById(slot, id);
-                Profile.heroJson = _hero.ToJson();
                 _services.Save.MarkDirty();
-                string label = PrettyId(id);
-                LastDrop = (firstRelic ? "Equipped " : "Found ") + label;
+                _services.Save.PersistNow();
+                LastDrop = "You found " + PrettyId(id);
                 LastDropLife = 4.4f;
                 return LastDrop;
             }

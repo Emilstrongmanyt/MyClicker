@@ -270,7 +270,7 @@ namespace MyClicker.UI
                 case ContentIds.Swift: return icons.swift;
                 case ContentIds.Crit: return icons.crit;
                 case ContentIds.Cleave: return icons.skull != null ? icons.skull : icons.might;
-                case ContentIds.Fury: return icons.heart != null ? icons.heart : icons.crit;
+                case ContentIds.Fury: return icons.crit != null ? icons.crit : icons.might;
                 case ContentIds.Harvest: return icons.dust != null ? icons.dust : icons.fortune;
                 default: return icons.shop;
             }

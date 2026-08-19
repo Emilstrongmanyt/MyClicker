@@ -351,6 +351,16 @@ namespace MyClicker.Economy
             return true;
         }
 
+        public int LastAscendGlory { get; private set; }
+        public int PendingGlory => Mathf.Max(0, Profile.pendingGlory);
+        public int RunBosses => Mathf.Max(0, Profile.runBosses);
+
+        public int GloryForBoss(int zone)
+        {
+            int glory = Eco.gloryPerBoss + Mathf.FloorToInt(Eco.gloryPerBossPerZone * Mathf.Max(0, zone));
+            return Mathf.Max(2, glory);
+        }
+
         public bool CanAscend()
         {
             return Profile.zone > 0 || Profile.wave >= Mathf.Max(2, Combat.wavesPerBoss) || Profile.bossesSlain > 0;
@@ -360,6 +370,11 @@ namespace MyClicker.Economy
         {
             if (!CanAscend())
                 return false;
+            LastAscendGlory = PendingGlory;
+            if (LastAscendGlory > 0)
+                Profile.glory += LastAscendGlory;
+            Profile.pendingGlory = 0;
+            Profile.runBosses = 0;
             Profile.ascendCount++;
             Profile.wave = 1;
             Profile.zone = 0;
@@ -406,9 +421,10 @@ namespace MyClicker.Economy
             if (boss)
             {
                 Profile.bossesSlain++;
-                int glory = Eco.gloryPerBoss + Mathf.RoundToInt(Eco.gloryPerBossPerZone * Profile.zone);
+                Profile.runBosses++;
+                int glory = GloryForBoss(Profile.zone);
                 if (glory > 0)
-                    Profile.glory += glory;
+                    Profile.pendingGlory += glory;
             }
 
             _services.Save.MarkDirty();
