@@ -93,7 +93,10 @@ namespace MyClicker.UI
         {
             _open = true;
             if (_root != null)
+            {
                 _root.SetActive(true);
+                StoneUi.BringFront(_root);
+            }
             Refresh();
         }
 

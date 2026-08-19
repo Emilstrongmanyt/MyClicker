@@ -2,19 +2,14 @@ using MyClicker.App;
 using MyClicker.Data;
 using MyClicker.Economy;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace MyClicker.UI
 {
     public class PotionTray : MonoBehaviour
     {
-        const float HoldSeconds = 0.45f;
         readonly PotionSlot[] _slots = new PotionSlot[3];
         StoneUi.TooltipView _tip;
-        int _held = -1;
-        float _heldFor;
-        bool _tipShown;
 
         static readonly string[] Order =
         {
@@ -31,24 +26,20 @@ namespace MyClicker.UI
                 _slots[i] = BuildSlot(tray.transform, skin, Order[i], i);
 
             _tip = StoneUi.Tooltip(parent, "PotionTip", skin);
-            StoneUi.Place(_tip.root.GetComponent<RectTransform>(), 0.04f, 0.118f, 0.78f, 0.26f);
+            StoneUi.Place(_tip.root.GetComponent<RectTransform>(), 0.08f, 0.22f, 0.92f, 0.38f);
+        }
+
+        public void BindTooltip(StoneUi.TooltipView tip)
+        {
+            if (tip == null)
+                return;
+            _tip = tip;
         }
 
         public void Refresh()
         {
             for (int i = 0; i < _slots.Length; i++)
                 RefreshSlot(_slots[i]);
-        }
-
-        void Update()
-        {
-            if (_held < 0)
-                return;
-            _heldFor += Time.unscaledDeltaTime;
-            if (_tipShown || _heldFor < HoldSeconds)
-                return;
-            _tipShown = true;
-            ShowTip(_slots[_held].id);
         }
 
         PotionSlot BuildSlot(Transform parent, GameConfig.UiSkin skin, string id, int index)
@@ -64,46 +55,9 @@ namespace MyClicker.UI
             var timer = StoneUi.Label(button.transform, "Timer", "", 20, TextAnchor.LowerCenter);
             StoneUi.Place(timer, 0.04f, 0.02f, 0.96f, 0.34f);
             timer.color = new Color(1f, 0.86f, 0.42f);
-            Listen(button.gameObject, index);
+            string captured = id;
+            HoldPress.Bind(button.gameObject, () => Use(captured), () => ShowTip(captured), () => _tip?.Hide());
             return new PotionSlot { id = id, button = button, icon = icon, count = count, timer = timer };
-        }
-
-        void Listen(GameObject go, int index)
-        {
-            var trigger = go.GetComponent<EventTrigger>() ?? go.AddComponent<EventTrigger>();
-            Add(trigger, EventTriggerType.PointerDown, () => Down(index));
-            Add(trigger, EventTriggerType.PointerUp, () => Up(index));
-            Add(trigger, EventTriggerType.PointerExit, CancelHold);
-        }
-
-        static void Add(EventTrigger trigger, EventTriggerType type, UnityEngine.Events.UnityAction action)
-        {
-            var entry = new EventTrigger.Entry { eventID = type };
-            entry.callback.AddListener(_ => action());
-            trigger.triggers.Add(entry);
-        }
-
-        void Down(int index)
-        {
-            _held = index;
-            _heldFor = 0f;
-            _tipShown = false;
-        }
-
-        void Up(int index)
-        {
-            bool use = _held == index && !_tipShown;
-            CancelHold();
-            if (use)
-                Use(Order[index]);
-        }
-
-        void CancelHold()
-        {
-            _held = -1;
-            _heldFor = 0f;
-            _tipShown = false;
-            _tip?.Hide();
         }
 
         void Use(string id)

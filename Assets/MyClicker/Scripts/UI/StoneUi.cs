@@ -254,21 +254,21 @@ namespace MyClicker.UI
             var frame = Panel(parent, name, skin);
             var inset = new GameObject("Track", typeof(RectTransform), typeof(Image));
             inset.transform.SetParent(frame.transform, false);
-            Place(inset.GetComponent<RectTransform>(), 0.03f, 0.18f, 0.97f, 0.62f);
+            Place(inset.GetComponent<RectTransform>(), 0.035f, 0.10f, 0.965f, 0.58f);
             var track = inset.GetComponent<Image>();
-            track.sprite = skin != null ? skin.hpBackground : null;
-            track.color = new Color(0.10f, 0.07f, 0.06f, 0.95f);
+            track.sprite = SolidSprite();
+            track.color = new Color(0.08f, 0.07f, 0.06f, 0.96f);
 
             var fillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
             fillGo.transform.SetParent(inset.transform, false);
-            Stretch(fillGo.GetComponent<RectTransform>(), 2, 2);
+            Stretch(fillGo.GetComponent<RectTransform>(), 0, 0);
             var fill = fillGo.GetComponent<Image>();
-            fill.sprite = skin != null ? skin.hpFill : null;
+            fill.sprite = SolidSprite();
             fill.type = Image.Type.Filled;
             fill.fillMethod = Image.FillMethod.Horizontal;
             fill.fillOrigin = (int)Image.OriginHorizontal.Left;
             fill.fillAmount = 1f;
-            fill.color = new Color(0.84f, 0.18f, 0.14f, 1f);
+            fill.color = new Color(0.28f, 0.82f, 0.32f, 1f);
             fill.raycastTarget = false;
 
             var title = Label(frame.transform, "Title", "", 24, TextAnchor.MiddleLeft);
@@ -320,7 +320,10 @@ namespace MyClicker.UI
             public void Show(string heading, string text)
             {
                 if (root != null)
+                {
                     root.SetActive(true);
+                    BringFront(root);
+                }
                 if (title != null)
                     title.text = heading ?? "";
                 if (body != null)
@@ -368,7 +371,13 @@ namespace MyClicker.UI
                 if (fill != null)
                 {
                     fill.fillAmount = pct;
-                    fill.color = Color.Lerp(new Color(0.72f, 0.12f, 0.10f, 1f), new Color(0.90f, 0.28f, 0.12f, 1f), pct);
+                    fill.sprite = SolidSprite();
+                    if (pct > 0.75f)
+                        fill.color = new Color(0.28f, 0.82f, 0.32f, 1f);
+                    else if (pct >= 0.25f)
+                        fill.color = new Color(1f, 0.62f, 0.14f, 1f);
+                    else
+                        fill.color = new Color(0.90f, 0.16f, 0.12f, 1f);
                 }
 
                 if (title != null)
@@ -376,6 +385,24 @@ namespace MyClicker.UI
                 if (value != null)
                     value.text = Mathf.CeilToInt(Mathf.Max(0f, current)) + " / " + Mathf.CeilToInt(max);
             }
+        }
+
+        public static void BringFront(GameObject go)
+        {
+            if (go != null)
+                go.transform.SetAsLastSibling();
+        }
+
+        static Sprite _solid;
+
+        public static Sprite SolidSprite()
+        {
+            if (_solid != null)
+                return _solid;
+            var tex = Texture2D.whiteTexture;
+            _solid = Sprite.Create(tex, new Rect(0f, 0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 4f);
+            _solid.name = "Solid";
+            return _solid;
         }
 
         static void Stretch(RectTransform rt, float x, float y)

@@ -171,10 +171,11 @@ namespace MyClicker.Combat
 
             const float start = 28f;
             const float end = 152f;
+            const float northEast = 52f;
             for (int i = 0; i < n; i++)
             {
-                float t = n == 1 ? 0.5f : i / (float)(n - 1);
-                float ang = Mathf.Lerp(start, end, t) * Mathf.Deg2Rad;
+                float deg = n == 1 ? northEast : Mathf.Lerp(start, end, i / (float)(n - 1));
+                float ang = deg * Mathf.Deg2Rad;
                 float radius = ring[i].IsBoss ? combat.ringRadiusBoss : combat.ringRadius;
                 if (n >= 6 && (i % 2) == 1)
                     radius += 0.42f;

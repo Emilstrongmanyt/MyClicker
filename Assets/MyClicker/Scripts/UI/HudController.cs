@@ -1,3 +1,4 @@
+using System;
 using MyClicker.App;
 using MyClicker.Combat;
 using MyClicker.Data;
@@ -12,6 +13,7 @@ namespace MyClicker.UI
         Text _gold;
         Text _dust;
         Text _wave;
+        Text _zone;
         Text _name;
         Text _dps;
         Text _hint;
@@ -25,6 +27,7 @@ namespace MyClicker.UI
         Button _slam;
         Button _fury;
         Button _sweep;
+        StoneUi.TooltipView _tip;
         Image _goldIcon;
         Image _dustIcon;
         TapCombatController _battle;
@@ -42,8 +45,10 @@ namespace MyClicker.UI
 
             _name = StoneUi.Label(top.transform, "Name", "", 28, TextAnchor.MiddleLeft);
             StoneUi.Place(_name, 0.03f, 0.12f, 0.38f, 0.88f);
-            _wave = StoneUi.Label(top.transform, "Wave", "", 26, TextAnchor.MiddleCenter);
-            StoneUi.Place(_wave, 0.36f, 0.12f, 0.70f, 0.88f);
+            _zone = StoneUi.Label(top.transform, "Zone", "", 22, TextAnchor.MiddleCenter);
+            StoneUi.Place(_zone, 0.36f, 0.50f, 0.70f, 0.92f);
+            _wave = StoneUi.Label(top.transform, "Wave", "", 20, TextAnchor.MiddleCenter);
+            StoneUi.Place(_wave, 0.36f, 0.08f, 0.70f, 0.50f);
 
             _goldIcon = StoneUi.Icon(top.transform, "GoldIcon", icons != null ? icons.gold : skin.coinIcon);
             StoneUi.Place(_goldIcon, 0.70f, 0.18f, 0.78f, 0.82f);
@@ -63,29 +68,13 @@ namespace MyClicker.UI
             StoneUi.Place(_bossBar.root.GetComponent<RectTransform>(), 0.08f, 0.745f, 0.92f, 0.835f);
             _bossBar.SetVisible(false);
 
-            _shop = gameObject.AddComponent<ShopPanel>();
-            _shop.Build(parent, skin);
-            _gear = gameObject.AddComponent<GearPanel>();
-            _gear.Build(parent, skin);
-            _glory = gameObject.AddComponent<GloryPanel>();
-            _glory.Build(parent, skin);
-            _shop.RequestGlory = () =>
-            {
-                _gear.Hide();
-                _shop.Hide();
-                _glory.Toggle();
-            };
-            _potions = gameObject.AddComponent<PotionTray>();
-            _potions.Build(parent, skin);
-
             _focus = StoneUi.HealthBar(parent, "FocusBar", skin);
             StoneUi.Place(_focus.root.GetComponent<RectTransform>(), 0.04f, 0.155f, 0.48f, 0.212f);
-            var combat = services.Config != null ? services.Config.combat : new GameConfig.CombatSettings();
-            _slam = StoneUi.Button(parent, "Slam", "Slam", skin, () => _battle?.TrySlam());
+            _slam = StoneUi.Button(parent, "Slam", "Slam", skin, null);
             StoneUi.Place(_slam, 0.50f, 0.155f, 0.65f, 0.212f);
-            _fury = StoneUi.Button(parent, "FocusFury", "Fury", skin, () => _battle?.TryFocusFury());
+            _fury = StoneUi.Button(parent, "FocusFury", "Fury", skin, null);
             StoneUi.Place(_fury, 0.66f, 0.155f, 0.81f, 0.212f);
-            _sweep = StoneUi.Button(parent, "Sweep", "Sweep", skin, () => _battle?.TrySweep());
+            _sweep = StoneUi.Button(parent, "Sweep", "Sweep", skin, null);
             StoneUi.Place(_sweep, 0.82f, 0.155f, 0.97f, 0.212f);
 
             var armoryBtn = StoneUi.Button(parent, "ArmoryButton", "Armory", skin, () =>
@@ -113,6 +102,26 @@ namespace MyClicker.UI
             _banner = StoneUi.Banner(parent, "Toast", skin);
             StoneUi.Place(_banner.root.GetComponent<RectTransform>(), 0.07f, 0.41f, 0.93f, 0.59f);
 
+            _shop = gameObject.AddComponent<ShopPanel>();
+            _shop.Build(parent, skin);
+            _gear = gameObject.AddComponent<GearPanel>();
+            _gear.Build(parent, skin);
+            _glory = gameObject.AddComponent<GloryPanel>();
+            _glory.Build(parent, skin);
+            _shop.RequestGlory = () =>
+            {
+                _gear.Hide();
+                _shop.Hide();
+                _glory.Toggle();
+            };
+            _potions = gameObject.AddComponent<PotionTray>();
+            _potions.Build(parent, skin);
+
+            _tip = StoneUi.Tooltip(parent, "HoldTip", skin);
+            StoneUi.Place(_tip.root.GetComponent<RectTransform>(), 0.08f, 0.22f, 0.92f, 0.38f);
+            _potions.BindTooltip(_tip);
+            BindFocusTips();
+
             _battle = FindFirstObjectByType<TapCombatController>();
             _spawner = FindFirstObjectByType<EnemySpawner>();
             services.ProfileChanged += Refresh;
@@ -138,8 +147,10 @@ namespace MyClicker.UI
 
             if (_name != null)
                 _name.text = profile.displayName;
+            if (_zone != null)
+                _zone.text = zone.displayName;
             if (_wave != null)
-                _wave.text = WaveLabel(zone, profile, services);
+                _wave.text = WaveText(profile, services);
             if (_gold != null)
                 _gold.text = NumberFmt.Compact(profile.gold);
             if (_dust != null)
@@ -172,11 +183,7 @@ namespace MyClicker.UI
 
             var combat = services.Config != null ? services.Config.combat : new GameConfig.CombatSettings();
             if (_focus != null)
-            {
                 _focus.Set("Focus", economy.Focus, combat.focusMax > 0f ? combat.focusMax : 100f);
-                if (_focus.fill != null)
-                    _focus.fill.color = new Color(0.45f, 0.78f, 1f, 1f);
-            }
 
             if (_slam != null)
                 _slam.interactable = economy.Focus >= combat.slamCost;
@@ -202,16 +209,36 @@ namespace MyClicker.UI
             return line;
         }
 
-        static string WaveLabel(ZoneDef zone, PlayerProfile profile, GameServices services)
+        void BindFocusTips()
+        {
+            var combat = GameServices.Instance != null && GameServices.Instance.Config != null
+                ? GameServices.Instance.Config.combat
+                : new GameConfig.CombatSettings();
+            Action hide = () => _tip?.Hide();
+            HoldPress.Bind(_slam.gameObject, () => _battle?.TrySlam(), () => ShowFocusTip(
+                "Slam",
+                "Spend " + Mathf.RoundToInt(combat.slamCost) + " Focus to smash the nearest foe for heavy tap damage."), hide);
+            HoldPress.Bind(_fury.gameObject, () => _battle?.TryFocusFury(), () => ShowFocusTip(
+                "Fury",
+                "Spend " + Mathf.RoundToInt(combat.furyCost) + " Focus to boost tap and auto damage for a few seconds."), hide);
+            HoldPress.Bind(_sweep.gameObject, () => _battle?.TrySweep(), () => ShowFocusTip(
+                "Sweep",
+                "Spend " + Mathf.RoundToInt(combat.sweepCost) + " Focus to hit every invader on the field. Does not harm bosses."), hide);
+        }
+
+        void ShowFocusTip(string title, string body)
+        {
+            _tip?.Show(title, body);
+        }
+
+        static string WaveText(PlayerProfile profile, GameServices services)
         {
             int per = 10;
             if (services.Config != null)
                 per = Mathf.Max(1, services.Config.combat.wavesPerBoss);
-            bool boss = profile.wave > 0 && profile.wave % per == 0;
-            if (boss)
-                return zone.displayName + "  BOSS";
-            int left = per - (profile.wave % per);
-            return zone.displayName + "  " + profile.wave + "  ·  " + left + " to boss";
+            if (profile.wave > 0 && profile.wave % per == 0)
+                return "BOSS";
+            return "Wave " + profile.wave;
         }
 
         static void AppendBuff(ref string line, string name, float left)
