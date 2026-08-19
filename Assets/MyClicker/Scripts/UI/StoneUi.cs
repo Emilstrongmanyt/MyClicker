@@ -98,7 +98,7 @@ namespace MyClicker.UI
                 Camera.main.orthographicSize = 8f;
             }
 
-            var canvas = Object.FindFirstObjectByType<Canvas>();
+            var canvas = FindGameCanvas();
             if (canvas == null)
             {
                 var go = new GameObject("Canvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
@@ -130,6 +130,22 @@ namespace MyClicker.UI
             }
 
             return safe;
+        }
+
+        static Canvas FindGameCanvas()
+        {
+            var canvases = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            for (int i = 0; i < canvases.Length; i++)
+            {
+                var canvas = canvases[i];
+                if (canvas == null)
+                    continue;
+                if (canvas.gameObject.name == "LogoCanvas")
+                    continue;
+                return canvas;
+            }
+
+            return null;
         }
 
         public static Text Label(Transform parent, string name, string text, int size, TextAnchor anchor)

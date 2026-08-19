@@ -84,7 +84,7 @@ namespace MyClicker.App
                     len = prepared.clip.length;
                 if (len < 0.4)
                     len = 6.0;
-                _cutAt = (float)(len * 0.5);
+                _cutAt = Mathf.Max(0.6f, (float)(len * 0.5) - 1f);
                 prepared.Play();
                 CancelInvoke();
                 Invoke(nameof(CutToFade), _cutAt + 2f);
@@ -155,9 +155,11 @@ namespace MyClicker.App
             AsyncOperation load = SceneManager.LoadSceneAsync(scene);
             if (load != null)
             {
-                while (!load.isDone && load.progress < 0.9f)
+                while (!load.isDone)
                     yield return null;
             }
+
+            yield return null;
 
             float dur = Mathf.Max(0.2f, fadeSeconds);
             float t = 0f;
