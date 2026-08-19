@@ -75,6 +75,10 @@ jobs:
               "Assets/2D Casual backgorund/Original Artwork",
               "Assets/2D Potion Icon Pack/Original artwork",
               "Assets/Miniature Army 2D V.1/Original artwork",
+              "Assets/Cainos/Pixel Art Top Down - Basic/Scene",
+              "Assets/Cainos/Pixel Art Top Down - Basic/Tile Palette",
+              "Assets/Cainos/Pixel Art Top Down - Basic/Animation",
+              "Assets/Cainos/Pixel Art Top Down - Basic/Prefab",
           ]
           removed = 0
           for path in roots:

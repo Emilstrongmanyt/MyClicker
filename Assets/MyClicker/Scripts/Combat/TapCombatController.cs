@@ -13,12 +13,15 @@ namespace MyClicker.Combat
     public class TapCombatController : MonoBehaviour
     {
         EnemySpawner _spawner;
+        HeroCharacterAdapter _hero;
         float _spawnTimer;
         float _autoTimer;
         int _killsThisWave;
         bool _bossWave;
         bool _awaitingClear;
-        OfflineToast _offline;
+        string _toast;
+        float _toastLife;
+        float _strikeAnimLock;
 
         void Start()
         {
@@ -39,8 +42,8 @@ namespace MyClicker.Combat
             var prefab = HeroPrefabLoader.Load(services.Config);
             if (prefab != null)
             {
-                var hero = HeroCharacterAdapter.Spawn(prefab, services.Save.Profile.heroJson, pos, 0.7f);
-                services.Gear.Bind(hero);
+                _hero = HeroCharacterAdapter.Spawn(prefab, services.Save.Profile.heroJson, pos, 0.7f);
+                services.Gear.Bind(_hero);
             }
             else
                 Debug.LogError("[MyClicker] Battle hero prefab is missing.");
@@ -57,6 +60,8 @@ namespace MyClicker.Combat
 
             TickSpawns(Time.deltaTime);
             TickAuto(Time.deltaTime);
+            if (_strikeAnimLock > 0f)
+                _strikeAnimLock -= Time.deltaTime;
 
             if (!WasTap(out var screen) || OverUi())
                 return;
@@ -68,7 +73,7 @@ namespace MyClicker.Combat
             Vector3 world = cam.ScreenToWorldPoint(new Vector3(screen.x, screen.y, -cam.transform.position.z));
             world.z = 0f;
             var enemy = _spawner.AtPoint(world) ?? _spawner.Nearest(world);
-            if (enemy == null || !enemy.Alive)
+            if (enemy == null || !enemy.Alive || !enemy.Vulnerable)
                 return;
 
             Strike(enemy, tap: true);
@@ -117,7 +122,7 @@ namespace MyClicker.Combat
                 return;
             _autoTimer = economy.AutoInterval;
             var enemy = _spawner.Nearest(HeroSlot());
-            if (enemy != null && enemy.Alive)
+            if (enemy != null && enemy.Alive && enemy.Vulnerable)
                 Strike(enemy, tap: false);
         }
 
@@ -129,6 +134,7 @@ namespace MyClicker.Combat
             if (crit)
                 damage *= services.Economy.CritMultiplier;
 
+            AnimateHero(enemy);
             Vector3 pos = enemy.transform.position;
             ApplyHit(enemy, damage, crit, tap);
             float cleave = services.Economy.CleaveFraction;
@@ -196,6 +202,86 @@ namespace MyClicker.Combat
             PrepareWave(services.Save.Profile.wave, fresh: true);
         }
 
+        public void RestartRun()
+        {
+            if (_spawner != null)
+                _spawner.Clear();
+            PrepareWave(GameServices.Instance.Save.Profile.wave, fresh: true);
+        }
+
+        public bool TrySlam()
+        {
+            var economy = GameServices.Instance != null ? GameServices.Instance.Economy : null;
+            if (economy == null || !economy.TrySpendFocus(Settings().slamCost))
+                return false;
+            var enemy = _spawner != null ? _spawner.Nearest(HeroSlot()) : null;
+            if (enemy == null || !enemy.Alive)
+                return true;
+            StrikeMul(enemy, GameServices.Instance.Config.economy.slamDamageMul, tap: true);
+            return true;
+        }
+
+        public bool TrySweep()
+        {
+            var economy = GameServices.Instance != null ? GameServices.Instance.Economy : null;
+            if (economy == null || !economy.TrySpendFocus(Settings().sweepCost))
+                return false;
+            if (_spawner == null)
+                return true;
+            float mul = GameServices.Instance.Config.economy.sweepDamageMul;
+            var alive = _spawner.Alive;
+            for (int i = 0; i < alive.Count; i++)
+            {
+                var enemy = alive[i];
+                if (enemy == null || !enemy.Alive || !enemy.Vulnerable || enemy.IsBoss)
+                    continue;
+                StrikeMul(enemy, mul, tap: true);
+            }
+
+            return true;
+        }
+
+        public bool TryFocusFury()
+        {
+            var economy = GameServices.Instance != null ? GameServices.Instance.Economy : null;
+            return economy != null && economy.TryStartFocusFury();
+        }
+
+        void StrikeMul(EnemyController enemy, float mul, bool tap)
+        {
+            var services = GameServices.Instance;
+            float damage = services.Economy.TapDamage * mul;
+            bool crit = Random.value < services.Economy.CritChance;
+            if (crit)
+                damage *= services.Economy.CritMultiplier;
+            AnimateHero(enemy);
+            Vector3 pos = enemy.transform.position;
+            ApplyHit(enemy, damage, crit, tap);
+            float cleave = services.Economy.CleaveFraction;
+            if (cleave <= 0f)
+                return;
+            var splash = _spawner.NearestExcept(pos, enemy);
+            if (splash != null && splash.Alive && !(splash.IsBoss && mul <= 1.3f))
+                ApplyHit(splash, damage * cleave, false, tap);
+        }
+
+        void AnimateHero(EnemyController enemy)
+        {
+            if (_hero == null || enemy == null)
+                return;
+            _hero.FaceWorldX(enemy.transform.position.x);
+            if (_strikeAnimLock > 0f)
+                return;
+            _hero.PlayStrike();
+            _strikeAnimLock = 0.16f;
+        }
+
+        void ShowToast(string message, float life)
+        {
+            _toast = message;
+            _toastLife = life;
+        }
+
         float EnemyHp(bool boss)
         {
             var services = GameServices.Instance;
@@ -243,16 +329,15 @@ namespace MyClicker.Combat
             if (gold <= 0)
                 return;
             services.Save.AddGold(gold);
-            _offline = new OfflineToast { gold = gold, life = 4.2f };
+            ShowToast("While you were away\n+" + NumberFmt.Compact(gold) + " gold", 4.8f);
         }
 
-        public string OfflineMessage =>
-            _offline.life > 0f ? "While you were away  +" + NumberFmt.Compact(_offline.gold) + "g" : null;
+        public string ToastMessage => _toastLife > 0f ? _toast : null;
 
         void LateUpdate()
         {
-            if (_offline.life > 0f)
-                _offline.life -= Time.unscaledDeltaTime;
+            if (_toastLife > 0f)
+                _toastLife -= Time.unscaledDeltaTime;
         }
 
         static GameConfig.CombatSettings Settings()
@@ -300,10 +385,5 @@ namespace MyClicker.Combat
             return false;
         }
 
-        struct OfflineToast
-        {
-            public long gold;
-            public float life;
-        }
     }
 }

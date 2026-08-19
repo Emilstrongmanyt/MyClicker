@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 using HeroEditor.Common.Data;
 using HeroEditor.Common.Enums;
 using UnityEngine;
@@ -51,7 +52,35 @@ namespace MyClicker.Character
             }
 
             adapter.Hero.Initialize();
+            adapter.ReadyStance();
             return adapter;
+        }
+
+        public void ReadyStance()
+        {
+            if (Hero == null)
+                return;
+            Hero.GetReady();
+            Hero.SetState(CharacterState.Idle);
+        }
+
+        public void PlayStrike()
+        {
+            if (Hero == null)
+                return;
+            if (!Hero.IsReady())
+                Hero.GetReady();
+            Hero.Slash();
+        }
+
+        public void FaceWorldX(float worldX)
+        {
+            float dx = worldX - transform.position.x;
+            if (Mathf.Abs(dx) < 0.08f)
+                return;
+            var scale = transform.localScale;
+            scale.x = Mathf.Abs(scale.x) * (dx >= 0f ? 1f : -1f);
+            transform.localScale = scale;
         }
 
         public string ToJson()

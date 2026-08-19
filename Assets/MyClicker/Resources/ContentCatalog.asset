@@ -1514,6 +1514,8 @@ MonoBehaviour:
     costGrowth: 1.18
     perLevel: 4
     maxLevel: 200
+    requiresId: 
+    requiresLevel: 0
   - id: fortune
     displayName: Fortune
     description: More gold from every kill.
@@ -1522,6 +1524,8 @@ MonoBehaviour:
     costGrowth: 1.2
     perLevel: 0.12
     maxLevel: 200
+    requiresId: 
+    requiresLevel: 0
   - id: swift
     displayName: Swift
     description: Your hero swings on their own, faster each rank.
@@ -1530,6 +1534,8 @@ MonoBehaviour:
     costGrowth: 1.22
     perLevel: 0.07
     maxLevel: 200
+    requiresId: 
+    requiresLevel: 0
   - id: crit
     displayName: Crit
     description: Chance for a triple-damage strike.
@@ -1538,22 +1544,54 @@ MonoBehaviour:
     costGrowth: 1.25
     perLevel: 0.02
     maxLevel: 200
+    requiresId: 
+    requiresLevel: 0
+  - id: cleave
+    displayName: Cleave
+    description: Strikes splash to a nearby foe.
+    icon: {fileID: 21300000, guid: c0a8f5e328b4d4ac0804dfdfe8e4bca8, type: 3}
+    baseCost: 80
+    costGrowth: 1.23
+    perLevel: 0.05
+    maxLevel: 200
+    requiresId: might
+    requiresLevel: 6
+  - id: fury
+    displayName: Fury
+    description: Critical hits hit even harder.
+    icon: {fileID: 21300000, guid: 1b53dfc22589a4d21aedd16a434996b6, type: 3}
+    baseCost: 90
+    costGrowth: 1.26
+    perLevel: 0.25
+    maxLevel: 200
+    requiresId: crit
+    requiresLevel: 5
+  - id: harvest
+    displayName: Harvest
+    description: More dust and potion drops.
+    icon: {fileID: 21300000, guid: e9bbecf6329624d48b4ad79709c7c092, type: 3}
+    baseCost: 70
+    costGrowth: 1.22
+    perLevel: 0.04
+    maxLevel: 200
+    requiresId: fortune
+    requiresLevel: 6
   potions:
   - id: pot_might
     displayName: Ember Vial
-    description: 20s of extra tap damage.
+    description: A warm draught. +60% tap damage for 20 seconds.
     icon: {fileID: 21300000, guid: 7cc68837b8b2a2b4aa0984c7355cf06e, type: 3}
     duration: 20
     potency: 0.6
   - id: pot_swift
     displayName: Gale Tonic
-    description: 20s of faster auto-swings.
+    description: A brisk tonic. Auto-swings 35% faster for 20 seconds.
     icon: {fileID: 21300000, guid: 722bb967d4af2d346a97b94a7add01df, type: 3}
     duration: 20
     potency: 0.35
   - id: pot_gold
     displayName: Gilded Brew
-    description: 20s of double gold.
+    description: A lucky brew. Double gold from every kill for 20 seconds.
     icon: {fileID: 21300000, guid: 3b114dcb5cc9798479990ceba44dfbfd, type: 3}
     duration: 20
     potency: 1

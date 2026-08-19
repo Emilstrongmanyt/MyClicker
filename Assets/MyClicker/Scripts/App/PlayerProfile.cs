@@ -23,6 +23,12 @@ namespace MyClicker.App
         public int cleaveLevel;
         public int furyLevel;
         public int harvestLevel;
+        public int mutationMight;
+        public int mutationFortune;
+        public int mutationSwift;
+        public int mutationLuck;
+        public int ascendCount;
+        public float focus;
         public int temperWeapon;
         public int temperArmor;
         public int temperHelmet;
@@ -126,6 +132,30 @@ namespace MyClicker.App
                 case Data.ContentIds.PotSwift: return potSwift;
                 case Data.ContentIds.PotGold: return potGold;
                 default: return 0;
+            }
+        }
+
+        public int MutationLevel(string id)
+        {
+            switch (id)
+            {
+                case Data.ContentIds.MutMight: return mutationMight;
+                case Data.ContentIds.MutFortune: return mutationFortune;
+                case Data.ContentIds.MutSwift: return mutationSwift;
+                case Data.ContentIds.MutLuck: return mutationLuck;
+                default: return 0;
+            }
+        }
+
+        public void SetMutationLevel(string id, int value)
+        {
+            value = Mathf.Max(0, value);
+            switch (id)
+            {
+                case Data.ContentIds.MutMight: mutationMight = value; break;
+                case Data.ContentIds.MutFortune: mutationFortune = value; break;
+                case Data.ContentIds.MutSwift: mutationSwift = value; break;
+                case Data.ContentIds.MutLuck: mutationLuck = value; break;
             }
         }
 

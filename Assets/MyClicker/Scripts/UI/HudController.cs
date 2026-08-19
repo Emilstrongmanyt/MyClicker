@@ -15,11 +15,16 @@ namespace MyClicker.UI
         Text _name;
         Text _dps;
         Text _hint;
-        Text _offline;
+        StoneUi.BannerView _banner;
         StoneUi.HealthBarView _bossBar;
         ShopPanel _shop;
         GearPanel _gear;
+        GloryPanel _glory;
         PotionTray _potions;
+        StoneUi.HealthBarView _focus;
+        Button _slam;
+        Button _fury;
+        Button _sweep;
         Image _goldIcon;
         Image _dustIcon;
         TapCombatController _battle;
@@ -62,12 +67,31 @@ namespace MyClicker.UI
             _shop.Build(parent, skin);
             _gear = gameObject.AddComponent<GearPanel>();
             _gear.Build(parent, skin);
+            _glory = gameObject.AddComponent<GloryPanel>();
+            _glory.Build(parent, skin);
+            _shop.RequestGlory = () =>
+            {
+                _gear.Hide();
+                _shop.Hide();
+                _glory.Toggle();
+            };
             _potions = gameObject.AddComponent<PotionTray>();
             _potions.Build(parent, skin);
+
+            _focus = StoneUi.HealthBar(parent, "FocusBar", skin);
+            StoneUi.Place(_focus.root.GetComponent<RectTransform>(), 0.04f, 0.155f, 0.48f, 0.212f);
+            var combat = services.Config != null ? services.Config.combat : new GameConfig.CombatSettings();
+            _slam = StoneUi.Button(parent, "Slam", "Slam", skin, () => _battle?.TrySlam());
+            StoneUi.Place(_slam, 0.50f, 0.155f, 0.65f, 0.212f);
+            _fury = StoneUi.Button(parent, "FocusFury", "Fury", skin, () => _battle?.TryFocusFury());
+            StoneUi.Place(_fury, 0.66f, 0.155f, 0.81f, 0.212f);
+            _sweep = StoneUi.Button(parent, "Sweep", "Sweep", skin, () => _battle?.TrySweep());
+            StoneUi.Place(_sweep, 0.82f, 0.155f, 0.97f, 0.212f);
 
             var armoryBtn = StoneUi.Button(parent, "ArmoryButton", "Armory", skin, () =>
             {
                 _shop.Hide();
+                _glory.Hide();
                 _gear.Toggle();
             });
             StoneUi.Place(armoryBtn, 0.42f, 0.018f, 0.68f, 0.108f);
@@ -77,6 +101,7 @@ namespace MyClicker.UI
             var shopBtn = StoneUi.Button(parent, "ShopButton", "Forge", skin, () =>
             {
                 _gear.Hide();
+                _glory.Hide();
                 _shop.Toggle();
             });
             StoneUi.Place(shopBtn, 0.70f, 0.018f, 0.96f, 0.108f);
@@ -85,8 +110,8 @@ namespace MyClicker.UI
 
             _hint = StoneUi.Label(parent, "Hint", "Tap anywhere to strike", 24, TextAnchor.LowerCenter);
             StoneUi.Place(_hint, 0.08f, 0.112f, 0.92f, 0.155f);
-            _offline = StoneUi.Label(parent, "Offline", "", 26, TextAnchor.MiddleCenter);
-            StoneUi.Place(_offline, 0.08f, 0.30f, 0.92f, 0.38f);
+            _banner = StoneUi.Banner(parent, "Toast", skin);
+            StoneUi.Place(_banner.root.GetComponent<RectTransform>(), 0.07f, 0.41f, 0.93f, 0.59f);
 
             _battle = FindFirstObjectByType<TapCombatController>();
             _spawner = FindFirstObjectByType<EnemySpawner>();
@@ -114,27 +139,26 @@ namespace MyClicker.UI
             if (_name != null)
                 _name.text = profile.displayName;
             if (_wave != null)
-                _wave.text = zone.displayName + "  " + profile.wave;
+                _wave.text = WaveLabel(zone, profile, services);
             if (_gold != null)
                 _gold.text = NumberFmt.Compact(profile.gold);
             if (_dust != null)
-                _dust.text = NumberFmt.Compact(profile.dust) + " dust";
+                _dust.text = NumberFmt.Compact(profile.dust);
             if (_dps != null)
             {
-                string buff = profile.mightBuffLeft > 0f || profile.swiftBuffLeft > 0f || profile.goldBuffLeft > 0f
-                    ? "  BUFF"
-                    : "";
-                _dps.text = "Tap " + Mathf.RoundToInt(economy.TapDamage) + "   Auto " +
-                            Mathf.RoundToInt(economy.AutoDps) + "/s" + buff;
+                _dps.text = "Tap " + Mathf.RoundToInt(economy.TapDamage) + "  Auto " +
+                            Mathf.RoundToInt(economy.AutoDps) + "/s  " +
+                            NumberFmt.Compact(Mathf.Max(0, Mathf.RoundToInt(economy.GoldPerSecond))) + "g/s" +
+                            BuffLine(profile);
             }
 
-            if (_offline != null)
+            if (_banner != null)
             {
-                string offline = _battle != null ? _battle.OfflineMessage : null;
+                string toast = _battle != null ? _battle.ToastMessage : null;
                 string drop = services.Gear != null && services.Gear.LastDropLife > 0f
                     ? services.Gear.LastDrop
                     : null;
-                _offline.text = offline ?? drop ?? "";
+                _banner.Show(toast ?? drop);
             }
 
             var boss = _spawner != null ? _spawner.CurrentBoss : null;
@@ -146,9 +170,55 @@ namespace MyClicker.UI
                     _bossBar.Set(boss.DisplayName, boss.Hp, boss.MaxHp);
             }
 
+            var combat = services.Config != null ? services.Config.combat : new GameConfig.CombatSettings();
+            if (_focus != null)
+            {
+                _focus.Set("Focus", economy.Focus, combat.focusMax > 0f ? combat.focusMax : 100f);
+                if (_focus.fill != null)
+                    _focus.fill.color = new Color(0.45f, 0.78f, 1f, 1f);
+            }
+
+            if (_slam != null)
+                _slam.interactable = economy.Focus >= combat.slamCost;
+            if (_fury != null)
+                _fury.interactable = economy.Focus >= combat.furyCost;
+            if (_sweep != null)
+                _sweep.interactable = economy.Focus >= combat.sweepCost;
+
             _shop?.Refresh();
             _gear?.Refresh();
+            _glory?.Refresh();
             _potions?.Refresh();
+        }
+
+        static string BuffLine(PlayerProfile profile)
+        {
+            string line = "";
+            AppendBuff(ref line, "Ember", profile.mightBuffLeft);
+            AppendBuff(ref line, "Gale", profile.swiftBuffLeft);
+            AppendBuff(ref line, "Gilded", profile.goldBuffLeft);
+            var fury = GameServices.Instance != null ? GameServices.Instance.Economy.FocusFuryLeft : 0f;
+            AppendBuff(ref line, "Fury", fury);
+            return line;
+        }
+
+        static string WaveLabel(ZoneDef zone, PlayerProfile profile, GameServices services)
+        {
+            int per = 10;
+            if (services.Config != null)
+                per = Mathf.Max(1, services.Config.combat.wavesPerBoss);
+            bool boss = profile.wave > 0 && profile.wave % per == 0;
+            if (boss)
+                return zone.displayName + "  BOSS";
+            int left = per - (profile.wave % per);
+            return zone.displayName + "  " + profile.wave + "  ·  " + left + " to boss";
+        }
+
+        static void AppendBuff(ref string line, string name, float left)
+        {
+            if (left <= 0f)
+                return;
+            line += "   " + name + " " + EconomyService.FormatBuff(left);
         }
     }
 }

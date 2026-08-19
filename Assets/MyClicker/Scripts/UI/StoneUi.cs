@@ -20,6 +20,69 @@ namespace MyClicker.UI
             return image;
         }
 
+        public static void HideDefaultLabel(Button button)
+        {
+            if (button == null)
+                return;
+            var label = button.transform.Find("Label");
+            if (label != null)
+                label.gameObject.SetActive(false);
+        }
+
+        public static PriceView Price(Transform parent, string name, int size)
+        {
+            var go = new GameObject(name, typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var amount = Label(go.transform, "Amount", "", size, TextAnchor.MiddleCenter);
+            Place(amount, 0.04f, 0.08f, 0.96f, 0.92f);
+            var icon = Icon(go.transform, "Icon", null);
+            Place(icon, 0.70f, 0.16f, 0.96f, 0.84f);
+            icon.gameObject.SetActive(false);
+            return new PriceView { root = go.GetComponent<RectTransform>(), amount = amount, icon = icon };
+        }
+
+        public static TooltipView Tooltip(Transform parent, string name, GameConfig.UiSkin skin)
+        {
+            var frame = Panel(parent, name, skin);
+            frame.raycastTarget = false;
+            var title = Label(frame.transform, "Title", "", 28, TextAnchor.MiddleLeft);
+            Place(title, 0.06f, 0.62f, 0.94f, 0.94f);
+            var body = Label(frame.transform, "Body", "", 22, TextAnchor.UpperLeft);
+            Place(body, 0.06f, 0.08f, 0.94f, 0.64f);
+            var outline = body.gameObject.AddComponent<Outline>();
+            outline.effectColor = new Color(0.05f, 0.03f, 0.02f, 0.85f);
+            outline.effectDistance = new Vector2(1.4f, -1.4f);
+            frame.gameObject.SetActive(false);
+            return new TooltipView { root = frame.gameObject, title = title, body = body };
+        }
+
+        public static BannerView Banner(Transform parent, string name, GameConfig.UiSkin skin)
+        {
+            var frame = Panel(parent, name, skin);
+            frame.raycastTarget = false;
+            if (skin != null && skin.bannerVictory != null)
+            {
+                frame.sprite = skin.bannerVictory;
+                frame.type = Image.Type.Sliced;
+                frame.color = Color.white;
+            }
+            else
+                frame.color = new Color(0.10f, 0.07f, 0.05f, 0.94f);
+
+            var text = Label(frame.transform, "Text", "", 42, TextAnchor.MiddleCenter);
+            Place(text, 0.06f, 0.10f, 0.94f, 0.90f);
+            text.resizeTextMinSize = 18;
+            text.resizeTextMaxSize = 44;
+            var outline = text.gameObject.AddComponent<Outline>();
+            outline.effectColor = new Color(0.04f, 0.02f, 0.01f, 1f);
+            outline.effectDistance = new Vector2(2.6f, -2.6f);
+            var shadow = text.gameObject.AddComponent<Shadow>();
+            shadow.effectColor = new Color(0f, 0f, 0f, 0.75f);
+            shadow.effectDistance = new Vector2(0f, -3f);
+            frame.gameObject.SetActive(false);
+            return new BannerView { root = frame.gameObject, text = text };
+        }
+
         public static void Place(RectTransform rt, float x0, float y0, float x1, float y1)
         {
             rt.anchorMin = new Vector2(x0, y0);
@@ -213,6 +276,77 @@ namespace MyClicker.UI
             var value = Label(frame.transform, "Value", "", 22, TextAnchor.MiddleRight);
             Place(value, 0.55f, 0.64f, 0.96f, 0.96f);
             return new HealthBarView { root = frame.gameObject, fill = fill, title = title, value = value };
+        }
+
+        public sealed class PriceView
+        {
+            public RectTransform root;
+            public Text amount;
+            public Image icon;
+
+            public void Set(string text, Sprite currency)
+            {
+                if (amount != null)
+                    amount.text = text ?? "";
+                bool showIcon = currency != null;
+                if (icon != null)
+                {
+                    icon.sprite = currency;
+                    icon.color = showIcon ? Color.white : new Color(1f, 1f, 1f, 0.15f);
+                    icon.gameObject.SetActive(showIcon);
+                }
+
+                if (amount == null)
+                    return;
+                if (showIcon)
+                {
+                    Place(amount, 0.02f, 0.08f, 0.66f, 0.92f);
+                    amount.alignment = TextAnchor.MiddleRight;
+                }
+                else
+                {
+                    Place(amount, 0.04f, 0.08f, 0.96f, 0.92f);
+                    amount.alignment = TextAnchor.MiddleCenter;
+                }
+            }
+        }
+
+        public sealed class TooltipView
+        {
+            public GameObject root;
+            public Text title;
+            public Text body;
+
+            public void Show(string heading, string text)
+            {
+                if (root != null)
+                    root.SetActive(true);
+                if (title != null)
+                    title.text = heading ?? "";
+                if (body != null)
+                    body.text = text ?? "";
+            }
+
+            public void Hide()
+            {
+                if (root != null)
+                    root.SetActive(false);
+            }
+        }
+
+        public sealed class BannerView
+        {
+            public GameObject root;
+            public Text text;
+
+            public void Show(string message)
+            {
+                bool on = !string.IsNullOrEmpty(message);
+                if (root != null)
+                    root.SetActive(on);
+                if (text != null)
+                    text.text = on ? message : "";
+            }
         }
 
         public sealed class HealthBarView

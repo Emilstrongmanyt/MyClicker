@@ -10,10 +10,14 @@ namespace MyClicker.Combat
         public float Hp { get; private set; }
         public bool Alive => Hp > 0f && !_dying;
         public bool IsBoss { get; private set; }
+        public bool Engaged => _engaged;
+        public bool Vulnerable { get; private set; }
+        public float EngagedSeconds { get; private set; }
         public string DisplayName { get; private set; }
         public UnitVisual Visual { get; private set; }
 
         Vector3 _target;
+        Vector3 _hold;
         float _speed;
         float _stopDistance;
         SpriteRenderer _renderer;
@@ -22,6 +26,7 @@ namespace MyClicker.Combat
         float _flash;
         bool _dying;
         bool _engaged;
+        bool _animLock;
         Action<EnemyController> _onDeathFinished;
 
         public void Setup(UnitVisual visual, Sprite fallback, float hp, Vector3 target, float speed, float stopDistance, Action<EnemyController> onDeathFinished)
@@ -34,18 +39,22 @@ namespace MyClicker.Combat
             MaxHp = hp;
             Hp = hp;
             _target = target;
+            _hold = target + Vector3.up * Mathf.Max(0.8f, stopDistance);
             _speed = speed;
-            _stopDistance = stopDistance;
+            _stopDistance = Mathf.Max(0.08f, stopDistance);
             _dying = false;
             _engaged = false;
+            _animLock = false;
+            Vulnerable = false;
+            EngagedSeconds = 0f;
             _flash = 0f;
             _onDeathFinished = onDeathFinished;
 
             if (_renderer == null)
                 _renderer = GetComponent<SpriteRenderer>() ?? gameObject.AddComponent<SpriteRenderer>();
-            _renderer.sortingOrder = IsBoss ? 12 : 10;
-            _renderer.color = _baseColor;
             _renderer.enabled = true;
+            _renderer.color = new Color(1f, 1f, 1f, 0.75f);
+            _renderer.sortingOrder = IsBoss ? 12 : 10;
 
             if (_clip == null)
                 _clip = GetComponent<ClipPlayer>() ?? gameObject.AddComponent<ClipPlayer>();
@@ -69,7 +78,7 @@ namespace MyClicker.Combat
 
         public bool Hit(float damage)
         {
-            if (!Alive)
+            if (!Alive || !Vulnerable)
                 return false;
 
             Hp = Mathf.Max(0f, Hp - damage);
@@ -77,6 +86,7 @@ namespace MyClicker.Combat
             if (_renderer != null)
                 _renderer.color = Color.white;
             Play(UnitClip.Hurt, 14f, false);
+            _animLock = true;
 
             if (Hp > 0f)
                 return false;
@@ -116,24 +126,40 @@ namespace MyClicker.Combat
                 return;
 
             Vector3 pos = transform.position;
-            Vector3 to = _target - pos;
+            Vector3 to = _hold - pos;
             to.z = 0f;
             float dist = to.magnitude;
-            if (dist > _stopDistance)
+            bool atHold = dist <= _stopDistance;
+            if (!atHold)
             {
                 transform.position = pos + to.normalized * (_speed * Time.deltaTime);
-                FaceToward(_target);
-
+                FaceToward(_hold);
                 if (_engaged)
                 {
                     _engaged = false;
-                    Play(UnitClip.Walk, 10f, true);
+                    EngagedSeconds = 0f;
+                    if (!_animLock)
+                        Play(UnitClip.Walk, 10f, true);
                 }
             }
-            else if (!_engaged)
+            else
             {
-                _engaged = true;
-                Play(UnitClip.Attack, 9f, true);
+                FaceToward(_target);
+                if (!_engaged)
+                {
+                    _engaged = true;
+                    EngagedSeconds = 0f;
+                    if (!_animLock)
+                        Play(UnitClip.Attack, 10f, true);
+                }
+                else
+                    EngagedSeconds += Time.deltaTime;
+            }
+
+            if (_animLock && (_clip == null || _clip.Done))
+            {
+                _animLock = false;
+                Play(atHold ? UnitClip.Attack : UnitClip.Walk, atHold ? 10f : 10f, true);
             }
 
             if (_flash > 0f && _renderer != null)
@@ -141,6 +167,44 @@ namespace MyClicker.Combat
                 _flash -= Time.deltaTime;
                 _renderer.color = Color.Lerp(_baseColor, new Color(1f, 0.42f, 0.42f), Mathf.Clamp01(_flash / 0.1f));
             }
+
+            RefreshOnScreen();
+        }
+
+        void RefreshOnScreen()
+        {
+            bool inside = FullyOnScreen();
+            if (inside == Vulnerable)
+                return;
+            Vulnerable = inside;
+            if (_renderer != null && _flash <= 0f)
+                _renderer.color = inside ? _baseColor : new Color(1f, 1f, 1f, 0.72f);
+        }
+
+        bool FullyOnScreen()
+        {
+            if (_renderer == null || !_renderer.enabled)
+                return false;
+            var cam = Camera.main;
+            if (cam == null)
+                return true;
+            var bounds = _renderer.bounds;
+            Vector3 min = cam.ViewportToWorldPoint(new Vector3(0.02f, 0.02f, 0f));
+            Vector3 max = cam.ViewportToWorldPoint(new Vector3(0.98f, 0.98f, 0f));
+            float x0 = Mathf.Max(bounds.min.x, Mathf.Min(min.x, max.x));
+            float x1 = Mathf.Min(bounds.max.x, Mathf.Max(min.x, max.x));
+            float y0 = Mathf.Max(bounds.min.y, Mathf.Min(min.y, max.y));
+            float y1 = Mathf.Min(bounds.max.y, Mathf.Max(min.y, max.y));
+            float visible = Mathf.Max(0f, x1 - x0) * Mathf.Max(0f, y1 - y0);
+            float area = Mathf.Max(0.001f, bounds.size.x * bounds.size.y);
+            return visible / area >= 0.92f;
+        }
+
+        public void SetHold(Vector3 hold, float slack)
+        {
+            _hold = hold;
+            if (slack > 0f)
+                _stopDistance = slack;
         }
 
         void FaceToward(Vector3 target)

@@ -65,12 +65,26 @@ namespace MyClicker.Data
             public Vector2 spawnX = new Vector2(-4.4f, 4.4f);
             public Vector2 spawnY = new Vector2(5.8f, 7.6f);
             public Vector2 playerSlot = new Vector2(0f, -4.15f);
+            public float overrunSeconds = 5f;
+            public float ringRadius = 2.05f;
+            public float ringRadiusBoss = 2.55f;
+            public float holdSlack = 0.14f;
+            public float focusMax = 100f;
+            public float focusRegen = 10f;
+            public float slamCost = 35f;
+            public float furyCost = 50f;
+            public float sweepCost = 70f;
         }
 
         [System.Serializable]
         public class WorldSettings
         {
             public Sprite[] backgroundSprites;
+            public Sprite[] grassTiles;
+            public Sprite[] stoneTiles;
+            public Sprite[] wallTiles;
+            public Sprite[] plantSprites;
+            public Sprite[] propSprites;
         }
 
         [System.Serializable]
@@ -108,10 +122,20 @@ namespace MyClicker.Data
             public int craftGoldCost = 18;
             public int temperBaseCost = 8;
             public float temperCostGrowth = 1.35f;
-            public float gearDropChance = 0.07f;
-            public float gearBossDropChance = 1f;
+            public float gearDropChance = 0.01f;
+            public float gearBossDropChance = 0.18f;
             public float offlineCapHours = 8f;
             public float offlineGoldFactor = 0.55f;
+            public float harvestGearPerLevel = 0.0025f;
+            public int gloryPerBoss = 2;
+            public float gloryPerBossPerZone = 1f;
+            public float mutationPerDecade = 0.85f;
+            public float mutationSwiftPerDecade = 0.55f;
+            public float unspentGloryOffline = 0.035f;
+            public float focusFurySeconds = 5f;
+            public float focusFuryBonus = 0.5f;
+            public float slamDamageMul = 2.6f;
+            public float sweepDamageMul = 1.25f;
         }
     }
 }

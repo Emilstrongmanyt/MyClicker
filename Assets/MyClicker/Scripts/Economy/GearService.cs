@@ -116,7 +116,8 @@ namespace MyClicker.Economy
             if (_hero == null)
                 return null;
             float chance = boss ? Eco.gearBossDropChance : Eco.gearDropChance;
-            chance += _services.Save.Profile.harvestLevel * 0.01f;
+            chance += _services.Save.Profile.harvestLevel * Eco.harvestGearPerLevel;
+            chance *= 1f + EconomyService.Mutation(_services.Save.Profile.mutationLuck, Eco.mutationPerDecade);
             if (UnityEngine.Random.value > chance)
                 return null;
 
@@ -153,7 +154,7 @@ namespace MyClicker.Economy
                 _services.Save.MarkDirty();
                 string label = PrettyId(id);
                 LastDrop = (firstRelic ? "Equipped " : "Found ") + label;
-                LastDropLife = 3.6f;
+                LastDropLife = 4.4f;
                 return LastDrop;
             }
 

@@ -11,6 +11,10 @@ namespace MyClicker.UI
         ShopRow[] _rows = new ShopRow[0];
         GameObject _root;
         bool _open;
+        int _buyMode = 1;
+        Button _mode1;
+        Button _mode10;
+        Button _modeMax;
 
         static readonly string[] Order =
         {
@@ -24,6 +28,7 @@ namespace MyClicker.UI
         };
 
         public bool Open => _open;
+        public System.Action RequestGlory;
 
         public void Build(Transform parent, GameConfig.UiSkin skin)
         {
@@ -32,14 +37,23 @@ namespace MyClicker.UI
             StoneUi.Place(panel, 0.05f, 0.16f, 0.95f, 0.78f);
 
             var title = StoneUi.Label(panel.transform, "Title", "Forge", 40, TextAnchor.MiddleCenter);
-            StoneUi.Place(title, 0.08f, 0.88f, 0.78f, 0.98f);
+            StoneUi.Place(title, 0.08f, 0.88f, 0.58f, 0.98f);
 
+            var glory = StoneUi.Button(panel.transform, "GloryBtn", "Glory", skin, () => RequestGlory?.Invoke());
+            StoneUi.Place(glory, 0.58f, 0.88f, 0.80f, 0.98f);
             var close = StoneUi.Button(panel.transform, "Close", "X", skin, Hide);
             StoneUi.Place(close, 0.82f, 0.88f, 0.96f, 0.98f);
 
+            _mode1 = StoneUi.Button(panel.transform, "Buy1", "x1", skin, () => SetMode(1));
+            StoneUi.Place(_mode1, 0.08f, 0.78f, 0.34f, 0.86f);
+            _mode10 = StoneUi.Button(panel.transform, "Buy10", "x10", skin, () => SetMode(10));
+            StoneUi.Place(_mode10, 0.37f, 0.78f, 0.63f, 0.86f);
+            _modeMax = StoneUi.Button(panel.transform, "BuyMax", "Max", skin, () => SetMode(-1));
+            StoneUi.Place(_modeMax, 0.66f, 0.78f, 0.92f, 0.86f);
+
             var viewportGo = new GameObject("Viewport", typeof(RectTransform), typeof(Image), typeof(Mask));
             viewportGo.transform.SetParent(panel.transform, false);
-            StoneUi.Place(viewportGo.GetComponent<RectTransform>(), 0.03f, 0.04f, 0.97f, 0.86f);
+            StoneUi.Place(viewportGo.GetComponent<RectTransform>(), 0.03f, 0.04f, 0.97f, 0.76f);
             var viewportImage = viewportGo.GetComponent<Image>();
             viewportImage.color = new Color(1f, 1f, 1f, 0.02f);
             viewportGo.GetComponent<Mask>().showMaskGraphic = false;
@@ -116,16 +130,25 @@ namespace MyClicker.UI
             var detail = StoneUi.Label(row.transform, "Detail", "", 20, TextAnchor.UpperLeft);
             StoneUi.Place(detail, 0.20f, 0.08f, 0.68f, 0.56f);
 
-            var buy = StoneUi.Button(row.transform, "Buy", "Buy", skin, () => Buy(id));
+            var buy = StoneUi.Button(row.transform, "Buy", "", skin, () => Buy(id));
             StoneUi.Place(buy, 0.70f, 0.16f, 0.97f, 0.84f);
+            StoneUi.HideDefaultLabel(buy);
+            var price = StoneUi.Price(buy.transform, "Price", 28);
+            StoneUi.Place(price.root, 0.04f, 0.10f, 0.96f, 0.90f);
 
-            return new ShopRow { id = id, icon = icon, name = name, detail = detail, buy = buy };
+            return new ShopRow { id = id, icon = icon, name = name, detail = detail, buy = buy, price = price };
+        }
+
+        void SetMode(int mode)
+        {
+            _buyMode = mode;
+            Refresh();
         }
 
         void Buy(string id)
         {
             var services = GameServices.Instance;
-            if (services == null || !services.Economy.TryBuy(id))
+            if (services == null || !services.Economy.TryBuy(id, _buyMode))
                 return;
             Refresh();
         }
@@ -138,24 +161,29 @@ namespace MyClicker.UI
             var economy = services.Economy;
             var profile = services.Save.Profile;
             int level = profile.UpgradeLevel(row.id);
-            long cost = economy.UpgradeCost(row.id);
+            int planned = economy.PlannedLevels(row.id, _buyMode);
+            long cost = economy.CostFor(row.id, Mathf.Max(1, planned));
             bool unlocked = economy.IsUnlocked(row.id);
             bool maxed = economy.IsMaxed(row.id);
             bool can = economy.CanBuy(row.id);
             row.name.text = TitleFor(row.id) + "  Lv " + level;
             row.detail.text = unlocked ? DetailFor(row.id, economy) : economy.LockReason(row.id);
-            var label = row.buy.GetComponentInChildren<Text>();
-            if (label != null)
+            if (row.price != null)
             {
                 if (!unlocked)
-                    label.text = "Lock";
+                    row.price.Set("Lock", null);
                 else if (maxed)
-                    label.text = "MAX";
+                    row.price.Set("MAX", null);
+                else if (planned > 1)
+                    row.price.Set(NumberFmt.Compact(cost) + " x" + planned, GoldIcon());
                 else
-                    label.text = NumberFmt.Gold(cost);
+                    row.price.Set(NumberFmt.Compact(economy.UpgradeCost(row.id)), GoldIcon());
             }
 
             row.buy.interactable = can;
+            TintMode(_mode1, _buyMode == 1);
+            TintMode(_mode10, _buyMode == 10);
+            TintMode(_modeMax, _buyMode < 0);
             if (row.icon.sprite == null)
                 row.icon.sprite = IconFor(row.id);
         }
@@ -204,6 +232,26 @@ namespace MyClicker.UI
             }
         }
 
+        static void TintMode(Button button, bool on)
+        {
+            if (button == null)
+                return;
+            var image = button.GetComponent<Image>();
+            if (image != null)
+                image.color = on ? new Color(1f, 0.92f, 0.7f) : Color.white;
+        }
+
+        static Sprite GoldIcon()
+        {
+            var services = GameServices.Instance;
+            if (services == null)
+                return null;
+            var icons = services.Catalog != null ? services.Catalog.icons : null;
+            if (icons != null && icons.gold != null)
+                return icons.gold;
+            return services.Config != null ? services.Config.ui.coinIcon : null;
+        }
+
         static Sprite IconFor(string id)
         {
             var icons = GameServices.Instance != null ? GameServices.Instance.Catalog.icons : null;
@@ -232,6 +280,7 @@ namespace MyClicker.UI
             public Text name;
             public Text detail;
             public Button buy;
+            public StoneUi.PriceView price;
         }
     }
 }

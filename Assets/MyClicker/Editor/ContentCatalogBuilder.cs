@@ -52,6 +52,12 @@ namespace MyClicker.Editor
             };
         }
 
+        public static void BatchRebuild()
+        {
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+            Rebuild();
+        }
+
         [MenuItem("MyClicker/Rebuild Content Catalog")]
         public static void Rebuild()
         {
@@ -67,6 +73,7 @@ namespace MyClicker.Editor
             if (config != null)
             {
                 config.world.backgroundSprites = AllBackgroundSlices();
+                AssignCainosTiles(config.world);
                 EditorUtility.SetDirty(config);
             }
             EditorUtility.SetDirty(catalog);
@@ -210,6 +217,26 @@ namespace MyClicker.Editor
             return AssetDatabase.LoadAllAssetsAtPath(path)
                 .OfType<Sprite>()
                 .OrderBy(IndexOf)
+                .ToArray();
+        }
+
+        static void AssignCainosTiles(GameConfig.WorldSettings world)
+        {
+            const string tex = "Assets/Cainos/Pixel Art Top Down - Basic/Texture/";
+            world.grassTiles = LoadSprites(tex + "TX Tileset Grass.png");
+            world.stoneTiles = LoadSprites(tex + "TX Tileset Stone Ground.png");
+            world.wallTiles = LoadSprites(tex + "TX Tileset Wall.png");
+            world.plantSprites = LoadSprites(tex + "TX Plant.png");
+            world.propSprites = LoadSprites(tex + "TX Props.png")
+                .Concat(LoadSprites(tex + "TX Struct.png"))
+                .ToArray();
+        }
+
+        static Sprite[] LoadSprites(string path)
+        {
+            return AssetDatabase.LoadAllAssetsAtPath(path)
+                .OfType<Sprite>()
+                .OrderBy(s => s.name)
                 .ToArray();
         }
 
@@ -365,7 +392,7 @@ namespace MyClicker.Editor
                 {
                     id = ContentIds.PotMight,
                     displayName = "Ember Vial",
-                    description = "20s of extra tap damage.",
+                    description = "A warm draught. +60% tap damage for 20 seconds.",
                     icon = PotionSprite("pot3red") ?? PotionSprite("pot1red"),
                     duration = 20f,
                     potency = 0.6f
@@ -374,7 +401,7 @@ namespace MyClicker.Editor
                 {
                     id = ContentIds.PotSwift,
                     displayName = "Gale Tonic",
-                    description = "20s of faster auto-swings.",
+                    description = "A brisk tonic. Auto-swings 35% faster for 20 seconds.",
                     icon = PotionSprite("pot8sky") ?? PotionSprite("pot3blue") ?? PotionSprite("pot1sky"),
                     duration = 20f,
                     potency = 0.35f
@@ -383,7 +410,7 @@ namespace MyClicker.Editor
                 {
                     id = ContentIds.PotGold,
                     displayName = "Gilded Brew",
-                    description = "20s of double gold.",
+                    description = "A lucky brew. Double gold from every kill for 20 seconds.",
                     icon = PotionSprite("pot5yellow") ?? PotionSprite("pot1yellow"),
                     duration = 20f,
                     potency = 1f

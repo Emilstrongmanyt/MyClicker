@@ -53,16 +53,17 @@ namespace MyClicker.Combat
         public EnemyController SpawnRegular(UnitVisual visual, float hp)
         {
             var combat = Settings();
-            float side = Random.value < 0.5f ? combat.spawnX.x : combat.spawnX.y;
-            var pos = new Vector3(side, Random.Range(combat.spawnY.x, combat.spawnY.y), 0f);
-            return SpawnAt(visual, hp, pos, combat.enemySpeed, combat.approachStopDistance);
+            float top = Camera.main != null ? Camera.main.orthographicSize + 1.15f : combat.spawnY.y;
+            var pos = new Vector3(Random.Range(-2.6f, 2.6f), top, 0f);
+            return SpawnAt(visual, hp, pos, combat.enemySpeed, combat.holdSlack);
         }
 
         public EnemyController SpawnBoss(UnitVisual visual, float hp)
         {
             var combat = Settings();
-            var pos = new Vector3(0f, combat.spawnY.y + 0.4f, 0f);
-            return SpawnAt(visual, hp, pos, combat.enemySpeed * 0.72f, combat.approachStopDistance + 0.35f);
+            float top = Camera.main != null ? Camera.main.orthographicSize + 1.45f : combat.spawnY.y + 0.4f;
+            var pos = new Vector3(0f, top, 0f);
+            return SpawnAt(visual, hp, pos, combat.enemySpeed * 0.72f, combat.holdSlack);
         }
 
         public EnemyController Nearest(Vector3 world)
@@ -73,7 +74,7 @@ namespace MyClicker.Combat
             for (int i = 0; i < _alive.Count; i++)
             {
                 var enemy = _alive[i];
-                if (enemy == null || !enemy.Alive)
+                if (enemy == null || !enemy.Alive || !enemy.Vulnerable)
                     continue;
                 float d = (enemy.transform.position - world).sqrMagnitude;
                 if (d < bestDist)
@@ -94,7 +95,7 @@ namespace MyClicker.Combat
             for (int i = 0; i < _alive.Count; i++)
             {
                 var enemy = _alive[i];
-                if (enemy == null || enemy == skip || !enemy.Alive)
+                if (enemy == null || enemy == skip || !enemy.Alive || !enemy.Vulnerable)
                     continue;
                 float d = (enemy.transform.position - world).sqrMagnitude;
                 if (d < bestDist)
@@ -112,7 +113,8 @@ namespace MyClicker.Combat
             var hit = Physics2D.OverlapPoint(world);
             if (hit == null)
                 return null;
-            return hit.GetComponent<EnemyController>();
+            var enemy = hit.GetComponent<EnemyController>();
+            return enemy != null && enemy.Vulnerable ? enemy : null;
         }
 
         public void Clear()
@@ -137,16 +139,49 @@ namespace MyClicker.Combat
             if (visual != null && visual.Preview != null)
                 fallback = visual.Preview;
             var target = new Vector3(combat.playerSlot.x, combat.playerSlot.y, 0f);
-            enemy.Setup(visual, fallback, hp, target, speed, stop, OnPooledDeath);
+            enemy.Setup(visual, fallback, hp, target, speed, Settings().holdSlack, OnPooledDeath);
             enemy.gameObject.SetActive(true);
             if (!_alive.Contains(enemy))
                 _alive.Add(enemy);
+            RefreshFormation();
             return enemy;
         }
 
         void OnPooledDeath(EnemyController enemy)
         {
             _alive.Remove(enemy);
+            RefreshFormation();
+        }
+
+        public void RefreshFormation()
+        {
+            Prune();
+            var combat = Settings();
+            var hero = new Vector3(combat.playerSlot.x, combat.playerSlot.y, 0f);
+            var ring = new List<EnemyController>();
+            for (int i = 0; i < _alive.Count; i++)
+            {
+                if (_alive[i] != null && _alive[i].Alive)
+                    ring.Add(_alive[i]);
+            }
+
+            int n = ring.Count;
+            if (n == 0)
+                return;
+
+            const float start = 28f;
+            const float end = 152f;
+            for (int i = 0; i < n; i++)
+            {
+                float t = n == 1 ? 0.5f : i / (float)(n - 1);
+                float ang = Mathf.Lerp(start, end, t) * Mathf.Deg2Rad;
+                float radius = ring[i].IsBoss ? combat.ringRadiusBoss : combat.ringRadius;
+                if (n >= 6 && (i % 2) == 1)
+                    radius += 0.42f;
+                radius += Mathf.Max(0, n - 4) * 0.06f;
+                var hold = hero + new Vector3(Mathf.Cos(ang), Mathf.Sin(ang), 0f) * radius;
+                ring[i].SetHold(hold, combat.holdSlack);
+            }
         }
 
         void Prune()
