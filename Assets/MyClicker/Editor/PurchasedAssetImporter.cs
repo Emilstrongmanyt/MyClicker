@@ -436,8 +436,8 @@ namespace MyClicker.Editor
             Log("Configuring portrait iOS player settings...");
             PlayerSettings.companyName = "Solo Dreams";
             PlayerSettings.productName = "MyClicker";
-            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS, "com.solodreams.myclicker");
-            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone, "com.solodreams.myclicker");
+            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS, "com.solodreams.MyClicker");
+            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone, "com.solodreams.MyClicker");
             PlayerSettings.bundleVersion = "0.1.0";
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
             PlayerSettings.allowedAutorotateToPortrait = true;

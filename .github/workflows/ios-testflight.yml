@@ -27,7 +27,7 @@ env:
   UNITY_VERSION: 6000.5.2f1
   PROJECT_PATH: .
   BUILD_NAME: MyClickerBeta
-  BUNDLE_ID: com.solodreams.myclicker
+  BUNDLE_ID: com.solodreams.MyClicker
 
 jobs:
   build-unity-ios:
@@ -259,6 +259,31 @@ jobs:
           fi
           echo "Using Xcode project at $XCODE_DIR"
           export XCODE_DIR
+          python3 - <<'PY'
+          import os
+          root = os.environ["XCODE_DIR"]
+          old = "com.solodreams.myclicker"
+          new = os.environ["BUNDLE_ID"]
+          if old == new:
+              print("Bundle id already matches", new)
+          else:
+              changed = 0
+              for dirpath, _, files in os.walk(root):
+                  for name in files:
+                      if not name.endswith((".pbxproj", ".plist", ".xcconfig", ".xcscheme", ".pbxuser")):
+                          continue
+                      path = os.path.join(dirpath, name)
+                      try:
+                          text = open(path, encoding="utf-8").read()
+                      except OSError:
+                          continue
+                      if old not in text:
+                          continue
+                      open(path, "w", encoding="utf-8").write(text.replace(old, new))
+                      changed += 1
+                      print("rewrote bundle id in", path)
+              print(f"Updated {changed} files to {new}")
+          PY
           find "$XCODE_DIR" -type f \( -name "*.sh" -o -name "usymtool*" \) -exec chmod +x {} \;
           AUTH_KEY=$RUNNER_TEMP/AuthKey.p8
           printf '%s' "$APPLE_CONNECT_KEY" | base64 --decode > "$AUTH_KEY"
