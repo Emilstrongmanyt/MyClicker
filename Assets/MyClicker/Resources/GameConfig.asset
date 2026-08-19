@@ -550,16 +550,19 @@ MonoBehaviour:
     - {fileID: 21300094, guid: 15b2d2faaecad4bfb9edc6585d94f509, type: 3}
     - {fileID: 21300092, guid: 15b2d2faaecad4bfb9edc6585d94f509, type: 3}
     - {fileID: 21300088, guid: 15b2d2faaecad4bfb9edc6585d94f509, type: 3}
-    spawnInterval: 1.4
-    maxAlive: 8
-    enemySpeed: 1.6
-    tapDamage: 12
-    enemyBaseHp: 30
-    enemyHpPerWave: 8
-    approachStopDistance: 1.4
-    spawnX: {x: -4.2, y: 4.2}
-    spawnY: {x: 6.5, y: 8.2}
-    playerSlot: {x: 0, y: -4.4}
+    spawnInterval: 0.85
+    maxAlive: 6
+    enemySpeed: 2.15
+    tapDamage: 10
+    enemyBaseHp: 26
+    enemyHpPerWave: 7.5
+    bossHpMul: 9
+    approachStopDistance: 1.55
+    killsPerWave: 8
+    wavesPerBoss: 10
+    spawnX: {x: -4.4, y: 4.4}
+    spawnY: {x: 5.8, y: 7.6}
+    playerSlot: {x: 0, y: -4.15}
   world:
     backgroundSprites: []
   economy:
@@ -629,6 +632,25 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 1fd86bd08048fed46abe5b4a828cfc61, type: 3}
     - {fileID: 21300000, guid: 322f4303f0ec849478ec5f2ee6129eab, type: 3}
     startingGold: 0
-    goldPerKill: 3
-    goldPerWave: 12
-    potionDropChance: 0.12
+    goldPerKill: 5
+    goldPerKillPerWave: 1.15
+    goldPerWave: 18
+    goldPerBoss: 70
+    goldPerBossPerWave: 6
+    dustPerBoss: 3
+    dustDropChance: 0.08
+    potionDropChance: 0.08
+    potionBossDropChance: 1
+    mightPerLevel: 4
+    fortunePerLevel: 0.12
+    autoIntervalStart: 2.35
+    autoIntervalDecay: 0.93
+    autoIntervalMin: 0.28
+    critPerLevel: 0.02
+    critChanceCap: 0.6
+    critMultiplier: 3
+    mightPotionBonus: 0.6
+    swiftPotionBonus: 0.35
+    goldPotionBonus: 1
+    offlineCapHours: 8
+    offlineGoldFactor: 0.55

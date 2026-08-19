@@ -34,6 +34,7 @@ jobs:
     name: Build Unity iOS project
     if: ${{ github.event_name != 'workflow_dispatch' || !inputs.sign_only }}
     runs-on: ubuntu-latest
+    timeout-minutes: 180
     steps:
       - name: Free disk space
         uses: jlumbroso/free-disk-space@main
@@ -49,8 +50,83 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          lfs: true
-          fetch-depth: 0
+          lfs: false
+          fetch-depth: 1
+
+      - name: Prune unused store-pack art
+        run: |
+          python3 <<'PY'
+          import os, shutil
+          roots = [
+              "Assets/Layer Lab/GUI-TheStone/Preview",
+              "Assets/Layer Lab/GUI-TheStone/PSD,AI",
+              "Assets/Layer Lab/GUI-TheStone/Scene",
+              "Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Icon_PictoIcons/PictoIcon_32",
+              "Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Icon_PictoIcons/PictoIcon_128",
+              "Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Icon_PictoIcons/PictoIcon_256",
+              "Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Icon_PictoIcons/PictoIcon_512",
+              "Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Icon_PictoIcons/PictoIcon_Orginal",
+              "Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Icon_ItemIcons/ItemIcon_32",
+              "Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Icon_ItemIcons/ItemIcon_128",
+              "Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Icon_ItemIcons/ItemIcon_256",
+              "Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Icon_ItemIcons/ItemIcon_512",
+              "Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Icon_ItemIcons/ItemIcon_Original",
+              "Assets/HeroEditor/FantasyHeroes/TestRoom",
+              "Assets/2D Casual backgorund/Original Artwork",
+              "Assets/2D Potion Icon Pack/Original artwork",
+              "Assets/Miniature Army 2D V.1/Original artwork",
+          ]
+          removed = 0
+          for path in roots:
+              if os.path.exists(path):
+                  shutil.rmtree(path)
+                  meta = path + ".meta"
+                  if os.path.exists(meta):
+                      os.remove(meta)
+                  print("removed", path)
+                  removed += 1
+          # Keep Elv A-sheets only (idle/full cycle). B-E are unused in the catalog.
+          for dirpath, dirnames, filenames in os.walk("Assets/ElvAssets"):
+              for name in filenames:
+                  lower = name.lower()
+                  if not lower.endswith(".png"):
+                      continue
+                  keep = lower.endswith("_a.png") or lower.endswith("_a.Png".lower())
+                  if keep:
+                      continue
+                  os.remove(os.path.join(dirpath, name))
+                  meta = os.path.join(dirpath, name + ".meta")
+                  if os.path.exists(meta):
+                      os.remove(meta)
+                  print("removed extra sheet", os.path.join(dirpath, name))
+          print(f"Pruned {removed} unused folders")
+          PY
+          df -h
+
+      - name: Pull Git LFS for remaining assets
+        run: |
+          git lfs install --local
+          git lfs pull
+          python3 <<'PY'
+          import os, sys
+          pointers = []
+          for root, dirs, files in os.walk("Assets"):
+              for name in files:
+                  path = os.path.join(root, name)
+                  try:
+                      with open(path, "rb") as handle:
+                          head = handle.read(64)
+                  except OSError:
+                      continue
+                  if head.startswith(b"version https://git-lfs.github.com/spec/v1"):
+                      pointers.append(path)
+          print(f"LFS pointer files remaining: {len(pointers)}")
+          for path in pointers[:40]:
+              print(" POINTER", path)
+          if pointers:
+              sys.exit("Git LFS left pointer files on disk; Unity cannot import them.")
+          PY
+          df -h
 
       - name: Cache Unity Library
         uses: actions/cache@v4
@@ -82,7 +158,6 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           unityVersion: ${{ env.UNITY_VERSION }}
           targetPlatform: iOS

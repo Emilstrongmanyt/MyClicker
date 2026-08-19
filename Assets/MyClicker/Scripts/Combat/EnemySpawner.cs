@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using MyClicker.App;
+using MyClicker.Data;
 using UnityEngine;
 
 namespace MyClicker.Combat
@@ -8,87 +9,150 @@ namespace MyClicker.Combat
     {
         readonly List<EnemyController> _pool = new List<EnemyController>();
         readonly List<EnemyController> _alive = new List<EnemyController>();
-        float _timer;
 
         public IReadOnlyList<EnemyController> Alive => _alive;
-
-        public void Tick(float dt)
+        public int AliveCount
         {
-            var config = GameServices.Instance.Config;
-            var combat = config != null ? config.combat : new Data.GameConfig.CombatSettings();
-            _alive.RemoveAll(e => e == null || !e.gameObject.activeInHierarchy);
+            get
+            {
+                Prune();
+                return _alive.Count;
+            }
+        }
 
-            _timer -= dt;
-            if (_timer > 0f || _alive.Count >= combat.maxAlive)
-                return;
+        public bool HasBoss
+        {
+            get
+            {
+                Prune();
+                for (int i = 0; i < _alive.Count; i++)
+                {
+                    if (_alive[i] != null && _alive[i].IsBoss && _alive[i].Alive)
+                        return true;
+                }
 
-            _timer = combat.spawnInterval;
-            Spawn(combat);
+                return false;
+            }
+        }
+
+        public EnemyController CurrentBoss
+        {
+            get
+            {
+                Prune();
+                for (int i = 0; i < _alive.Count; i++)
+                {
+                    if (_alive[i] != null && _alive[i].IsBoss && _alive[i].Alive)
+                        return _alive[i];
+                }
+
+                return null;
+            }
+        }
+
+        public EnemyController SpawnRegular(UnitVisual visual, float hp)
+        {
+            var combat = Settings();
+            float side = Random.value < 0.5f ? combat.spawnX.x : combat.spawnX.y;
+            var pos = new Vector3(side, Random.Range(combat.spawnY.x, combat.spawnY.y), 0f);
+            return SpawnAt(visual, hp, pos, combat.enemySpeed, combat.approachStopDistance);
+        }
+
+        public EnemyController SpawnBoss(UnitVisual visual, float hp)
+        {
+            var combat = Settings();
+            var pos = new Vector3(0f, combat.spawnY.y + 0.4f, 0f);
+            return SpawnAt(visual, hp, pos, combat.enemySpeed * 0.72f, combat.approachStopDistance + 0.35f);
+        }
+
+        public EnemyController Nearest(Vector3 world)
+        {
+            Prune();
+            EnemyController best = null;
+            float bestDist = float.MaxValue;
+            for (int i = 0; i < _alive.Count; i++)
+            {
+                var enemy = _alive[i];
+                if (enemy == null || !enemy.Alive)
+                    continue;
+                float d = (enemy.transform.position - world).sqrMagnitude;
+                if (d < bestDist)
+                {
+                    bestDist = d;
+                    best = enemy;
+                }
+            }
+
+            return best;
+        }
+
+        public EnemyController AtPoint(Vector3 world)
+        {
+            var hit = Physics2D.OverlapPoint(world);
+            if (hit == null)
+                return null;
+            return hit.GetComponent<EnemyController>();
         }
 
         public void Clear()
         {
-            foreach (var enemy in _alive)
+            for (int i = 0; i < _alive.Count; i++)
             {
-                if (enemy != null)
-                    enemy.gameObject.SetActive(false);
+                if (_alive[i] != null)
+                    _alive[i].gameObject.SetActive(false);
             }
 
             _alive.Clear();
         }
 
-        void Spawn(Data.GameConfig.CombatSettings combat)
+        EnemyController SpawnAt(UnitVisual visual, float hp, Vector3 pos, float speed, float stop)
         {
-            var enemy = Get(combat);
-            float side = Random.value < 0.5f ? combat.spawnX.x : combat.spawnX.y;
-            var pos = new Vector3(side, Random.Range(combat.spawnY.x, combat.spawnY.y), 0f);
+            var combat = Settings();
+            var enemy = Get();
             enemy.transform.position = pos;
-            Sprite sprite = null;
+            Sprite fallback = null;
             if (combat.enemySprites != null && combat.enemySprites.Length > 0)
-                sprite = combat.enemySprites[Random.Range(0, combat.enemySprites.Length)];
-            int wave = GameServices.Instance.Save.Profile.wave;
-            float hp = combat.enemyBaseHp + combat.enemyHpPerWave * (wave - 1);
-            enemy.Setup(sprite, hp, new Vector3(combat.playerSlot.x, combat.playerSlot.y, 0f), combat.enemySpeed);
+                fallback = combat.enemySprites[Random.Range(0, combat.enemySprites.Length)];
+            if (visual != null && visual.Preview != null)
+                fallback = visual.Preview;
+            var target = new Vector3(combat.playerSlot.x, combat.playerSlot.y, 0f);
+            enemy.Setup(visual, fallback, hp, target, speed, stop, OnPooledDeath);
             enemy.gameObject.SetActive(true);
-            _alive.Add(enemy);
+            if (!_alive.Contains(enemy))
+                _alive.Add(enemy);
+            return enemy;
         }
 
-        EnemyController Get(Data.GameConfig.CombatSettings combat)
+        void OnPooledDeath(EnemyController enemy)
         {
-            foreach (var enemy in _pool)
+            _alive.Remove(enemy);
+        }
+
+        void Prune()
+        {
+            _alive.RemoveAll(e => e == null || !e.gameObject.activeInHierarchy);
+        }
+
+        EnemyController Get()
+        {
+            for (int i = 0; i < _pool.Count; i++)
             {
-                if (enemy != null && !enemy.gameObject.activeInHierarchy)
-                    return enemy;
+                if (_pool[i] != null && !_pool[i].gameObject.activeInHierarchy)
+                    return _pool[i];
             }
 
-            GameObject go = null;
-            if (combat.enemyPrefabs != null && combat.enemyPrefabs.Length > 0)
-            {
-                var prefab = combat.enemyPrefabs[Random.Range(0, combat.enemyPrefabs.Length)];
-                if (prefab != null)
-                    go = Instantiate(prefab);
-            }
-
-            if (go == null)
-            {
-                go = new GameObject("Enemy");
-                var renderer = go.AddComponent<SpriteRenderer>();
-                renderer.sortingOrder = 10;
-            }
-
+            var go = new GameObject("Enemy");
             go.transform.SetParent(transform, false);
-            var enemyNew = go.GetComponent<EnemyController>();
-            if (enemyNew == null)
-                enemyNew = go.AddComponent<EnemyController>();
-            if (go.GetComponent<Collider2D>() == null)
-            {
-                var col = go.AddComponent<CircleCollider2D>();
-                col.isTrigger = true;
-                col.radius = 0.55f;
-            }
+            go.AddComponent<SpriteRenderer>();
+            var created = go.AddComponent<EnemyController>();
+            _pool.Add(created);
+            return created;
+        }
 
-            _pool.Add(enemyNew);
-            return enemyNew;
+        static GameConfig.CombatSettings Settings()
+        {
+            var config = GameServices.Instance != null ? GameServices.Instance.Config : null;
+            return config != null ? config.combat : new GameConfig.CombatSettings();
         }
     }
 }

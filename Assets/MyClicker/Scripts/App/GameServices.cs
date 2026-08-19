@@ -1,4 +1,6 @@
+using System;
 using MyClicker.Data;
+using MyClicker.Economy;
 using UnityEngine;
 
 namespace MyClicker.App
@@ -9,6 +11,10 @@ namespace MyClicker.App
 
         public SaveSystem Save { get; private set; }
         public GameConfig Config { get; private set; }
+        public ContentCatalog Catalog { get; private set; }
+        public EconomyService Economy { get; private set; }
+
+        public event Action ProfileChanged;
 
         public static GameServices Ensure()
         {
@@ -43,6 +49,30 @@ namespace MyClicker.App
             Initialize();
         }
 
+        void Update()
+        {
+            if (Save == null)
+                return;
+            Economy?.TickBuffs(Time.unscaledDeltaTime);
+            Save.Tick();
+        }
+
+        void OnApplicationPause(bool pause)
+        {
+            if (pause)
+                Save?.PersistNow();
+        }
+
+        void OnApplicationQuit()
+        {
+            Save?.PersistNow();
+        }
+
+        public void NotifyProfile()
+        {
+            ProfileChanged?.Invoke();
+        }
+
         void Initialize()
         {
             if (Save != null)
@@ -55,6 +85,8 @@ namespace MyClicker.App
             Config = Resources.Load<GameConfig>("GameConfig");
             if (Config == null)
                 Config = ScriptableObject.CreateInstance<GameConfig>();
+            Catalog = ContentCatalog.Load();
+            Economy = new EconomyService(this);
         }
     }
 }

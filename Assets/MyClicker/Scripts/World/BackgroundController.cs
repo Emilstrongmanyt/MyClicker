@@ -8,7 +8,10 @@ namespace MyClicker.World
         void Start()
         {
             var config = GameServices.Ensure().Config;
+            var zone = GameServices.Ensure().Catalog.ZoneAt(GameServices.Instance.Save.Profile.zone);
             var sprites = config != null ? config.world.backgroundSprites : null;
+            if (zone != null && zone.background != null)
+                sprites = new[] { zone.background };
             if (sprites == null || sprites.Length == 0)
             {
                 Camera.main.backgroundColor = new Color(0.36f, 0.48f, 0.28f);

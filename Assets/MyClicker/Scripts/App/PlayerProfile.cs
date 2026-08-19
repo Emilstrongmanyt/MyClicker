@@ -8,12 +8,73 @@ namespace MyClicker.App
     {
         public string displayName = "Hero";
         public bool hasCharacter;
-        public int gold;
+        public long gold;
+        public int dust;
+        public int glory;
+        public int zone;
         public int wave = 1;
         public int kills;
+        public int bossesSlain;
         public float tapDamage = 12f;
+        public int mightLevel;
+        public int fortuneLevel;
+        public int swiftLevel;
+        public int critLevel;
+        public int potMight;
+        public int potSwift;
+        public int potGold;
+        public float mightBuffLeft;
+        public float swiftBuffLeft;
+        public float goldBuffLeft;
+        public long lastSeenUnix;
         public string heroJson;
         public CharacterSave character = new CharacterSave();
+
+        public int UpgradeLevel(string id)
+        {
+            switch (id)
+            {
+                case Data.ContentIds.Might: return mightLevel;
+                case Data.ContentIds.Fortune: return fortuneLevel;
+                case Data.ContentIds.Swift: return swiftLevel;
+                case Data.ContentIds.Crit: return critLevel;
+                default: return 0;
+            }
+        }
+
+        public void SetUpgradeLevel(string id, int value)
+        {
+            value = Mathf.Max(0, value);
+            switch (id)
+            {
+                case Data.ContentIds.Might: mightLevel = value; break;
+                case Data.ContentIds.Fortune: fortuneLevel = value; break;
+                case Data.ContentIds.Swift: swiftLevel = value; break;
+                case Data.ContentIds.Crit: critLevel = value; break;
+            }
+        }
+
+        public int PotionCount(string id)
+        {
+            switch (id)
+            {
+                case Data.ContentIds.PotMight: return potMight;
+                case Data.ContentIds.PotSwift: return potSwift;
+                case Data.ContentIds.PotGold: return potGold;
+                default: return 0;
+            }
+        }
+
+        public void SetPotionCount(string id, int value)
+        {
+            value = Mathf.Max(0, value);
+            switch (id)
+            {
+                case Data.ContentIds.PotMight: potMight = value; break;
+                case Data.ContentIds.PotSwift: potSwift = value; break;
+                case Data.ContentIds.PotGold: potGold = value; break;
+            }
+        }
     }
 
     [Serializable]

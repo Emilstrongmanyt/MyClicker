@@ -10,6 +10,7 @@ namespace MyClicker.App
         void Start()
         {
             GameServices.Ensure();
+            MyClicker.Audio.AudioDirector.Ensure().PlayCreate();
             Invoke(nameof(Go), splashSeconds);
         }
 

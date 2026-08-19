@@ -14,6 +14,7 @@ namespace MyClicker.Character
 
         void Start()
         {
+            MyClicker.Audio.AudioDirector.Ensure().PlayCreate();
             var services = GameServices.Ensure();
             var prefab = HeroPrefabLoader.Load(services.Config);
             if (prefab == null)

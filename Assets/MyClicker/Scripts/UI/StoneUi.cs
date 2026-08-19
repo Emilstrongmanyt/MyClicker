@@ -8,6 +8,31 @@ namespace MyClicker.UI
 {
     public static class StoneUi
     {
+        public static Image Icon(Transform parent, string name, Sprite sprite)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(parent, false);
+            var image = go.GetComponent<Image>();
+            image.sprite = sprite;
+            image.preserveAspect = true;
+            image.color = sprite != null ? Color.white : new Color(1f, 1f, 1f, 0.15f);
+            image.raycastTarget = false;
+            return image;
+        }
+
+        public static void Place(RectTransform rt, float x0, float y0, float x1, float y1)
+        {
+            rt.anchorMin = new Vector2(x0, y0);
+            rt.anchorMax = new Vector2(x1, y1);
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+        }
+
+        public static void Place(Component component, float x0, float y0, float x1, float y1)
+        {
+            Place(component.GetComponent<RectTransform>(), x0, y0, x1, y1);
+        }
+
         public static Transform EnsureCanvas()
         {
             if (Camera.main != null)
@@ -65,6 +90,7 @@ namespace MyClicker.UI
             label.horizontalOverflow = HorizontalWrapMode.Wrap;
             label.verticalOverflow = VerticalWrapMode.Truncate;
             label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.raycastTarget = false;
             return label;
         }
 

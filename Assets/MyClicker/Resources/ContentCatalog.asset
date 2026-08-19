@@ -1,0 +1,1580 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f3a1c2e4b6d708192a3b4c5d6e7f809, type: 3}
+  m_Name: ContentCatalog
+  m_EditorClassIdentifier: 
+  enemies:
+  - id: enemy_001
+    displayName: Night Spore
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -123726580, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: 915643764, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: 1468320302, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: 252834984, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: -2142400444, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: 1726932043, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    walk:
+    - {fileID: 382872053, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: 257259652, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: 1458656105, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: -803054356, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: 2101393366, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: -339322251, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    attack:
+    - {fileID: 590864371, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: -377460607, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: 418297362, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: -111115829, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: 39125234, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: -129277291, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    hurt:
+    - {fileID: 722440691, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: -713442203, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: -1405751953, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: -29448611, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: 591579166, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: 1726899325, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    death:
+    - {fileID: -1625439019, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: 30811848, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: -1119907319, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: -1779681716, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: -291001073, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+    - {fileID: -644822603, guid: 54f4aaa4054fd184eaf66d208189cc38, type: 3}
+  - id: enemy_002
+    displayName: Scarab Grub
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -1540333166, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: -1776078451, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: -373398418, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: 1315668091, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: -1012470217, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: -371512246, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    walk:
+    - {fileID: -1090918338, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: 1373875079, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: 952318420, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: 175244636, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: -57218746, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: -464328742, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    attack:
+    - {fileID: 83203538, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: -277877148, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: 103928352, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: -2021085198, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: -1949408932, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: 1434734565, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    hurt:
+    - {fileID: -868008863, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: 500040989, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: 870716368, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: -924270995, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: 1939874407, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: -754548436, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    death:
+    - {fileID: -447738940, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: 72511157, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: 787703957, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: -2027841431, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: 730031716, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+    - {fileID: 1769224494, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+  - id: enemy_003
+    displayName: Pale Puff
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: 2032029620, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: 796117950, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -1161047275, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -728741987, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -217430210, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: 1608688120, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    walk:
+    - {fileID: -890247557, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -642200179, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -1761922749, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: 1852546987, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -1702482855, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -815066059, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    attack:
+    - {fileID: -900151323, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -1506468970, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: 35338230, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -1768302307, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -104202139, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: 723709333, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    hurt:
+    - {fileID: 855242398, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -493787499, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -1785743200, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -593274451, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -398727226, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: 766969288, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    death:
+    - {fileID: 804983855, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: 460075531, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: 1054141398, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: -521513837, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: 1422745709, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+    - {fileID: 2062205512, guid: a22329e9e674cfb468a195e8e10ed100, type: 3}
+  - id: enemy_004
+    displayName: Cave Crawler
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -1948798310, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -1918262881, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -1380074937, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: 1996330489, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: 1233174780, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -368246541, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    walk:
+    - {fileID: -1381769670, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -1711701772, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -620315261, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: 133785878, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: 1590846767, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: 2067837838, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    attack:
+    - {fileID: -663858493, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -2089892184, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -1946400586, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -1683217081, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -1398037074, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -853782524, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    hurt:
+    - {fileID: -2099199888, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -961822388, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: 664029890, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -608131650, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -1172539829, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -1218595692, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    death:
+    - {fileID: 828034997, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -1214335942, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -566611894, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -1493576347, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -1789263518, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+    - {fileID: -1393479935, guid: 74df370ce1ec61945839064e16295e02, type: 3}
+  - id: enemy_005
+    displayName: Ash Imp
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: 1212922733, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -997407561, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -120035874, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -2121549122, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -893148350, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -1327110857, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    walk:
+    - {fileID: -148438356, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -1367411638, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -1741236561, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: 2075681575, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -266977763, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -1018058914, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    attack:
+    - {fileID: 459848276, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: 973529550, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: 1338525701, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -567103649, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: 1414501403, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: 1506217424, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    hurt:
+    - {fileID: -1988147232, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -1380028569, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: 1034329306, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: 419265505, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -420615895, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -526008694, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    death:
+    - {fileID: -144839704, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: 2013599006, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -1877942, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: -1080848133, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+    - {fileID: 780942296, guid: 94f973fa6b7309340be62908bca20064, type: 3}
+  - id: enemy_006
+    displayName: Azure Blob
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -2018184794, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: 1161000315, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -1217433344, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -2056498317, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -1886563525, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -648981325, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    walk:
+    - {fileID: -538447107, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -1500045990, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: 10897833, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: 1433306389, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: 1794695904, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -1165953513, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    attack:
+    - {fileID: -608325473, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -534698452, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: 73229301, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: 1852005205, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -563619130, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -1230042451, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    hurt:
+    - {fileID: 969959616, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: 722023969, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -817777429, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -1417138143, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -1519094624, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -1093299311, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    death:
+    - {fileID: 461093690, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: 851494562, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -1085702621, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: 42844854, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -1536969165, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+    - {fileID: -390975767, guid: fd01fb3e6f803d044bc82b8dc349b9b0, type: 3}
+  - id: enemy_007
+    displayName: Fen Tick
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: 2013516726, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: 1118556324, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: 1910777135, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -235188296, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -909318074, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: 150321264, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    walk:
+    - {fileID: 1394826418, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: 1313386698, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -1654205062, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -993347795, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: 1520348125, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -1939662206, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    attack:
+    - {fileID: 1177160045, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -795059196, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -1760927667, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -305833117, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -1296568648, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -605020410, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    hurt:
+    - {fileID: 280518698, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -2020743024, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: 801118942, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: 934241057, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: 539785601, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -1013512768, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    death:
+    - {fileID: 792189879, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -2034764826, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: 556787213, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: 1439565411, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -1035987117, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+    - {fileID: -824829451, guid: f1e7b6f0c1a3c7146b22060a488afe07, type: 3}
+  - id: enemy_008
+    displayName: Bog Wisp
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -943280823, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: -2099835632, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: -1954208462, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: 687549377, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: -1346136786, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: 129807886, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    walk:
+    - {fileID: 357935179, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: 1445784249, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: -1904899093, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: -1572984471, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: 1503234080, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: -612123738, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    attack:
+    - {fileID: -1567372731, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: 506886240, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: -1416156598, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: -1243069381, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: 349802730, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: 603272100, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    hurt:
+    - {fileID: -1042661519, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: -54696185, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: -164481030, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: 2059778588, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: 1343957402, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: -1641430329, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    death:
+    - {fileID: 1327993144, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: 362958193, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: 105762832, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: -1680778641, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: -91314643, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+    - {fileID: 2012398481, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+  - id: enemy_009
+    displayName: Reed Bat
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -1141823995, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: 281769993, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: 459388001, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: 491102278, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: 359963335, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: -1747663412, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    walk:
+    - {fileID: 872280237, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: 325587480, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: -1567599768, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: -105895489, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: 1116518888, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: -681752100, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    attack:
+    - {fileID: -1903011581, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: -816320007, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: -514596362, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: -1660829989, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: 399685296, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: -1300098346, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    hurt:
+    - {fileID: -1797969676, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: 2143456455, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: 1477358334, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: -1708142909, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: 1567569663, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: 1844190563, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    death:
+    - {fileID: 2036462342, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: 1415913733, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: -1624708952, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: 1385497926, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: -303927676, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+    - {fileID: -1031842966, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+  - id: enemy_010
+    displayName: Fern Cat
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: 796398623, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: -1465345854, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: 1093534741, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: 1145137670, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: -524158317, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: 787779937, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    walk:
+    - {fileID: 524817676, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: -218454540, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: 1571858549, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: 1894689735, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: -1429967005, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: 147054098, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    attack:
+    - {fileID: -134678333, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: -326078230, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: 672853838, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: -1079725838, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: -1436474033, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: 1157503843, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    hurt:
+    - {fileID: 710039377, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: -1709979964, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: -2010292955, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: -738630183, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: -627369464, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: 1578764110, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    death:
+    - {fileID: 814834269, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: -80348132, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: 317021214, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: 1721149069, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+    - {fileID: -1833273427, guid: a80b805d5edce2045ba09dc055c48052, type: 3}
+  - id: enemy_011
+    displayName: Mire Toad
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: 281471234, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: -1404993862, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 1516322186, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 33913011, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 838016917, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 881569558, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    walk:
+    - {fileID: 1155912011, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: -146790537, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: -2097743646, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 574798013, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: -488112052, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 2096120089, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    attack:
+    - {fileID: -563197592, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 22504281, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 1930924054, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: -902561740, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: -22415421, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: -1034523729, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    hurt:
+    - {fileID: 1898622213, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 416793828, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: -1115565212, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: -1541707966, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 1876064999, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 355654679, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    death:
+    - {fileID: 766922532, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 884771075, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 212832221, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: -637441787, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 1645014224, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+    - {fileID: 577990541, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+  - id: enemy_012
+    displayName: Tide Slime
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: 483199733, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 1105839274, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 1841236476, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 109105086, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 668090547, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 1635963623, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    walk:
+    - {fileID: 1532168616, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 801635800, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: -408695254, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: -251181870, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: -1046734836, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: -1479919144, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    attack:
+    - {fileID: 802391163, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 990656042, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: -562947115, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 162696474, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: -930650964, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: -850201397, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    hurt:
+    - {fileID: -1647236815, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 1482153048, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 1609393575, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: -1928533562, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: -614354886, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 780809434, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    death:
+    - {fileID: 1513390791, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 287156349, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 1968179689, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 1116984312, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 1588320757, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+    - {fileID: 755970498, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
+  - id: enemy_013
+    displayName: Ember Mite
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -148174987, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 2048566110, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 1209561762, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 2004344969, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 1301948590, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: -1899868003, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    walk:
+    - {fileID: -1591166457, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: -1054151850, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: -534775235, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 1872907013, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 2071131045, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 1618370042, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    attack:
+    - {fileID: 2032956151, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 121123459, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 629677803, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: -791644246, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: -210409148, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: -1879236385, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    hurt:
+    - {fileID: -964240570, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: -443527201, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: -406763654, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 257021992, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: -1937043573, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 1386027105, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    death:
+    - {fileID: -464981515, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 639562657, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 2075107240, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 685276963, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: 765571952, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+    - {fileID: -1753824250, guid: 9e7c9ba7be6e2ec44afbae8333c7b6dd, type: 3}
+  - id: enemy_014
+    displayName: Soot Imp
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: 853008507, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 275513947, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: -1176840401, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 1556572930, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 262564870, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: -1161481859, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    walk:
+    - {fileID: -634626321, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: -476008596, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 1006585099, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: -1048541966, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 1232284294, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 2105775861, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    attack:
+    - {fileID: 240542767, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 1344154308, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 1276744788, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 621823672, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: -1067115441, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 1667791320, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    hurt:
+    - {fileID: -668588163, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 855940885, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 559709974, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 1085803338, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 1847861898, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 580051067, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    death:
+    - {fileID: 1711971289, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 1285362088, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: -1931879121, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: -2017837674, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 361514729, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+    - {fileID: 1833378960, guid: 098cda23eaff5c744bb4575df2715308, type: 3}
+  - id: enemy_015
+    displayName: Cinder Bat
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -1552751436, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 180202188, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: -814386891, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: -977590280, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 1514755679, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: -350806128, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    walk:
+    - {fileID: -1066013557, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 506356646, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 1980330241, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 1983277652, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: -59555456, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 1313088170, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    attack:
+    - {fileID: 420822464, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: -1797896075, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 628620192, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: -1321969095, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 1296657194, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: -879798586, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    hurt:
+    - {fileID: -1636391629, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: -1544456971, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 1506912166, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 1838367895, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 1270644022, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: -1144929230, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    death:
+    - {fileID: -1519987721, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 1641807641, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 1746525037, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 1022963438, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: -666706935, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+    - {fileID: 789306139, guid: 9c9db407885e87944b40b6286e9a4ccf, type: 3}
+  - id: enemy_016
+    displayName: Magma Grub
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -551965264, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 311536906, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 877141293, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: -1187463389, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 776849870, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 1310954732, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    walk:
+    - {fileID: -1716109732, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 341478846, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 614964727, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: -209903539, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 1841534616, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 1227727206, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    attack:
+    - {fileID: -1557368350, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 544965344, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: -1680757649, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 333734680, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: -1718435668, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 1446632501, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    hurt:
+    - {fileID: 1516867822, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 2068435322, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 902333245, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 1806362755, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: -1840146588, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: -1669208267, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    death:
+    - {fileID: 1069298547, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: -958833053, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: -1958732765, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: -1983011133, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 1131152698, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+    - {fileID: 93146241, guid: c1e4bd28f93f9be429f30ae722a60f96, type: 3}
+  - id: enemy_017
+    displayName: Ash Wolf
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -1931470638, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 794096080, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: -267414842, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 1374623625, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: -1808766029, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 1125261528, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    walk:
+    - {fileID: 1831329365, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 550534951, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 156323622, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 2102935801, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 561314837, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 616593861, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    attack:
+    - {fileID: -1178634563, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 731264301, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 1158665176, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: -1262199111, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 953873894, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: -83360976, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    hurt:
+    - {fileID: -298260998, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: -1361962529, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: -2059118749, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: -1641828899, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 1462504050, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: -1112355852, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    death:
+    - {fileID: -873860640, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: -1815448956, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 1338262915, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: -1664471492, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: 414385715, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+    - {fileID: -713929473, guid: 53f9c9d5a95f57541b27ca244eeab886, type: 3}
+  - id: enemy_018
+    displayName: Coal Golem
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -2041600926, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 1013204299, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 951580414, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 438869199, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: -1769134385, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 1046420295, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    walk:
+    - {fileID: 1126517804, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 299144022, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: -1450857642, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 1990414658, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 901597550, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 1746969863, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    attack:
+    - {fileID: 1442779556, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 1745946875, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 1588032350, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 757299339, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 1224517620, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: -1299554506, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    hurt:
+    - {fileID: 1474893790, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: -1575809859, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: -1148716469, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: -1646735499, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 1496712811, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: -1979486605, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    death:
+    - {fileID: 2065227627, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 1061156858, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: -1090596960, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: -1901124011, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: -1887789773, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+    - {fileID: 1962155236, guid: 9ad60f626c175944e8716c223ddf064a, type: 3}
+  - id: enemy_019
+    displayName: Frost Bit
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: 2034622922, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -149757407, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: 1793026877, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -1978726990, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: 1093595762, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -1086012432, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    walk:
+    - {fileID: 1198763878, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -1009786269, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -1267901534, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: 766021851, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -841495561, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -536324429, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    attack:
+    - {fileID: -862394531, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -665340588, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: 49185388, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: 1619574795, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: 328854472, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: 717486814, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    hurt:
+    - {fileID: -4039714, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: 2086051805, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: 1625755646, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -594153582, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -842465098, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -1005066535, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    death:
+    - {fileID: 423804855, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -1527225247, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -1720248573, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: 1020977344, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -1619252131, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+    - {fileID: -1924839074, guid: ede85c3ced4dd2e4e891c538ccd06f39, type: 3}
+  - id: enemy_020
+    displayName: Ice Imp
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: 1627012871, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -2055716919, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -907582837, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: 573604017, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -1948674677, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -23835585, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    walk:
+    - {fileID: -2110190215, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -1362811429, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -1024702326, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -546291615, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: 1089473506, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -2071077368, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    attack:
+    - {fileID: 637566503, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -1117000173, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -1537865555, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: 1288124907, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -142486729, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -136729298, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    hurt:
+    - {fileID: 391748669, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -212649683, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: 2044097646, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -319978698, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: 1020382008, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: 162401221, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    death:
+    - {fileID: -805397024, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: 646397625, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: 1627689696, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+    - {fileID: -996728255, guid: 4def547137dd10748bdaf59af3f679f9, type: 3}
+  - id: enemy_021
+    displayName: Snow Bat
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -1065429023, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: 1932228410, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: -1499410719, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: -1737657418, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: -1465098913, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: 1830808194, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    walk:
+    - {fileID: 354382049, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: -1364998721, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: 1054447749, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: -1468723097, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: 729689787, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: -1153021402, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    attack:
+    - {fileID: 1518845556, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: 2084504523, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: 1702525102, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: -1633694868, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: 548239968, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: -1931822636, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    hurt:
+    - {fileID: 1002231211, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: -1529530909, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: 261490695, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: 1405061084, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: -1030427812, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: -264780051, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    death:
+    - {fileID: -651795028, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: 1180509313, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: 249378561, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: 292262888, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+    - {fileID: 1629159424, guid: 2358d265b34351f4c80ec67ef892af36, type: 3}
+  - id: enemy_022
+    displayName: Hail Wolf
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: 619182839, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -566398720, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: 1554763782, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -860962119, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: 1427583893, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -1297369550, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    walk:
+    - {fileID: 923432782, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -1321665621, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: 2113808321, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: 1202997677, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -421208546, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -835225356, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    attack:
+    - {fileID: 2090871294, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -1041456557, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: 1471283534, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -622528902, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: 1125778755, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -449439075, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    hurt:
+    - {fileID: 1208600298, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: 1305730277, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -1091041648, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: 860013932, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: 1850360774, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -1280617064, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    death:
+    - {fileID: -1311174020, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -1914201847, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: 2014056335, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -195746805, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+    - {fileID: -340783098, guid: d9268aa473987e4469459d39cbf95a4d, type: 3}
+  - id: enemy_023
+    displayName: Glacier Slime
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -111600232, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: 267358513, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -459960196, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -2095764537, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -1676786496, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -1135060566, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    walk:
+    - {fileID: 983500415, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: 306563213, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -144474272, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -717232591, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -748771566, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: 855315115, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    attack:
+    - {fileID: -2053841571, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: 1508265689, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: 1512336309, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -1335733064, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -358474365, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -2005304560, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    hurt:
+    - {fileID: 564368133, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: 718835669, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -898328125, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: 970622444, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -1145514421, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: 1947222442, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    death:
+    - {fileID: 1796556207, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: 885103407, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -2138699027, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: 2128300604, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -555291940, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+    - {fileID: -1039599219, guid: dbbcb4ba4a0113f43bdc233b5ce07fa8, type: 3}
+  - id: enemy_024
+    displayName: Rime Knight
+    isBoss: 0
+    scale: 2.25
+    idle:
+    - {fileID: -190638785, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: -698479022, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 186450187, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: -1670136877, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 721489627, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: -1641969365, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    walk:
+    - {fileID: -1971317238, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: -413875501, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 1194382098, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 208760808, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 847202750, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: -951082634, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    attack:
+    - {fileID: -1742506767, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 11057837, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: -1767587808, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: -1287058657, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 323010098, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 1774623241, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    hurt:
+    - {fileID: 948585279, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 473490838, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 403539514, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 169058363, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: -1048832230, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 1224251462, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    death:
+    - {fileID: 844701679, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: -901150511, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: -1992303663, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: -206460637, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 1748589197, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+    - {fileID: 579427753, guid: bd7e94bd6f958994a8903b478be309c3, type: 3}
+  bosses:
+  - id: boss_01
+    displayName: Ancient Bear
+    isBoss: 1
+    scale: 2.7
+    idle:
+    - {fileID: -104572678, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -1853252568, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -1283584115, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -1420906142, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -635044293, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -641975655, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    walk:
+    - {fileID: 253716029, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: 436923213, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -2052519665, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -456504042, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: 1242573153, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -412348737, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    attack:
+    - {fileID: 1803849066, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -199165388, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: 1991581215, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -1850383773, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -1297907359, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: 687209800, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    hurt:
+    - {fileID: -1731191338, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: 477706498, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: 1818240106, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -1226060622, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: 103289660, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -793149298, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    death:
+    - {fileID: 1264716443, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: 2023291356, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -2059174440, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -532617523, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -1766903266, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+    - {fileID: -1848706977, guid: 7781321adcbc06a4abff152ccd393a40, type: 3}
+  - id: boss_02
+    displayName: Osiris
+    isBoss: 1
+    scale: 2.7
+    idle:
+    - {fileID: -1066386698, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: -771698902, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: -1353250084, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 912748311, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: -1001069599, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 1310485455, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    walk:
+    - {fileID: 1843294264, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 744417981, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 692670146, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: -322255332, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 906341601, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: -1157231548, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    attack:
+    - {fileID: 800822181, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: -1070752795, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 186488996, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: -779031734, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 1240990041, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: -1328894281, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    hurt:
+    - {fileID: 1060933102, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 490225728, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 1258328709, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 895230555, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 123944867, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: -629826942, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    death:
+    - {fileID: -2087405745, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: -1089117100, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 917273136, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 1246316134, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: -463806537, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+    - {fileID: 240234898, guid: 62293b77471236146a6e2dc58e35eaf9, type: 3}
+  - id: boss_03
+    displayName: ChompBug
+    isBoss: 1
+    scale: 2.7
+    idle:
+    - {fileID: 1319307259, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: 388247780, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: 1663435393, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -1260443231, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -2142444602, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -222015691, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    walk:
+    - {fileID: -1071281872, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: 582599165, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -1879057219, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: 1353020004, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -1991622525, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -1709313222, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    attack:
+    - {fileID: 1533753682, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: 1624523632, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: 345266385, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: 1376767928, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: 327406620, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -1483863545, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    hurt:
+    - {fileID: -1108366017, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -1815164814, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -1771764568, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: 2019894213, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -101286815, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -1199395613, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    death:
+    - {fileID: 860144885, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -1036256524, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: 150577399, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: 1224404116, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -1227050962, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+    - {fileID: -1166300206, guid: f179fd3915456c340ae47507a405c5b9, type: 3}
+  - id: boss_04
+    displayName: Minotaur
+    isBoss: 1
+    scale: 2.7
+    idle:
+    - {fileID: 1689391468, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: 813802943, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: 79706432, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -1742557057, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -814136973, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -1769596338, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    walk:
+    - {fileID: -1452835801, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: 786876917, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -396500216, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -867025785, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -720810969, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: 108438427, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    attack:
+    - {fileID: -363833859, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -1907814646, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: 490267444, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -265122121, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -229632927, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: 868825149, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    hurt:
+    - {fileID: -770064827, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -359372912, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: 703367214, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: 903928520, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -177764010, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -1659530368, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    death:
+    - {fileID: 19954775, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: 240364344, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -49709766, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: 848366293, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: 488273018, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+    - {fileID: -1058084535, guid: 4919dc9bb0d9e754f8857afd8f69895b, type: 3}
+  - id: boss_05
+    displayName: Toxic Vermin
+    isBoss: 1
+    scale: 2.7
+    idle:
+    - {fileID: 40021750, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: -1494359294, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 207453842, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 786845098, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 486795497, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: -2053054979, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    walk:
+    - {fileID: 1532170180, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: -1477443870, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: -1892340192, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 2060080216, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 1413967070, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 544839637, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    attack:
+    - {fileID: 1790891433, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 785100541, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: -1427563941, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 450173109, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: -1813983626, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 1049430711, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    hurt:
+    - {fileID: 839547795, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 1726817339, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 933329342, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: -1878123051, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: -249364277, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 1756476296, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    death:
+    - {fileID: 969126988, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: -328027698, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: -1045676841, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 673457549, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: -1545046749, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+    - {fileID: 1958091845, guid: 34f82370af285324eb16e68e8f61a6da, type: 3}
+  - id: boss_06
+    displayName: Werewolf
+    isBoss: 1
+    scale: 2.7
+    idle:
+    - {fileID: -623360233, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 1252424404, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 1128026921, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 1643420784, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 769746226, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 1206264433, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    walk:
+    - {fileID: 1954827239, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: -1847471126, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 1948413743, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 503623104, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: -1197788287, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 718896974, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    attack:
+    - {fileID: -1814272555, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 1811918223, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 1925791950, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 416181401, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: -555583051, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 244691079, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    hurt:
+    - {fileID: 483201994, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: -1265946951, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 945548912, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 1775628128, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: -367942037, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: -1732626856, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    death:
+    - {fileID: 1426631524, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 1666262942, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: -1431007663, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 1946762092, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 792003519, guid: 11738c05070f913498162f05b02076b1, type: 3}
+    - {fileID: 1590296713, guid: 11738c05070f913498162f05b02076b1, type: 3}
+  - id: boss_07
+    displayName: Molarbeast
+    isBoss: 1
+    scale: 2.7
+    idle:
+    - {fileID: 1289914351, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -783968819, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: 1307412915, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: 1324599865, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -2131745420, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: 1883664300, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    walk:
+    - {fileID: -728877881, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -1224941458, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: 359304827, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: 724772696, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -1486752940, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: 1375680886, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    attack:
+    - {fileID: -1142520218, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -1241770131, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -1439145451, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -1722832091, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -805431380, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -479525689, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    hurt:
+    - {fileID: 1064085948, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -549580622, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: 1079495719, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: 1917428437, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -1884098112, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: 1202636788, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    death:
+    - {fileID: 1693448825, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: 1420768285, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -48701254, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -1992981273, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: 1580847131, guid: 8326739a6e397a446907b000f0894302, type: 3}
+    - {fileID: -1681340176, guid: 8326739a6e397a446907b000f0894302, type: 3}
+  - id: boss_08
+    displayName: Abysslime
+    isBoss: 1
+    scale: 2.7
+    idle:
+    - {fileID: -929816876, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: 1123925423, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: -6950637, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: 2017834617, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: 1447364896, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: -451212638, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    walk:
+    - {fileID: 1302003636, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: 1912163328, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: -1264185713, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: 1360060333, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: 1153508890, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: -2031806986, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    attack:
+    - {fileID: -412316401, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: -1926145491, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: -706938870, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: -1261447109, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: -2007200292, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: -1308852241, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    hurt:
+    - {fileID: -1092496221, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: -2086233663, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: -841695445, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: 1338682490, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: -587155122, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: 685291343, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    death:
+    - {fileID: 410688329, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: 1438479762, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: 1233331596, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: 1085384976, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: 1855292386, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+    - {fileID: 400422522, guid: 48ed767f394cd7847933900a3c83aeb7, type: 3}
+  - id: boss_09
+    displayName: Titan Guard
+    isBoss: 1
+    scale: 2.7
+    idle:
+    - {fileID: -1664549160, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: 1116860813, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: 1834287923, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -738655033, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -1403294549, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -536523379, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    walk:
+    - {fileID: 1391697451, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -1209340535, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -825763535, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: 2005322945, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -840423970, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -1602364267, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    attack:
+    - {fileID: 1203352702, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -462547723, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -1251557519, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: 1409271321, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: 545350885, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -1241920753, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    hurt:
+    - {fileID: 499225306, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -585631093, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -940489206, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -1176342121, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -757320943, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: 625004373, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    death:
+    - {fileID: 350656033, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -1194519038, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -1481073651, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: 466994216, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -1300293664, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+    - {fileID: -1071492304, guid: e880ac5b4cd69544d8293528718b97f6, type: 3}
+  - id: boss_10
+    displayName: Pumpkin Jack
+    isBoss: 1
+    scale: 2.7
+    idle:
+    - {fileID: -1107439795, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 125304598, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 1277458002, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 766293675, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 740313532, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 1241506047, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    walk:
+    - {fileID: -1412005661, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: -2003496556, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: -371866540, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 2074236629, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: -1813666120, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 134709456, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    attack:
+    - {fileID: 1059068034, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 2033530284, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: -1454911956, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 848308772, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: -1532596468, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: -1194532333, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    hurt:
+    - {fileID: 21554676, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 1061655061, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 713668160, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: -1775766032, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 481407358, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: -637126263, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    death:
+    - {fileID: -1235304699, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: -908174429, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 215004207, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 191524264, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: -2096470408, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+    - {fileID: 428110297, guid: 14c530e1a26984c4f83533fea72caf7b, type: 3}
+  zones:
+  - id: old-road
+    displayName: The Old Road
+    enemyIds:
+    - enemy_001
+    - enemy_002
+    - enemy_003
+    - enemy_004
+    - enemy_005
+    - enemy_006
+    bossId: boss_01
+    hpMul: 1
+    goldMul: 1
+    background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    battleCue: battle
+    bossCue: boss
+  - id: moon-fen
+    displayName: Moon Fen
+    enemyIds:
+    - enemy_007
+    - enemy_008
+    - enemy_009
+    - enemy_010
+    - enemy_011
+    - enemy_012
+    bossId: boss_02
+    hpMul: 1.25
+    goldMul: 1.2
+    background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    battleCue: night
+    bossCue: boss
+  - id: chitter-deep
+    displayName: Chitter Deep
+    enemyIds:
+    - enemy_013
+    - enemy_014
+    - enemy_015
+    - enemy_016
+    - enemy_017
+    - enemy_018
+    bossId: boss_03
+    hpMul: 1.5
+    goldMul: 1.4
+    background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    battleCue: battle
+    bossCue: boss
+  - id: labyrinth-gate
+    displayName: Labyrinth Gate
+    enemyIds:
+    - enemy_019
+    - enemy_020
+    - enemy_021
+    - enemy_022
+    - enemy_023
+    - enemy_024
+    bossId: boss_04
+    hpMul: 1.8
+    goldMul: 1.65
+    background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    battleCue: battle
+    bossCue: boss
+  - id: blight-ducts
+    displayName: Blight Ducts
+    enemyIds:
+    - enemy_001
+    - enemy_002
+    - enemy_003
+    - enemy_004
+    - enemy_005
+    - enemy_006
+    bossId: boss_05
+    hpMul: 2.15
+    goldMul: 1.9
+    background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    battleCue: battle
+    bossCue: boss
+  - id: howling-wood
+    displayName: Howling Wood
+    enemyIds:
+    - enemy_007
+    - enemy_008
+    - enemy_009
+    - enemy_010
+    - enemy_011
+    - enemy_012
+    bossId: boss_06
+    hpMul: 2.55
+    goldMul: 2.2
+    background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    battleCue: battle
+    bossCue: boss
+  - id: bone-yard
+    displayName: Bone Yard
+    enemyIds:
+    - enemy_013
+    - enemy_014
+    - enemy_015
+    - enemy_016
+    - enemy_017
+    - enemy_018
+    bossId: boss_07
+    hpMul: 3.05
+    goldMul: 2.55
+    background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    battleCue: battle
+    bossCue: boss
+  - id: black-pool
+    displayName: Black Pool
+    enemyIds:
+    - enemy_019
+    - enemy_020
+    - enemy_021
+    - enemy_022
+    - enemy_023
+    - enemy_024
+    bossId: boss_08
+    hpMul: 3.6
+    goldMul: 2.95
+    background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    battleCue: night
+    bossCue: boss
+  - id: titan-stair
+    displayName: Titan Stair
+    enemyIds:
+    - enemy_005
+    - enemy_006
+    - enemy_007
+    - enemy_008
+    - enemy_009
+    - enemy_010
+    - enemy_011
+    - enemy_012
+    bossId: boss_09
+    hpMul: 4.3
+    goldMul: 3.4
+    background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    battleCue: battle
+    bossCue: boss
+  - id: harvest-night
+    displayName: Harvest Night
+    enemyIds:
+    - enemy_001
+    - enemy_002
+    - enemy_003
+    - enemy_004
+    - enemy_005
+    - enemy_006
+    - enemy_007
+    - enemy_008
+    - enemy_009
+    - enemy_010
+    - enemy_011
+    - enemy_012
+    - enemy_013
+    - enemy_014
+    - enemy_015
+    - enemy_016
+    - enemy_017
+    - enemy_018
+    - enemy_019
+    - enemy_020
+    - enemy_021
+    - enemy_022
+    - enemy_023
+    - enemy_024
+    bossId: boss_10
+    hpMul: 5.1
+    goldMul: 4
+    background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    battleCue: night
+    bossCue: boss
+  upgrades:
+  - id: might
+    displayName: Might
+    description: Each rank adds tap and auto damage immediately.
+    icon: {fileID: 21300000, guid: 3eb5b0c92903f49b29b80b4160762fe5, type: 3}
+    baseCost: 15
+    costGrowth: 1.18
+    perLevel: 4
+    maxLevel: 200
+  - id: fortune
+    displayName: Fortune
+    description: More gold from every kill.
+    icon: {fileID: 21300000, guid: ffdbc2fbce7304ab9b7e5955ecba69fc, type: 3}
+    baseCost: 25
+    costGrowth: 1.2
+    perLevel: 0.12
+    maxLevel: 200
+  - id: swift
+    displayName: Swift
+    description: Your hero swings on their own, faster each rank.
+    icon: {fileID: 21300000, guid: 443967e98c2b54ebaa7d13993dd6025f, type: 3}
+    baseCost: 40
+    costGrowth: 1.22
+    perLevel: 0.07
+    maxLevel: 200
+  - id: crit
+    displayName: Crit
+    description: Chance for a triple-damage strike.
+    icon: {fileID: 21300000, guid: 29c0424cee8c14b60a0aad285535466e, type: 3}
+    baseCost: 50
+    costGrowth: 1.25
+    perLevel: 0.02
+    maxLevel: 200
+  potions:
+  - id: pot_might
+    displayName: Ember Vial
+    description: 20s of extra tap damage.
+    icon: {fileID: 21300000, guid: 7cc68837b8b2a2b4aa0984c7355cf06e, type: 3}
+    duration: 20
+    potency: 0.6
+  - id: pot_swift
+    displayName: Gale Tonic
+    description: 20s of faster auto-swings.
+    icon: {fileID: 21300000, guid: 722bb967d4af2d346a97b94a7add01df, type: 3}
+    duration: 20
+    potency: 0.35
+  - id: pot_gold
+    displayName: Gilded Brew
+    description: 20s of double gold.
+    icon: {fileID: 21300000, guid: 3b114dcb5cc9798479990ceba44dfbfd, type: 3}
+    duration: 20
+    potency: 1
+  icons:
+    gold: {fileID: 21300000, guid: 7dfab3383b9b64b71a66a0e0c23b3827, type: 3}
+    dust: {fileID: 21300000, guid: e9bbecf6329624d48b4ad79709c7c092, type: 3}
+    glory: {fileID: 21300000, guid: 759b7b7aa2af84b4292c52e2c3ab87ce, type: 3}
+    shop: {fileID: 21300000, guid: f7b5dd75621d74bbaa442e09551df62b, type: 3}
+    might: {fileID: 21300000, guid: 3eb5b0c92903f49b29b80b4160762fe5, type: 3}
+    fortune: {fileID: 21300000, guid: ffdbc2fbce7304ab9b7e5955ecba69fc, type: 3}
+    swift: {fileID: 21300000, guid: 443967e98c2b54ebaa7d13993dd6025f, type: 3}
+    crit: {fileID: 21300000, guid: 29c0424cee8c14b60a0aad285535466e, type: 3}
+    potion: {fileID: 21300000, guid: 251d36e4fe6e04ccd8b548993db354ea, type: 3}
+    settings: {fileID: 21300000, guid: 2ed2502960c1e49849eaf966bd613d6d, type: 3}
+    heart: {fileID: 21300000, guid: 1b53dfc22589a4d21aedd16a434996b6, type: 3}
+    skull: {fileID: 21300000, guid: c0a8f5e328b4d4ac0804dfdfe8e4bca8, type: 3}
+    anvil: {fileID: 21300000, guid: 53005590f34b04472979ba1d1005bf59, type: 3}
+    chest: {fileID: 21300000, guid: 75646df37c90342aa9d861c1a8834922, type: 3}
+    lockIcon: {fileID: 21300000, guid: ab3c8894328494d7ebcb2ea582a1a36e, type: 3}
+  audio:
+    create: {fileID: 8300000, guid: f6d314d45f8adf54980fe7e25660ba8b, type: 3}
+    battle: {fileID: 8300000, guid: 4a612a32142943c4684efd84514ac0dd, type: 3}
+    boss: {fileID: 8300000, guid: 9edd24cd30949294099f04effdbccb18, type: 3}
+    night: {fileID: 8300000, guid: a0dca571fd18fff438237e3788d94176, type: 3}
