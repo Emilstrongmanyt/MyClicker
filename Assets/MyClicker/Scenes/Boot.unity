@@ -196,7 +196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69efa378addd3754c8ad18443560c09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MyClicker.App.BootLoader
-  splashSeconds: 0.35
+  fadeSeconds: 0.8
 --- !u!4 &509580508
 Transform:
   m_ObjectHideFlags: 0
