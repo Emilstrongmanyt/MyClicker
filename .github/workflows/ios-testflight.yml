@@ -284,17 +284,35 @@ jobs:
           print(f"Wrote {out}")
           PY
           gem install fastlane --no-document
-          set +e
-          fastlane produce \
-            --api_key_path "$RUNNER_TEMP/api_key.json" \
-            --app_identifier "$BUNDLE_ID" \
-            --app_name "MyClickerBeta" \
-            --sku myclickerbeta \
-            --skip_itc \
-            --platform ios \
-            --team_id "$APPLE_TEAM_ID"
-          echo "produce exit $?"
-          set -e
+          export AUTH_KEY
+          ruby <<'RUBY'
+          require "spaceship"
+
+          token = Spaceship::ConnectAPI::Token.create(
+            key_id: ENV.fetch("APPLE_CONNECT_KEY_ID").strip,
+            issuer_id: ENV.fetch("APPLE_CONNECT_ISSUER_ID").strip,
+            key: File.read(ENV.fetch("AUTH_KEY"))
+          )
+          Spaceship::ConnectAPI.token = token
+
+          identifier = ENV.fetch("BUNDLE_ID")
+          existing = begin
+            Spaceship::ConnectAPI::BundleId.all(filter: { identifier: identifier }).first
+          rescue StandardError
+            Spaceship::ConnectAPI::BundleId.all.find { |item| item.identifier == identifier }
+          end
+
+          if existing
+            puts "App ID already exists: #{existing.id} #{existing.identifier}"
+          else
+            created = Spaceship::ConnectAPI::BundleId.create(
+              name: "MyClicker",
+              platform: "IOS",
+              identifier: identifier
+            )
+            puts "Created App ID: #{created.id} #{created.identifier}"
+          end
+          RUBY
           fastlane sigh \
             --api_key_path "$RUNNER_TEMP/api_key.json" \
             --app_identifier "$BUNDLE_ID" \
