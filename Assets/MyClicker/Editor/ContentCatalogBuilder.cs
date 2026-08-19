@@ -63,6 +63,12 @@ namespace MyClicker.Editor
             catalog.upgrades = BuildUpgrades(catalog.icons);
             catalog.potions = BuildPotions();
             catalog.zones = BuildZones();
+            var config = AssetDatabase.LoadAssetAtPath<MyClicker.Data.GameConfig>("Assets/MyClicker/Resources/GameConfig.asset");
+            if (config != null)
+            {
+                config.world.backgroundSprites = AllBackgroundSlices();
+                EditorUtility.SetDirty(config);
+            }
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();
             Debug.Log("[MyClicker] Content catalog rebuilt: " +
@@ -196,6 +202,15 @@ namespace MyClicker.Editor
             foreach (var pair in groups)
                 rows.Add(pair.Value.OrderBy(s => s.rect.x).ToArray());
             return rows;
+        }
+
+        static Sprite[] AllBackgroundSlices()
+        {
+            const string path = "Assets/2D Casual backgorund/Sprite/Asset4u_HD.png";
+            return AssetDatabase.LoadAllAssetsAtPath(path)
+                .OfType<Sprite>()
+                .OrderBy(IndexOf)
+                .ToArray();
         }
 
         static ZoneDef[] BuildZones()

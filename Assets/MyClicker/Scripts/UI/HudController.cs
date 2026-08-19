@@ -70,7 +70,7 @@ namespace MyClicker.UI
                 _shop.Hide();
                 _gear.Toggle();
             });
-            StoneUi.Place(armoryBtn, 0.42f, 0.145f, 0.68f, 0.23f);
+            StoneUi.Place(armoryBtn, 0.42f, 0.018f, 0.68f, 0.108f);
             var armoryIcon = StoneUi.Icon(armoryBtn.transform, "Icon", icons != null ? icons.anvil : null);
             StoneUi.Place(armoryIcon, 0.06f, 0.18f, 0.24f, 0.82f);
 
@@ -79,12 +79,12 @@ namespace MyClicker.UI
                 _gear.Hide();
                 _shop.Toggle();
             });
-            StoneUi.Place(shopBtn, 0.70f, 0.145f, 0.96f, 0.23f);
+            StoneUi.Place(shopBtn, 0.70f, 0.018f, 0.96f, 0.108f);
             var shopIcon = StoneUi.Icon(shopBtn.transform, "Icon", icons != null ? icons.shop : null);
             StoneUi.Place(shopIcon, 0.06f, 0.18f, 0.24f, 0.82f);
 
             _hint = StoneUi.Label(parent, "Hint", "Tap anywhere to strike", 24, TextAnchor.LowerCenter);
-            StoneUi.Place(_hint, 0.08f, 0.085f, 0.92f, 0.13f);
+            StoneUi.Place(_hint, 0.08f, 0.112f, 0.92f, 0.155f);
             _offline = StoneUi.Label(parent, "Offline", "", 26, TextAnchor.MiddleCenter);
             StoneUi.Place(_offline, 0.08f, 0.30f, 0.92f, 0.38f);
 

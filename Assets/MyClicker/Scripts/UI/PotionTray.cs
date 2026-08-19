@@ -19,7 +19,7 @@ namespace MyClicker.UI
         public void Build(Transform parent, GameConfig.UiSkin skin)
         {
             var tray = StoneUi.Panel(parent, "PotionTray", skin);
-            StoneUi.Place(tray, 0.04f, 0.145f, 0.40f, 0.23f);
+            StoneUi.Place(tray, 0.04f, 0.018f, 0.40f, 0.108f);
             for (int i = 0; i < Order.Length; i++)
             {
                 _slots[i] = BuildSlot(tray.transform, skin, Order[i], i);

@@ -567,7 +567,56 @@ MonoBehaviour:
     spawnY: {x: 5.8, y: 7.6}
     playerSlot: {x: 0, y: -4.15}
   world:
-    backgroundSprites: []
+    backgroundSprites:
+    - {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300002, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300004, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300006, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300008, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300010, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300012, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300014, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300016, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300018, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300020, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300022, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300024, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300026, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300028, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300030, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300032, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300034, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300036, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300038, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300040, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300042, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300044, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300046, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300048, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300050, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300052, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300054, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300056, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300058, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300060, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300062, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300064, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300066, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300068, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300070, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300072, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300074, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300076, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300078, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300080, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300082, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300084, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300086, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300088, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300090, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300092, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300094, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
+    - {fileID: 21300096, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
   economy:
     potionIcons:
     - {fileID: 21300000, guid: 6732aed256ac94fb590cece42fb4240a, type: 3}
