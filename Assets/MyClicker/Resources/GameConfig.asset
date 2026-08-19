@@ -557,6 +557,9 @@ MonoBehaviour:
     enemyBaseHp: 26
     enemyHpPerWave: 7.5
     bossHpMul: 9
+    lateHpStartWave: 18
+    lateHpGrowth: 1.048
+    lateSpawnBoost: 0.018
     approachStopDistance: 1.55
     killsPerWave: 8
     wavesPerBoss: 10
@@ -652,5 +655,10 @@ MonoBehaviour:
     mightPotionBonus: 0.6
     swiftPotionBonus: 0.35
     goldPotionBonus: 1
+    lateGoldStartWave: 18
+    lateGoldGrowth: 1.03
+    cleaveBase: 0.4
+    harvestDustPerLevel: 0.04
+    harvestPotionPerLevel: 0.015
     offlineCapHours: 8
     offlineGoldFactor: 0.55

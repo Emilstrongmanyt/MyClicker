@@ -53,6 +53,7 @@ namespace MyClicker.Combat
 
             float scale = visual != null ? visual.scale : 2.1f;
             transform.localScale = Vector3.one * scale;
+            FaceToward(_target);
 
             var col = GetComponent<CircleCollider2D>();
             if (col == null)
@@ -121,12 +122,7 @@ namespace MyClicker.Combat
             if (dist > _stopDistance)
             {
                 transform.position = pos + to.normalized * (_speed * Time.deltaTime);
-                if (_renderer != null && Mathf.Abs(to.x) > 0.05f)
-                {
-                    var scale = transform.localScale;
-                    scale.x = Mathf.Abs(scale.x) * (to.x < 0f ? 1f : -1f);
-                    transform.localScale = scale;
-                }
+                FaceToward(_target);
 
                 if (_engaged)
                 {
@@ -145,6 +141,16 @@ namespace MyClicker.Combat
                 _flash -= Time.deltaTime;
                 _renderer.color = Color.Lerp(_baseColor, new Color(1f, 0.42f, 0.42f), Mathf.Clamp01(_flash / 0.1f));
             }
+        }
+
+        void FaceToward(Vector3 target)
+        {
+            float dx = target.x - transform.position.x;
+            if (Mathf.Abs(dx) < 0.05f)
+                return;
+            var scale = transform.localScale;
+            scale.x = Mathf.Abs(scale.x) * (dx < 0f ? -1f : 1f);
+            transform.localScale = scale;
         }
 
         void Play(UnitClip clip, float fps, bool loop)

@@ -8,17 +8,19 @@ namespace MyClicker.UI
 {
     public class ShopPanel : MonoBehaviour
     {
-        readonly ShopRow[] _rows = new ShopRow[4];
+        ShopRow[] _rows = new ShopRow[0];
         GameObject _root;
-        Text _title;
         bool _open;
 
         static readonly string[] Order =
         {
             ContentIds.Might,
+            ContentIds.Cleave,
             ContentIds.Fortune,
+            ContentIds.Harvest,
             ContentIds.Swift,
-            ContentIds.Crit
+            ContentIds.Crit,
+            ContentIds.Fury
         };
 
         public bool Open => _open;
@@ -29,16 +31,40 @@ namespace MyClicker.UI
             _root = panel.gameObject;
             StoneUi.Place(panel, 0.05f, 0.16f, 0.95f, 0.78f);
 
-            _title = StoneUi.Label(panel.transform, "Title", "Forge", 40, TextAnchor.MiddleCenter);
-            StoneUi.Place(_title, 0.08f, 0.88f, 0.78f, 0.98f);
+            var title = StoneUi.Label(panel.transform, "Title", "Forge", 40, TextAnchor.MiddleCenter);
+            StoneUi.Place(title, 0.08f, 0.88f, 0.78f, 0.98f);
 
             var close = StoneUi.Button(panel.transform, "Close", "X", skin, Hide);
             StoneUi.Place(close, 0.82f, 0.88f, 0.96f, 0.98f);
 
+            var viewportGo = new GameObject("Viewport", typeof(RectTransform), typeof(Image), typeof(Mask));
+            viewportGo.transform.SetParent(panel.transform, false);
+            StoneUi.Place(viewportGo.GetComponent<RectTransform>(), 0.03f, 0.04f, 0.97f, 0.86f);
+            var viewportImage = viewportGo.GetComponent<Image>();
+            viewportImage.color = new Color(1f, 1f, 1f, 0.02f);
+            viewportGo.GetComponent<Mask>().showMaskGraphic = false;
+
+            var contentGo = new GameObject("Content", typeof(RectTransform));
+            contentGo.transform.SetParent(viewportGo.transform, false);
+            var content = contentGo.GetComponent<RectTransform>();
+            content.anchorMin = new Vector2(0f, 1f);
+            content.anchorMax = new Vector2(1f, 1f);
+            content.pivot = new Vector2(0.5f, 1f);
+            content.offsetMin = Vector2.zero;
+            content.offsetMax = Vector2.zero;
+
+            var scroll = panel.gameObject.AddComponent<ScrollRect>();
+            scroll.viewport = viewportGo.GetComponent<RectTransform>();
+            scroll.content = content;
+            scroll.horizontal = false;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.scrollSensitivity = 40f;
+
+            _rows = new ShopRow[Order.Length];
+            float rowH = 118f;
+            content.sizeDelta = new Vector2(0f, Order.Length * rowH + 12f);
             for (int i = 0; i < Order.Length; i++)
-            {
-                _rows[i] = BuildRow(panel.transform, skin, Order[i], i);
-            }
+                _rows[i] = BuildRow(content, skin, Order[i], i, rowH);
 
             Hide();
         }
@@ -72,18 +98,22 @@ namespace MyClicker.UI
                 RefreshRow(_rows[i]);
         }
 
-        ShopRow BuildRow(Transform parent, GameConfig.UiSkin skin, string id, int index)
+        ShopRow BuildRow(RectTransform parent, GameConfig.UiSkin skin, string id, int index, float rowH)
         {
             var row = StoneUi.Panel(parent, "Row_" + id, skin);
-            float top = 0.86f - index * 0.18f;
-            StoneUi.Place(row, 0.04f, top - 0.16f, 0.96f, top);
+            var rt = row.rectTransform;
+            rt.anchorMin = new Vector2(0.02f, 1f);
+            rt.anchorMax = new Vector2(0.98f, 1f);
+            rt.pivot = new Vector2(0.5f, 1f);
+            rt.anchoredPosition = new Vector2(0f, -8f - index * rowH);
+            rt.sizeDelta = new Vector2(0f, rowH - 10f);
 
             var icon = StoneUi.Icon(row.transform, "Icon", IconFor(id));
             StoneUi.Place(icon, 0.03f, 0.14f, 0.18f, 0.86f);
 
-            var name = StoneUi.Label(row.transform, "Name", TitleFor(id), 28, TextAnchor.MiddleLeft);
+            var name = StoneUi.Label(row.transform, "Name", TitleFor(id), 26, TextAnchor.MiddleLeft);
             StoneUi.Place(name, 0.20f, 0.52f, 0.68f, 0.92f);
-            var detail = StoneUi.Label(row.transform, "Detail", "", 22, TextAnchor.UpperLeft);
+            var detail = StoneUi.Label(row.transform, "Detail", "", 20, TextAnchor.UpperLeft);
             StoneUi.Place(detail, 0.20f, 0.08f, 0.68f, 0.56f);
 
             var buy = StoneUi.Button(row.transform, "Buy", "Buy", skin, () => Buy(id));
@@ -109,13 +139,22 @@ namespace MyClicker.UI
             var profile = services.Save.Profile;
             int level = profile.UpgradeLevel(row.id);
             long cost = economy.UpgradeCost(row.id);
+            bool unlocked = economy.IsUnlocked(row.id);
             bool maxed = economy.IsMaxed(row.id);
             bool can = economy.CanBuy(row.id);
             row.name.text = TitleFor(row.id) + "  Lv " + level;
-            row.detail.text = DetailFor(row.id, level, economy);
+            row.detail.text = unlocked ? DetailFor(row.id, economy) : economy.LockReason(row.id);
             var label = row.buy.GetComponentInChildren<Text>();
             if (label != null)
-                label.text = maxed ? "MAX" : NumberFmt.Gold(cost);
+            {
+                if (!unlocked)
+                    label.text = "Lock";
+                else if (maxed)
+                    label.text = "MAX";
+                else
+                    label.text = NumberFmt.Gold(cost);
+            }
+
             row.buy.interactable = can;
             if (row.icon.sprite == null)
                 row.icon.sprite = IconFor(row.id);
@@ -132,11 +171,14 @@ namespace MyClicker.UI
                 case ContentIds.Fortune: return "Fortune";
                 case ContentIds.Swift: return "Swift";
                 case ContentIds.Crit: return "Crit";
+                case ContentIds.Cleave: return "Cleave";
+                case ContentIds.Fury: return "Fury";
+                case ContentIds.Harvest: return "Harvest";
                 default: return id;
             }
         }
 
-        static string DetailFor(string id, int level, EconomyService economy)
+        static string DetailFor(string id, EconomyService economy)
         {
             switch (id)
             {
@@ -151,8 +193,14 @@ namespace MyClicker.UI
                 case ContentIds.Crit:
                     return "Crit  " + Mathf.RoundToInt(economy.CritChance * 100f) + "%  x" +
                            economy.CritMultiplier.ToString("0.#");
+                case ContentIds.Cleave:
+                    return "Splash  " + Mathf.RoundToInt(economy.CleaveFraction * 100f) + "% to a nearby foe";
+                case ContentIds.Fury:
+                    return "Crit damage  x" + economy.CritMultiplier.ToString("0.00") + "   next +0.25";
+                case ContentIds.Harvest:
+                    return "More dust and potion drops each rank";
                 default:
-                    return "Lv " + level;
+                    return "";
             }
         }
 
@@ -170,6 +218,9 @@ namespace MyClicker.UI
                 case ContentIds.Fortune: return icons.fortune;
                 case ContentIds.Swift: return icons.swift;
                 case ContentIds.Crit: return icons.crit;
+                case ContentIds.Cleave: return icons.skull != null ? icons.skull : icons.might;
+                case ContentIds.Fury: return icons.heart != null ? icons.heart : icons.crit;
+                case ContentIds.Harvest: return icons.dust != null ? icons.dust : icons.fortune;
                 default: return icons.shop;
             }
         }

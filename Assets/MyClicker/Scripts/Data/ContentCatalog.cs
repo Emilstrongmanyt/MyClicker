@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MyClicker.Data
@@ -31,8 +32,7 @@ namespace MyClicker.Data
                 icons = new IconLibrary();
             if (audio == null)
                 audio = new AudioLibrary();
-            if (upgrades == null || upgrades.Length == 0)
-                upgrades = DefaultUpgrades();
+            upgrades = MergeUpgrades(upgrades);
             if (potions == null || potions.Length == 0)
                 potions = DefaultPotions();
             if (zones == null || zones.Length == 0)
@@ -43,14 +43,43 @@ namespace MyClicker.Data
                 bosses = Array.Empty<UnitVisual>();
         }
 
+        static UpgradeDef[] MergeUpgrades(UpgradeDef[] existing)
+        {
+            var defaults = DefaultUpgrades();
+            if (existing == null || existing.Length == 0)
+                return defaults;
+
+            var merged = new List<UpgradeDef>(existing);
+            for (int i = 0; i < defaults.Length; i++)
+            {
+                bool found = false;
+                for (int j = 0; j < merged.Count; j++)
+                {
+                    if (merged[j] != null && merged[j].id == defaults[i].id)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                    merged.Add(defaults[i]);
+            }
+
+            return merged.ToArray();
+        }
+
         static UpgradeDef[] DefaultUpgrades()
         {
             return new[]
             {
-                new UpgradeDef { id = ContentIds.Might, displayName = "Might", description = "Tap and auto damage.", baseCost = 15, costGrowth = 1.18f, perLevel = 4f },
+                new UpgradeDef { id = ContentIds.Might, displayName = "Might", description = "Tap and auto damage.", baseCost = 15, costGrowth = 1.18f, perLevel = 4f, requiresId = "", requiresLevel = 0 },
                 new UpgradeDef { id = ContentIds.Fortune, displayName = "Fortune", description = "More gold from every kill.", baseCost = 25, costGrowth = 1.20f, perLevel = 0.12f },
                 new UpgradeDef { id = ContentIds.Swift, displayName = "Swift", description = "Faster automatic swings.", baseCost = 40, costGrowth = 1.22f, perLevel = 0.07f },
                 new UpgradeDef { id = ContentIds.Crit, displayName = "Crit", description = "Chance for triple damage.", baseCost = 50, costGrowth = 1.25f, perLevel = 0.02f },
+                new UpgradeDef { id = ContentIds.Cleave, displayName = "Cleave", description = "Strikes splash to a nearby foe.", baseCost = 80, costGrowth = 1.23f, perLevel = 0.05f, requiresId = ContentIds.Might, requiresLevel = 6 },
+                new UpgradeDef { id = ContentIds.Fury, displayName = "Fury", description = "Critical hits hit even harder.", baseCost = 90, costGrowth = 1.26f, perLevel = 0.25f, requiresId = ContentIds.Crit, requiresLevel = 5 },
+                new UpgradeDef { id = ContentIds.Harvest, displayName = "Harvest", description = "More dust and potion drops.", baseCost = 70, costGrowth = 1.22f, perLevel = 0.04f, requiresId = ContentIds.Fortune, requiresLevel = 6 },
             };
         }
 
@@ -142,6 +171,9 @@ namespace MyClicker.Data
         public const string Fortune = "fortune";
         public const string Swift = "swift";
         public const string Crit = "crit";
+        public const string Cleave = "cleave";
+        public const string Fury = "fury";
+        public const string Harvest = "harvest";
 
         public const string PotMight = "pot_might";
         public const string PotSwift = "pot_swift";
@@ -239,6 +271,8 @@ namespace MyClicker.Data
         public float costGrowth = 1.18f;
         public float perLevel = 4f;
         public int maxLevel = 200;
+        public string requiresId = "";
+        public int requiresLevel;
     }
 
     [Serializable]

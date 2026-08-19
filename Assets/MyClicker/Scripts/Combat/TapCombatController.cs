@@ -88,7 +88,8 @@ namespace MyClicker.Combat
                 return;
             }
 
-            if (_spawner.AliveCount >= combat.maxAlive)
+            int cap = combat.maxAlive + Mathf.Clamp((GameServices.Instance.Save.Profile.wave - 1) / 15, 0, 4);
+            if (_spawner.AliveCount >= cap)
                 return;
             if (_killsThisWave + _spawner.AliveCount >= combat.killsPerWave)
             {
@@ -100,7 +101,8 @@ namespace MyClicker.Combat
             _spawnTimer -= dt;
             if (_spawnTimer > 0f)
                 return;
-            _spawnTimer = combat.spawnInterval;
+            float late = combat.lateSpawnBoost * Mathf.Max(0, GameServices.Instance.Save.Profile.wave - 12);
+            _spawnTimer = Mathf.Max(0.32f, combat.spawnInterval * (1f - Mathf.Min(0.45f, late)));
             SpawnRegular();
         }
 
@@ -125,22 +127,13 @@ namespace MyClicker.Combat
                 damage *= services.Economy.CritMultiplier;
 
             Vector3 pos = enemy.transform.position;
-            bool killed = enemy.Hit(damage);
-            FloatingCombatText.Show(
-                pos,
-                crit ? Mathf.RoundToInt(damage) + "!" : Mathf.RoundToInt(damage).ToString(),
-                crit ? new Color(1f, 0.86f, 0.28f) : (tap ? Color.white : new Color(0.85f, 0.9f, 1f)),
-                crit ? 44 : 34);
-
-            if (!killed)
+            ApplyHit(enemy, damage, crit, tap);
+            float cleave = services.Economy.CleaveFraction;
+            if (cleave <= 0f)
                 return;
-
-            int wave = services.Save.Profile.wave;
-            long gold = services.Economy.AwardKill(wave, enemy.IsBoss);
-            FloatingCombatText.Show(pos + Vector3.up * 0.45f, NumberFmt.Signed(gold) + "g", new Color(1f, 0.84f, 0.28f), 30);
-            _killsThisWave++;
-            if (enemy.IsBoss || _killsThisWave >= Settings().killsPerWave)
-                _awaitingClear = true;
+            var splash = _spawner.NearestExcept(pos, enemy);
+            if (splash != null && splash.Alive)
+                ApplyHit(splash, damage * cleave, false, tap);
         }
 
         void SpawnRegular()
@@ -207,10 +200,33 @@ namespace MyClicker.Combat
             var zone = services.Catalog.ZoneAt(services.Save.Profile.zone);
             int wave = Mathf.Max(1, services.Save.Profile.wave);
             float hp = combat.enemyBaseHp + combat.enemyHpPerWave * (wave - 1);
+            int late = Mathf.Max(0, wave - Mathf.RoundToInt(combat.lateHpStartWave));
+            if (late > 0)
+                hp *= Mathf.Pow(Mathf.Max(1.001f, combat.lateHpGrowth), late);
             hp *= Mathf.Max(0.25f, zone.hpMul);
             if (boss)
-                hp *= combat.bossHpMul;
+                hp *= combat.bossHpMul * (1f + 0.08f * services.Save.Profile.zone);
             return hp;
+        }
+
+        bool ApplyHit(EnemyController enemy, float damage, bool crit, bool tap)
+        {
+            bool killed = enemy.Hit(damage);
+            FloatingCombatText.Show(
+                enemy.transform.position,
+                crit ? Mathf.RoundToInt(damage) + "!" : Mathf.RoundToInt(damage).ToString(),
+                crit ? new Color(1f, 0.86f, 0.28f) : (tap ? Color.white : new Color(0.85f, 0.9f, 1f)),
+                crit ? 44 : 34);
+            if (!killed)
+                return false;
+
+            int wave = GameServices.Instance.Save.Profile.wave;
+            long gold = GameServices.Instance.Economy.AwardKill(wave, enemy.IsBoss);
+            FloatingCombatText.Show(enemy.transform.position + Vector3.up * 0.45f, NumberFmt.Signed(gold) + "g", new Color(1f, 0.84f, 0.28f), 30);
+            _killsThisWave++;
+            if (enemy.IsBoss || _killsThisWave >= Settings().killsPerWave)
+                _awaitingClear = true;
+            return true;
         }
 
         void ResolveOffline()

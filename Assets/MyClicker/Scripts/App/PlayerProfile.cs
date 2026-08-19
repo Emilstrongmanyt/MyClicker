@@ -20,6 +20,9 @@ namespace MyClicker.App
         public int fortuneLevel;
         public int swiftLevel;
         public int critLevel;
+        public int cleaveLevel;
+        public int furyLevel;
+        public int harvestLevel;
         public int potMight;
         public int potSwift;
         public int potGold;
@@ -38,6 +41,9 @@ namespace MyClicker.App
                 case Data.ContentIds.Fortune: return fortuneLevel;
                 case Data.ContentIds.Swift: return swiftLevel;
                 case Data.ContentIds.Crit: return critLevel;
+                case Data.ContentIds.Cleave: return cleaveLevel;
+                case Data.ContentIds.Fury: return furyLevel;
+                case Data.ContentIds.Harvest: return harvestLevel;
                 default: return 0;
             }
         }
@@ -51,6 +57,9 @@ namespace MyClicker.App
                 case Data.ContentIds.Fortune: fortuneLevel = value; break;
                 case Data.ContentIds.Swift: swiftLevel = value; break;
                 case Data.ContentIds.Crit: critLevel = value; break;
+                case Data.ContentIds.Cleave: cleaveLevel = value; break;
+                case Data.ContentIds.Fury: furyLevel = value; break;
+                case Data.ContentIds.Harvest: harvestLevel = value; break;
             }
         }
 

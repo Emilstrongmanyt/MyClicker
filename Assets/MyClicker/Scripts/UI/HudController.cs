@@ -16,8 +16,7 @@ namespace MyClicker.UI
         Text _dps;
         Text _hint;
         Text _offline;
-        Slider _bossBar;
-        Text _bossName;
+        StoneUi.HealthBarView _bossBar;
         ShopPanel _shop;
         PotionTray _potions;
         Image _goldIcon;
@@ -54,10 +53,9 @@ namespace MyClicker.UI
             _dps = StoneUi.Label(sub.transform, "Dps", "", 24, TextAnchor.MiddleRight);
             StoneUi.Place(_dps, 0.44f, 0.1f, 0.97f, 0.9f);
 
-            _bossName = StoneUi.Label(parent, "BossName", "", 26, TextAnchor.MiddleCenter);
-            StoneUi.Place(_bossName, 0.12f, 0.795f, 0.88f, 0.84f);
-            _bossBar = StoneUi.Bar(parent, "BossBar", skin);
-            StoneUi.Place(_bossBar, 0.12f, 0.755f, 0.88f, 0.795f);
+            _bossBar = StoneUi.HealthBar(parent, "BossBar", skin);
+            StoneUi.Place(_bossBar.root.GetComponent<RectTransform>(), 0.08f, 0.745f, 0.92f, 0.835f);
+            _bossBar.SetVisible(false);
 
             _shop = gameObject.AddComponent<ShopPanel>();
             _shop.Build(parent, skin);
@@ -124,16 +122,9 @@ namespace MyClicker.UI
             bool showBoss = boss != null && boss.Alive;
             if (_bossBar != null)
             {
-                _bossBar.gameObject.SetActive(showBoss);
+                _bossBar.SetVisible(showBoss);
                 if (showBoss)
-                    _bossBar.value = boss.MaxHp > 0f ? boss.Hp / boss.MaxHp : 0f;
-            }
-
-            if (_bossName != null)
-            {
-                _bossName.gameObject.SetActive(showBoss);
-                if (showBoss)
-                    _bossName.text = boss.DisplayName;
+                    _bossBar.Set(boss.DisplayName, boss.Hp, boss.MaxHp);
             }
 
             _shop?.Refresh();

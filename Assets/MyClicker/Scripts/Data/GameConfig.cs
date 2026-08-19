@@ -56,6 +56,9 @@ namespace MyClicker.Data
             public float enemyBaseHp = 26f;
             public float enemyHpPerWave = 7.5f;
             public float bossHpMul = 9f;
+            public float lateHpStartWave = 18f;
+            public float lateHpGrowth = 1.048f;
+            public float lateSpawnBoost = 0.018f;
             public float approachStopDistance = 1.55f;
             public int killsPerWave = 8;
             public int wavesPerBoss = 10;
@@ -95,6 +98,11 @@ namespace MyClicker.Data
             public float mightPotionBonus = 0.6f;
             public float swiftPotionBonus = 0.35f;
             public float goldPotionBonus = 1f;
+            public float lateGoldStartWave = 18f;
+            public float lateGoldGrowth = 1.03f;
+            public float cleaveBase = 0.40f;
+            public float harvestDustPerLevel = 0.04f;
+            public float harvestPotionPerLevel = 0.015f;
             public float offlineCapHours = 8f;
             public float offlineGoldFactor = 0.55f;
         }

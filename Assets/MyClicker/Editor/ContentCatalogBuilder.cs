@@ -303,6 +303,42 @@ namespace MyClicker.Editor
                     costGrowth = 1.25f,
                     perLevel = 0.02f
                 },
+                new UpgradeDef
+                {
+                    id = ContentIds.Cleave,
+                    displayName = "Cleave",
+                    description = "Strikes splash to a nearby foe.",
+                    icon = icons.skull != null ? icons.skull : icons.might,
+                    baseCost = 80,
+                    costGrowth = 1.23f,
+                    perLevel = 0.05f,
+                    requiresId = ContentIds.Might,
+                    requiresLevel = 6
+                },
+                new UpgradeDef
+                {
+                    id = ContentIds.Fury,
+                    displayName = "Fury",
+                    description = "Critical hits hit even harder.",
+                    icon = icons.heart != null ? icons.heart : icons.crit,
+                    baseCost = 90,
+                    costGrowth = 1.26f,
+                    perLevel = 0.25f,
+                    requiresId = ContentIds.Crit,
+                    requiresLevel = 5
+                },
+                new UpgradeDef
+                {
+                    id = ContentIds.Harvest,
+                    displayName = "Harvest",
+                    description = "More dust and potion drops.",
+                    icon = icons.dust != null ? icons.dust : icons.fortune,
+                    baseCost = 70,
+                    costGrowth = 1.22f,
+                    perLevel = 0.04f,
+                    requiresId = ContentIds.Fortune,
+                    requiresLevel = 6
+                },
             };
         }
 

@@ -170,7 +170,11 @@ namespace MyClicker.UI
             Stretch(fill.GetComponent<RectTransform>(), 0, 0);
             var fillImage = fill.GetComponent<Image>();
             fillImage.sprite = skin != null ? skin.hpFill : null;
-            fillImage.color = fillImage.sprite != null ? Color.white : new Color(0.72f, 0.18f, 0.16f, 1f);
+            fillImage.type = Image.Type.Filled;
+            fillImage.fillMethod = Image.FillMethod.Horizontal;
+            fillImage.fillOrigin = (int)Image.OriginHorizontal.Left;
+            fillImage.fillAmount = 1f;
+            fillImage.color = new Color(0.82f, 0.16f, 0.14f, 1f);
 
             var slider = go.GetComponent<Slider>();
             slider.fillRect = fill.GetComponent<RectTransform>();
@@ -180,6 +184,64 @@ namespace MyClicker.UI
             slider.value = 1f;
             slider.interactable = false;
             return slider;
+        }
+
+        public static HealthBarView HealthBar(Transform parent, string name, GameConfig.UiSkin skin)
+        {
+            var frame = Panel(parent, name, skin);
+            var inset = new GameObject("Track", typeof(RectTransform), typeof(Image));
+            inset.transform.SetParent(frame.transform, false);
+            Place(inset.GetComponent<RectTransform>(), 0.03f, 0.18f, 0.97f, 0.62f);
+            var track = inset.GetComponent<Image>();
+            track.sprite = skin != null ? skin.hpBackground : null;
+            track.color = new Color(0.10f, 0.07f, 0.06f, 0.95f);
+
+            var fillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+            fillGo.transform.SetParent(inset.transform, false);
+            Stretch(fillGo.GetComponent<RectTransform>(), 2, 2);
+            var fill = fillGo.GetComponent<Image>();
+            fill.sprite = skin != null ? skin.hpFill : null;
+            fill.type = Image.Type.Filled;
+            fill.fillMethod = Image.FillMethod.Horizontal;
+            fill.fillOrigin = (int)Image.OriginHorizontal.Left;
+            fill.fillAmount = 1f;
+            fill.color = new Color(0.84f, 0.18f, 0.14f, 1f);
+            fill.raycastTarget = false;
+
+            var title = Label(frame.transform, "Title", "", 24, TextAnchor.MiddleLeft);
+            Place(title, 0.04f, 0.64f, 0.70f, 0.96f);
+            var value = Label(frame.transform, "Value", "", 22, TextAnchor.MiddleRight);
+            Place(value, 0.55f, 0.64f, 0.96f, 0.96f);
+            return new HealthBarView { root = frame.gameObject, fill = fill, title = title, value = value };
+        }
+
+        public sealed class HealthBarView
+        {
+            public GameObject root;
+            public Image fill;
+            public Text title;
+            public Text value;
+
+            public void SetVisible(bool visible)
+            {
+                if (root != null)
+                    root.SetActive(visible);
+            }
+
+            public void Set(string name, float current, float max)
+            {
+                float pct = max > 0f ? Mathf.Clamp01(current / max) : 0f;
+                if (fill != null)
+                {
+                    fill.fillAmount = pct;
+                    fill.color = Color.Lerp(new Color(0.72f, 0.12f, 0.10f, 1f), new Color(0.90f, 0.28f, 0.12f, 1f), pct);
+                }
+
+                if (title != null)
+                    title.text = name;
+                if (value != null)
+                    value.text = Mathf.CeilToInt(Mathf.Max(0f, current)) + " / " + Mathf.CeilToInt(max);
+            }
         }
 
         static void Stretch(RectTransform rt, float x, float y)

@@ -86,6 +86,27 @@ namespace MyClicker.Combat
             return best;
         }
 
+        public EnemyController NearestExcept(Vector3 world, EnemyController skip)
+        {
+            Prune();
+            EnemyController best = null;
+            float bestDist = float.MaxValue;
+            for (int i = 0; i < _alive.Count; i++)
+            {
+                var enemy = _alive[i];
+                if (enemy == null || enemy == skip || !enemy.Alive)
+                    continue;
+                float d = (enemy.transform.position - world).sqrMagnitude;
+                if (d < bestDist)
+                {
+                    bestDist = d;
+                    best = enemy;
+                }
+            }
+
+            return best;
+        }
+
         public EnemyController AtPoint(Vector3 world)
         {
             var hit = Physics2D.OverlapPoint(world);

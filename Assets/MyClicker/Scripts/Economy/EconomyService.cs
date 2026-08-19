@@ -56,7 +56,17 @@ namespace MyClicker.Economy
 
         public float CritChance => Mathf.Min(Eco.critChanceCap, Profile.critLevel * Eco.critPerLevel);
 
-        public float CritMultiplier => Eco.critMultiplier;
+        public float CritMultiplier => Eco.critMultiplier + Profile.furyLevel * 0.25f;
+
+        public float CleaveFraction
+        {
+            get
+            {
+                if (Profile.cleaveLevel <= 0)
+                    return 0f;
+                return Eco.cleaveBase + (Profile.cleaveLevel - 1) * 0.05f;
+            }
+        }
 
         public float AutoDps => TapDamage / Mathf.Max(0.2f, AutoInterval);
 
@@ -69,7 +79,38 @@ namespace MyClicker.Economy
             return Math.Max(1, (long)Math.Round(baseCost * Math.Pow(growth, level)));
         }
 
-        public bool CanBuy(string id) => Profile.gold >= UpgradeCost(id) && !IsMaxed(id);
+        public bool CanBuy(string id) => IsUnlocked(id) && Profile.gold >= UpgradeCost(id) && !IsMaxed(id);
+
+        public bool IsUnlocked(string id)
+        {
+            var def = _services.Catalog.FindUpgrade(id);
+            if (def == null || string.IsNullOrEmpty(def.requiresId) || def.requiresLevel <= 0)
+                return true;
+            return Profile.UpgradeLevel(def.requiresId) >= def.requiresLevel;
+        }
+
+        public string LockReason(string id)
+        {
+            var def = _services.Catalog.FindUpgrade(id);
+            if (def == null || IsUnlocked(id))
+                return null;
+            return "Needs " + Title(def.requiresId) + " " + def.requiresLevel;
+        }
+
+        static string Title(string id)
+        {
+            switch (id)
+            {
+                case ContentIds.Might: return "Might";
+                case ContentIds.Fortune: return "Fortune";
+                case ContentIds.Swift: return "Swift";
+                case ContentIds.Crit: return "Crit";
+                case ContentIds.Cleave: return "Cleave";
+                case ContentIds.Fury: return "Fury";
+                case ContentIds.Harvest: return "Harvest";
+                default: return id;
+            }
+        }
 
         public bool IsMaxed(string id)
         {
@@ -80,7 +121,7 @@ namespace MyClicker.Economy
 
         public bool TryBuy(string id)
         {
-            if (IsMaxed(id))
+            if (!IsUnlocked(id) || IsMaxed(id))
                 return false;
             if (!_services.Save.TrySpendGold(UpgradeCost(id)))
                 return false;
@@ -96,19 +137,24 @@ namespace MyClicker.Economy
             double raw = boss
                 ? eco.goldPerBoss + wave * eco.goldPerBossPerWave
                 : eco.goldPerKill + (wave - 1) * eco.goldPerKillPerWave;
+            int late = Mathf.Max(0, wave - Mathf.RoundToInt(eco.lateGoldStartWave));
+            if (late > 0)
+                raw *= Math.Pow(Mathf.Max(1.001f, eco.lateGoldGrowth), late);
             return Math.Max(1, (long)Math.Round(raw * GoldMultiplier));
         }
 
         public int DustForKill(bool boss)
         {
             if (boss)
-                return Eco.dustPerBoss;
-            return UnityEngine.Random.value < Eco.dustDropChance ? 1 : 0;
+                return Eco.dustPerBoss + Profile.harvestLevel / 4;
+            float chance = Eco.dustDropChance + Profile.harvestLevel * Eco.harvestDustPerLevel;
+            return UnityEngine.Random.value < chance ? 1 : 0;
         }
 
         public string RollPotionDrop(bool boss)
         {
             float chance = boss ? Eco.potionBossDropChance : Eco.potionDropChance;
+            chance += Profile.harvestLevel * Eco.harvestPotionPerLevel;
             if (UnityEngine.Random.value > chance)
                 return null;
             float roll = UnityEngine.Random.value;
