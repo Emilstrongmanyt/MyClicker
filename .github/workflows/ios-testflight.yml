@@ -262,6 +262,57 @@ jobs:
           find "$XCODE_DIR" -type f \( -name "*.sh" -o -name "usymtool*" \) -exec chmod +x {} \;
           AUTH_KEY=$RUNNER_TEMP/AuthKey.p8
           printf '%s' "$APPLE_CONNECT_KEY" | base64 --decode > "$AUTH_KEY"
+          if ! grep -q "BEGIN PRIVATE KEY" "$AUTH_KEY"; then
+            echo "Decoded App Store Connect API key is invalid (missing PEM header)."
+            exit 1
+          fi
+          python3 - <<'PY'
+          import json, os
+          key_path = os.path.join(os.environ["RUNNER_TEMP"], "AuthKey.p8")
+          with open(key_path, "r", encoding="utf-8") as f:
+              key = f.read().strip()
+          payload = {
+              "key_id": os.environ["APPLE_CONNECT_KEY_ID"].strip(),
+              "issuer_id": os.environ["APPLE_CONNECT_ISSUER_ID"].strip(),
+              "key": key,
+              "duration": 1200,
+              "in_house": False,
+          }
+          out = os.path.join(os.environ["RUNNER_TEMP"], "api_key.json")
+          with open(out, "w", encoding="utf-8") as f:
+              json.dump(payload, f)
+          print(f"Wrote {out}")
+          PY
+          gem install fastlane --no-document
+          set +e
+          fastlane produce \
+            --api_key_path "$RUNNER_TEMP/api_key.json" \
+            --app_identifier "$BUNDLE_ID" \
+            --app_name "MyClickerBeta" \
+            --sku myclickerbeta \
+            --skip_itc \
+            --platform ios \
+            --team_id "$APPLE_TEAM_ID"
+          echo "produce exit $?"
+          set -e
+          fastlane sigh \
+            --api_key_path "$RUNNER_TEMP/api_key.json" \
+            --app_identifier "$BUNDLE_ID" \
+            --team_id "$APPLE_TEAM_ID" \
+            --provisioning_name "MyClicker AppStore" \
+            --output_path "$RUNNER_TEMP" \
+            --filename "MyClicker.mobileprovision" \
+            --force \
+            --skip_certificate_verification
+          PROFILE_PATH=$RUNNER_TEMP/MyClicker.mobileprovision
+          PROFILE_PLIST=$(security cms -D -i "$PROFILE_PATH")
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /dev/stdin <<< "$PROFILE_PLIST")
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' /dev/stdin <<< "$PROFILE_PLIST")
+          USE_AUTOMATIC_SIGNING=0
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$PROFILE_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/${PROFILE_UUID}.mobileprovision"
+          echo "Installed App Store profile name=$PROFILE_NAME uuid=$PROFILE_UUID"
+          export PROFILE_UUID PROFILE_NAME USE_AUTOMATIC_SIGNING
           EXPORT_PLIST=$RUNNER_TEMP/ExportOptions.plist
           python3 - <<'PY'
           import os, plistlib
@@ -269,15 +320,18 @@ jobs:
           automatic = os.environ.get("USE_AUTOMATIC_SIGNING") == "1"
           payload = {
               "method": "app-store-connect",
+              "destination": "export",
               "teamID": os.environ["APPLE_TEAM_ID"],
               "signingStyle": "automatic" if automatic else "manual",
+              "signingCertificate": "Apple Distribution",
               "uploadSymbols": True,
+              "manageAppVersionAndBuildNumber": False,
           }
           if not automatic:
               payload["provisioningProfiles"] = {os.environ["BUNDLE_ID"]: os.environ.get("PROFILE_NAME", "")}
           with open(path, "wb") as f:
               plistlib.dump(payload, f)
-          print(f"Wrote {path} automatic={automatic}")
+          print(f"Wrote {path} automatic={automatic} profile={os.environ.get('PROFILE_NAME')}")
           PY
           security find-identity -v -p codesigning
           python3 - <<'PY'
@@ -433,6 +487,10 @@ jobs:
             exit "$ARCHIVE_STATUS"
           fi
           xcodebuild -exportArchive \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$AUTH_KEY" \
+            -authenticationKeyID "$APPLE_CONNECT_KEY_ID" \
+            -authenticationKeyIssuerID "$APPLE_CONNECT_ISSUER_ID" \
             -archivePath $RUNNER_TEMP/MyClicker.xcarchive \
             -exportPath $RUNNER_TEMP/export \
             -exportOptionsPlist "$EXPORT_PLIST"
