@@ -42,6 +42,17 @@ namespace MyClicker.App
             MarkDirty();
         }
 
+        public bool TrySpendDust(int amount)
+        {
+            if (amount <= 0)
+                return true;
+            if (Profile.dust < amount)
+                return false;
+            Profile.dust -= amount;
+            MarkDirty();
+            return true;
+        }
+
         public bool TrySpendGold(long amount)
         {
             if (amount <= 0)

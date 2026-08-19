@@ -103,6 +103,11 @@ namespace MyClicker.Data
             public float cleaveBase = 0.40f;
             public float harvestDustPerLevel = 0.04f;
             public float harvestPotionPerLevel = 0.015f;
+            public int craftMightCost = 12;
+            public int craftSwiftCost = 12;
+            public int craftGoldCost = 18;
+            public int temperBaseCost = 8;
+            public float temperCostGrowth = 1.35f;
             public float offlineCapHours = 8f;
             public float offlineGoldFactor = 0.55f;
         }

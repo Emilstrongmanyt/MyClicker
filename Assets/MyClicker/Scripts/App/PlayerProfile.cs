@@ -23,6 +23,10 @@ namespace MyClicker.App
         public int cleaveLevel;
         public int furyLevel;
         public int harvestLevel;
+        public int temperWeapon;
+        public int temperArmor;
+        public int temperHelmet;
+        public int temperCape;
         public int potMight;
         public int potSwift;
         public int potGold;
@@ -60,6 +64,30 @@ namespace MyClicker.App
                 case Data.ContentIds.Cleave: cleaveLevel = value; break;
                 case Data.ContentIds.Fury: furyLevel = value; break;
                 case Data.ContentIds.Harvest: harvestLevel = value; break;
+            }
+        }
+
+        public int TemperLevel(string slot)
+        {
+            switch (slot)
+            {
+                case "Weapon": return temperWeapon;
+                case "Armor": return temperArmor;
+                case "Helmet": return temperHelmet;
+                case "Cape": return temperCape;
+                default: return 0;
+            }
+        }
+
+        public void SetTemperLevel(string slot, int value)
+        {
+            value = Mathf.Max(0, value);
+            switch (slot)
+            {
+                case "Weapon": temperWeapon = value; break;
+                case "Armor": temperArmor = value; break;
+                case "Helmet": temperHelmet = value; break;
+                case "Cape": temperCape = value; break;
             }
         }
 

@@ -25,6 +25,8 @@ namespace MyClicker.Economy
             get
             {
                 float value = Combat.tapDamage + Profile.mightLevel * Eco.mightPerLevel;
+                if (_services.Gear != null)
+                    value += _services.Gear.TapBonus;
                 if (Profile.mightBuffLeft > 0f)
                     value *= 1f + Eco.mightPotionBonus;
                 return value;
@@ -36,6 +38,8 @@ namespace MyClicker.Economy
             get
             {
                 float value = 1f + Profile.fortuneLevel * Eco.fortunePerLevel;
+                if (_services.Gear != null)
+                    value += _services.Gear.GoldBonus;
                 if (Profile.goldBuffLeft > 0f)
                     value *= 1f + Eco.goldPotionBonus;
                 var zone = _services.Catalog.ZoneAt(Profile.zone);
@@ -48,13 +52,24 @@ namespace MyClicker.Economy
             get
             {
                 float interval = Eco.autoIntervalStart * Mathf.Pow(Eco.autoIntervalDecay, Profile.swiftLevel);
+                if (_services.Gear != null)
+                    interval *= 1f - Mathf.Clamp01(_services.Gear.SwiftBonus);
                 if (Profile.swiftBuffLeft > 0f)
                     interval *= 1f - Eco.swiftPotionBonus;
                 return Mathf.Max(Eco.autoIntervalMin, interval);
             }
         }
 
-        public float CritChance => Mathf.Min(Eco.critChanceCap, Profile.critLevel * Eco.critPerLevel);
+        public float CritChance
+        {
+            get
+            {
+                float value = Profile.critLevel * Eco.critPerLevel;
+                if (_services.Gear != null)
+                    value += _services.Gear.CritBonus;
+                return Mathf.Min(Eco.critChanceCap, value);
+            }
+        }
 
         public float CritMultiplier => Eco.critMultiplier + Profile.furyLevel * 0.25f;
 

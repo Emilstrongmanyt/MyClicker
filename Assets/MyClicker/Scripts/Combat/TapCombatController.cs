@@ -38,7 +38,10 @@ namespace MyClicker.Combat
             var pos = new Vector3(combat.playerSlot.x, combat.playerSlot.y, 0f);
             var prefab = HeroPrefabLoader.Load(services.Config);
             if (prefab != null)
-                HeroCharacterAdapter.Spawn(prefab, services.Save.Profile.heroJson, pos, 0.7f);
+            {
+                var hero = HeroCharacterAdapter.Spawn(prefab, services.Save.Profile.heroJson, pos, 0.7f);
+                services.Gear.Bind(hero);
+            }
             else
                 Debug.LogError("[MyClicker] Battle hero prefab is missing.");
 

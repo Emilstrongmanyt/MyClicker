@@ -660,5 +660,10 @@ MonoBehaviour:
     cleaveBase: 0.4
     harvestDustPerLevel: 0.04
     harvestPotionPerLevel: 0.015
+    craftMightCost: 12
+    craftSwiftCost: 12
+    craftGoldCost: 18
+    temperBaseCost: 8
+    temperCostGrowth: 1.35
     offlineCapHours: 8
     offlineGoldFactor: 0.55

@@ -13,6 +13,7 @@ namespace MyClicker.App
         public GameConfig Config { get; private set; }
         public ContentCatalog Catalog { get; private set; }
         public EconomyService Economy { get; private set; }
+        public GearService Gear { get; private set; }
 
         public event Action ProfileChanged;
 
@@ -87,6 +88,7 @@ namespace MyClicker.App
                 Config = ScriptableObject.CreateInstance<GameConfig>();
             Catalog = ContentCatalog.Load();
             Economy = new EconomyService(this);
+            Gear = new GearService(this);
         }
     }
 }

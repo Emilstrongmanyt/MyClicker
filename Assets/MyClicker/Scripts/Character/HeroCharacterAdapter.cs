@@ -61,64 +61,156 @@ namespace MyClicker.Character
 
         public IReadOnlyList<string> Slots => CycleSlots;
 
+        public static readonly string[] GearSlots = { "Weapon", "Armor", "Helmet", "Cape" };
+
+        public int SlotCount(string slot)
+        {
+            if (slot == "Weapon")
+                return WeaponOptions().Count;
+            return ItemsFor(slot).Count;
+        }
+
+        public int SlotIndex(string slot)
+        {
+            if (slot == "Weapon")
+            {
+                var options = WeaponOptions();
+                int index = options.FindIndex(IsEquippedWeapon);
+                return index < 0 ? 0 : index;
+            }
+
+            var items = ItemsFor(slot);
+            int found = items.FindIndex(i => IsCurrent(slot, i));
+            return found < 0 ? 0 : found;
+        }
+
+        public string SlotId(string slot)
+        {
+            if (slot == "Weapon")
+            {
+                var options = WeaponOptions();
+                int index = SlotIndex(slot);
+                if (options.Count == 0 || index < 0 || index >= options.Count)
+                    return slot;
+                return options[index].Item != null ? options[index].Item.Id : slot;
+            }
+
+            var items = ItemsFor(slot);
+            int i = SlotIndex(slot);
+            if (items.Count == 0 || i < 0 || i >= items.Count || items[i] == null)
+                return slot;
+            return items[i].Id ?? slot;
+        }
+
+        public string SlotLabel(string slot)
+        {
+            if (slot == "Weapon")
+            {
+                var options = WeaponOptions();
+                int index = SlotIndex(slot);
+                if (options.Count == 0 || index < 0 || index >= options.Count)
+                    return "None";
+                return Pretty(options[index].Item);
+            }
+
+            var items = ItemsFor(slot);
+            int i = SlotIndex(slot);
+            if (items.Count == 0 || i < 0 || i >= items.Count)
+                return "None";
+            return Pretty(items[i]);
+        }
+
         public void Cycle(string slot, int delta)
+        {
+            int count = SlotCount(slot);
+            if (count <= 0)
+                return;
+            SetSlotIndex(slot, SlotIndex(slot) + delta);
+        }
+
+        public void SetSlotIndex(string slot, int index)
         {
             if (Hero == null || Hero.SpriteCollection == null)
                 return;
 
+            if (slot == "Weapon")
+            {
+                var options = WeaponOptions();
+                if (options.Count == 0)
+                    return;
+                int next = ((index % options.Count) + options.Count) % options.Count;
+                var choice = options[next];
+                Hero.Equip(choice.Item, choice.Part);
+                return;
+            }
+
+            var items = ItemsFor(slot);
+            if (items.Count == 0)
+                return;
+            int clamped = ((index % items.Count) + items.Count) % items.Count;
+            Apply(slot, items[clamped]);
+        }
+
+        void Apply(string slot, ItemSprite item)
+        {
             switch (slot)
             {
                 case "Hair":
-                    CycleItems(Preferred(Hero.SpriteCollection.Hair),
-                        item => Hero.Hair != null && item.Sprite == Hero.Hair,
-                        item => Hero.SetBody(item, BodyPart.Hair),
-                        delta, allowEmpty: true);
+                    Hero.SetBody(item, BodyPart.Hair);
                     break;
                 case "Eyes":
-                    CycleItems(Preferred(Hero.SpriteCollection.Eyes),
-                        item => Hero.EyesRenderer != null && item.Sprite == Hero.EyesRenderer.sprite,
-                        item => Hero.SetBody(item, BodyPart.Eyes),
-                        delta);
+                    Hero.SetBody(item, BodyPart.Eyes);
                     break;
                 case "Armor":
-                    CycleItems(FullArmorSets(Hero.SpriteCollection.Armor),
-                        SameArmor,
-                        item =>
-                        {
-                            if (item == null) Hero.UnEquip(EquipmentPart.Armor);
-                            else Hero.Equip(item, EquipmentPart.Armor);
-                        },
-                        delta, allowEmpty: true);
+                    if (item == null) Hero.UnEquip(EquipmentPart.Armor);
+                    else Hero.Equip(item, EquipmentPart.Armor);
                     break;
                 case "Helmet":
-                    CycleItems(Preferred(Hero.SpriteCollection.Helmet),
-                        item => Hero.Helmet != null && item.Sprite == Hero.Helmet,
-                        item =>
-                        {
-                            if (item == null) Hero.UnEquip(EquipmentPart.Helmet);
-                            else Hero.Equip(item, EquipmentPart.Helmet);
-                        },
-                        delta, allowEmpty: true);
-                    break;
-                case "Weapon":
-                    CycleWeapons(delta);
+                    if (item == null) Hero.UnEquip(EquipmentPart.Helmet);
+                    else Hero.Equip(item, EquipmentPart.Helmet);
                     break;
                 case "Cape":
-                    CycleItems(Preferred(Hero.SpriteCollection.Cape),
-                        item => Hero.Cape != null && WorldSprite(item) == Hero.Cape,
-                        item =>
-                        {
-                            if (item == null) Hero.UnEquip(EquipmentPart.Cape);
-                            else Hero.Equip(item, EquipmentPart.Cape);
-                        },
-                        delta, allowEmpty: true);
+                    if (item == null) Hero.UnEquip(EquipmentPart.Cape);
+                    else Hero.Equip(item, EquipmentPart.Cape);
                     break;
             }
         }
 
-        void CycleWeapons(int delta)
+        List<ItemSprite> ItemsFor(string slot)
+        {
+            if (Hero?.SpriteCollection == null)
+                return new List<ItemSprite>();
+            switch (slot)
+            {
+                case "Hair": return Preferred(Hero.SpriteCollection.Hair);
+                case "Eyes": return Preferred(Hero.SpriteCollection.Eyes);
+                case "Armor": return FullArmorSets(Hero.SpriteCollection.Armor);
+                case "Helmet": return Preferred(Hero.SpriteCollection.Helmet);
+                case "Cape": return Preferred(Hero.SpriteCollection.Cape);
+                default: return new List<ItemSprite>();
+            }
+        }
+
+        bool IsCurrent(string slot, ItemSprite item)
+        {
+            if (item == null)
+                return false;
+            switch (slot)
+            {
+                case "Hair": return Hero.Hair != null && item.Sprite == Hero.Hair;
+                case "Eyes": return Hero.EyesRenderer != null && item.Sprite == Hero.EyesRenderer.sprite;
+                case "Armor": return SameArmor(item);
+                case "Helmet": return Hero.Helmet != null && item.Sprite == Hero.Helmet;
+                case "Cape": return Hero.Cape != null && WorldSprite(item) == Hero.Cape;
+                default: return false;
+            }
+        }
+
+        List<WeaponOption> WeaponOptions()
         {
             var options = new List<WeaponOption>();
+            if (Hero?.SpriteCollection == null)
+                return options;
             foreach (var item in Preferred(Hero.SpriteCollection.MeleeWeapon1H))
             {
                 if (WorldSprite(item) != null)
@@ -137,15 +229,18 @@ namespace MyClicker.Character
                     options.Add(new WeaponOption { Item = item, Part = EquipmentPart.Bow });
             }
 
-            if (options.Count == 0)
-                return;
+            return options;
+        }
 
-            int index = options.FindIndex(o => IsEquippedWeapon(o));
-            if (index < 0)
-                index = 0;
-            int next = ((index + delta) % options.Count + options.Count) % options.Count;
-            var choice = options[next];
-            Hero.Equip(choice.Item, choice.Part);
+        static string Pretty(ItemSprite item)
+        {
+            if (item == null)
+                return "None";
+            string id = item.Id ?? "Gear";
+            int dot = id.LastIndexOf('.');
+            if (dot >= 0 && dot + 1 < id.Length)
+                id = id.Substring(dot + 1);
+            return id.Replace('_', ' ');
         }
 
         bool IsEquippedWeapon(WeaponOption option)
@@ -217,25 +312,6 @@ namespace MyClicker.Character
             if (item.Sprite != null)
                 return item.Sprite;
             return item.Sprites?.FirstOrDefault(s => s != null);
-        }
-
-        static void CycleItems(List<ItemSprite> items, Func<ItemSprite, bool> isCurrent, Action<ItemSprite> apply, int delta, bool allowEmpty = false)
-        {
-            if (items == null || items.Count == 0)
-                return;
-
-            int index = items.FindIndex(i => isCurrent(i));
-            int count = items.Count + (allowEmpty ? 1 : 0);
-            if (index < 0)
-                index = 0;
-            index = ((index + delta) % count + count) % count;
-            if (allowEmpty && index == items.Count)
-            {
-                apply(null);
-                return;
-            }
-
-            apply(items[index]);
         }
     }
 }

@@ -18,6 +18,7 @@ namespace MyClicker.UI
         Text _offline;
         StoneUi.HealthBarView _bossBar;
         ShopPanel _shop;
+        GearPanel _gear;
         PotionTray _potions;
         Image _goldIcon;
         Image _dustIcon;
@@ -59,13 +60,28 @@ namespace MyClicker.UI
 
             _shop = gameObject.AddComponent<ShopPanel>();
             _shop.Build(parent, skin);
+            _gear = gameObject.AddComponent<GearPanel>();
+            _gear.Build(parent, skin);
             _potions = gameObject.AddComponent<PotionTray>();
             _potions.Build(parent, skin);
 
-            var shopBtn = StoneUi.Button(parent, "ShopButton", "Forge", skin, () => _shop.Toggle());
-            StoneUi.Place(shopBtn, 0.55f, 0.145f, 0.96f, 0.23f);
+            var armoryBtn = StoneUi.Button(parent, "ArmoryButton", "Armory", skin, () =>
+            {
+                _shop.Hide();
+                _gear.Toggle();
+            });
+            StoneUi.Place(armoryBtn, 0.42f, 0.145f, 0.68f, 0.23f);
+            var armoryIcon = StoneUi.Icon(armoryBtn.transform, "Icon", icons != null ? icons.anvil : null);
+            StoneUi.Place(armoryIcon, 0.06f, 0.18f, 0.24f, 0.82f);
+
+            var shopBtn = StoneUi.Button(parent, "ShopButton", "Forge", skin, () =>
+            {
+                _gear.Hide();
+                _shop.Toggle();
+            });
+            StoneUi.Place(shopBtn, 0.70f, 0.145f, 0.96f, 0.23f);
             var shopIcon = StoneUi.Icon(shopBtn.transform, "Icon", icons != null ? icons.shop : null);
-            StoneUi.Place(shopIcon, 0.06f, 0.18f, 0.22f, 0.82f);
+            StoneUi.Place(shopIcon, 0.06f, 0.18f, 0.24f, 0.82f);
 
             _hint = StoneUi.Label(parent, "Hint", "Tap anywhere to strike", 24, TextAnchor.LowerCenter);
             StoneUi.Place(_hint, 0.08f, 0.085f, 0.92f, 0.13f);
@@ -128,6 +144,7 @@ namespace MyClicker.UI
             }
 
             _shop?.Refresh();
+            _gear?.Refresh();
             _potions?.Refresh();
         }
     }
