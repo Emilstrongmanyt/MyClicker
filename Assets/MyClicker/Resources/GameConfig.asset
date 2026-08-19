@@ -665,5 +665,7 @@ MonoBehaviour:
     craftGoldCost: 18
     temperBaseCost: 8
     temperCostGrowth: 1.35
+    gearDropChance: 0.07
+    gearBossDropChance: 1
     offlineCapHours: 8
     offlineGoldFactor: 0.55

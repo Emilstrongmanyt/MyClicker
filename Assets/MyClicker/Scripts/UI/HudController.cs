@@ -130,8 +130,11 @@ namespace MyClicker.UI
 
             if (_offline != null)
             {
-                string msg = _battle != null ? _battle.OfflineMessage : null;
-                _offline.text = msg ?? "";
+                string offline = _battle != null ? _battle.OfflineMessage : null;
+                string drop = services.Gear != null && services.Gear.LastDropLife > 0f
+                    ? services.Gear.LastDrop
+                    : null;
+                _offline.text = offline ?? drop ?? "";
             }
 
             var boss = _spawner != null ? _spawner.CurrentBoss : null;

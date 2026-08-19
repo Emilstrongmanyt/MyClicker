@@ -108,6 +108,8 @@ namespace MyClicker.Data
             public int craftGoldCost = 18;
             public int temperBaseCost = 8;
             public float temperCostGrowth = 1.35f;
+            public float gearDropChance = 0.07f;
+            public float gearBossDropChance = 1f;
             public float offlineCapHours = 8f;
             public float offlineGoldFactor = 0.55f;
         }

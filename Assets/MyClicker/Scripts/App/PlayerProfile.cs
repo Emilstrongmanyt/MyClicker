@@ -35,7 +35,34 @@ namespace MyClicker.App
         public float goldBuffLeft;
         public long lastSeenUnix;
         public string heroJson;
+        public string[] unlockedGear = new string[0];
         public CharacterSave character = new CharacterSave();
+
+        public bool HasGear(string id)
+        {
+            if (string.IsNullOrEmpty(id) || unlockedGear == null)
+                return false;
+            for (int i = 0; i < unlockedGear.Length; i++)
+            {
+                if (unlockedGear[i] == id)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool UnlockGear(string id)
+        {
+            if (string.IsNullOrEmpty(id) || HasGear(id))
+                return false;
+            int n = unlockedGear != null ? unlockedGear.Length : 0;
+            var next = new string[n + 1];
+            if (n > 0)
+                Array.Copy(unlockedGear, next, n);
+            next[n] = id;
+            unlockedGear = next;
+            return true;
+        }
 
         public int UpgradeLevel(string id)
         {

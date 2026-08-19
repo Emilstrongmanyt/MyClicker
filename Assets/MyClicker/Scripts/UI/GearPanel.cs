@@ -98,7 +98,7 @@ namespace MyClicker.UI
             var temper = StoneUi.Button(row.transform, "Temper", "Temper", skin, () => Temper(slot));
             StoneUi.Place(temper, 0.72f, 0.16f, 0.97f, 0.84f);
 
-            return new GearRow { slot = slot, name = name, detail = detail, temper = temper };
+            return new GearRow { slot = slot, name = name, detail = detail, temper = temper, prev = prev, next = next };
         }
 
         CraftRow BuildCraft(Transform parent, GameConfig.UiSkin skin, string id, int index)
@@ -133,12 +133,19 @@ namespace MyClicker.UI
             if (gear == null || row.name == null)
                 return;
             int rank = GameServices.Instance.Save.Profile.TemperLevel(row.slot);
+            int owned = gear.OwnedCount(row.slot);
             row.name.text = row.slot + "  " + gear.Label(row.slot);
-            row.detail.text = gear.BonusText(row.slot) + "   T" + rank;
+            row.detail.text = owned <= 1
+                ? "Starter look. Relics drop in battle."
+                : gear.BonusText(row.slot) + "   T" + rank + "   " + owned + " relics";
             var label = row.temper.GetComponentInChildren<Text>();
             if (label != null)
                 label.text = gear.TemperCost(row.slot) + "d";
             row.temper.interactable = GameServices.Instance.Save.Profile.dust >= gear.TemperCost(row.slot);
+            if (row.prev != null)
+                row.prev.interactable = owned > 1;
+            if (row.next != null)
+                row.next.interactable = owned > 1;
         }
 
         void RefreshCraft(CraftRow row)
@@ -173,6 +180,8 @@ namespace MyClicker.UI
             public Text name;
             public Text detail;
             public Button temper;
+            public Button prev;
+            public Button next;
         }
 
         struct CraftRow

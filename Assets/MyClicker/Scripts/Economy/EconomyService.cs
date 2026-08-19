@@ -225,6 +225,7 @@ namespace MyClicker.Economy
             string potion = RollPotionDrop(boss);
             if (!string.IsNullOrEmpty(potion))
                 GrantPotion(potion);
+            _services.Gear?.TryRollDrop(boss);
             Profile.kills++;
             if (boss)
                 Profile.bossesSlain++;

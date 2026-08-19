@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using MyClicker.App;
 using MyClicker.Character;
 using MyClicker.Data;
@@ -15,9 +16,16 @@ namespace MyClicker.Economy
             _services = services;
         }
 
+        public string LastDrop;
+        public float LastDropLife;
+
         public void Bind(HeroCharacterAdapter hero)
         {
             _hero = hero;
+            if (_hero == null)
+                return;
+            _hero.Pool = HeroCharacterAdapter.GearPool.Owned;
+            _hero.IsOwned = id => Profile.HasGear(id);
         }
 
         PlayerProfile Profile => _services.Save.Profile;
@@ -89,14 +97,82 @@ namespace MyClicker.Economy
             return true;
         }
 
+        public int OwnedCount(string slot)
+        {
+            return _hero != null ? _hero.SlotCount(slot) : 0;
+        }
+
         public void Cycle(string slot, int delta)
         {
-            if (_hero == null)
+            if (_hero == null || _hero.SlotCount(slot) <= 1)
                 return;
             _hero.Cycle(slot, delta);
-            var profile = Profile;
-            profile.heroJson = _hero.ToJson();
+            Profile.heroJson = _hero.ToJson();
             _services.Save.MarkDirty();
+        }
+
+        public string TryRollDrop(bool boss)
+        {
+            if (_hero == null)
+                return null;
+            float chance = boss ? Eco.gearBossDropChance : Eco.gearDropChance;
+            chance += _services.Save.Profile.harvestLevel * 0.01f;
+            if (UnityEngine.Random.value > chance)
+                return null;
+
+            var slots = new List<string>(HeroCharacterAdapter.GearSlots);
+            for (int i = slots.Count - 1; i > 0; i--)
+            {
+                int j = UnityEngine.Random.Range(0, i + 1);
+                string tmp = slots[i];
+                slots[i] = slots[j];
+                slots[j] = tmp;
+            }
+
+            foreach (var slot in slots)
+            {
+                var pool = _hero.LootIds(slot);
+                var fresh = new List<string>();
+                for (int i = 0; i < pool.Count; i++)
+                {
+                    if (!Profile.HasGear(pool[i]))
+                        fresh.Add(pool[i]);
+                }
+
+                if (fresh.Count == 0)
+                    continue;
+
+                string id = fresh[UnityEngine.Random.Range(0, fresh.Count)];
+                if (!Profile.UnlockGear(id))
+                    continue;
+
+                bool firstRelic = _hero.WearingStarter(slot);
+                if (firstRelic)
+                    _hero.EquipById(slot, id);
+                Profile.heroJson = _hero.ToJson();
+                _services.Save.MarkDirty();
+                string label = PrettyId(id);
+                LastDrop = (firstRelic ? "Equipped " : "Found ") + label;
+                LastDropLife = 3.6f;
+                return LastDrop;
+            }
+
+            return null;
+        }
+
+        public void TickDropToast(float dt)
+        {
+            if (LastDropLife > 0f)
+                LastDropLife -= dt;
+        }
+
+        static string PrettyId(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                return "Relic";
+            int dot = id.LastIndexOf('.');
+            string name = dot >= 0 && dot + 1 < id.Length ? id.Substring(dot + 1) : id;
+            return name.Replace(" [Paint]", "").Replace('_', ' ');
         }
 
         public int CraftCost(string potionId)
@@ -122,7 +198,22 @@ namespace MyClicker.Economy
         {
             string id = _hero != null ? _hero.SlotId(slot) : slot;
             int seed = Stable(id);
-            return 3 + seed % 10;
+            int tier = CollectionTier(id);
+            return tier + seed % 5;
+        }
+
+        static int CollectionTier(string id)
+        {
+            string hay = (id ?? "").ToLowerInvariant();
+            if (hay.Contains(".basic.") || hay.Contains("oldcape") || hay.Contains("grandmacape") || hay.Contains("cottton"))
+                return 2;
+            if (hay.Contains("bonus"))
+                return 7;
+            if (hay.Contains("knight") || hay.Contains("viking"))
+                return 10;
+            if (hay.Contains("samurai") || hay.Contains("sandlord") || hay.Contains("swamplord") || hay.Contains("throne"))
+                return 13;
+            return 8;
         }
 
         static int Stable(string value)

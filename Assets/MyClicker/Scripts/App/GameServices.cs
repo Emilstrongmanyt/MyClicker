@@ -55,6 +55,7 @@ namespace MyClicker.App
             if (Save == null)
                 return;
             Economy?.TickBuffs(Time.unscaledDeltaTime);
+            Gear?.TickDropToast(Time.unscaledDeltaTime);
             Save.Tick();
         }
 

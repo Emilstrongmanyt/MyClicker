@@ -63,6 +63,16 @@ namespace MyClicker.Character
 
         public static readonly string[] GearSlots = { "Weapon", "Armor", "Helmet", "Cape" };
 
+        public enum GearPool
+        {
+            Starter,
+            Loot,
+            Owned
+        }
+
+        public GearPool Pool = GearPool.Starter;
+        public Func<string, bool> IsOwned;
+
         public int SlotCount(string slot)
         {
             if (slot == "Weapon")
@@ -176,17 +186,82 @@ namespace MyClicker.Character
             }
         }
 
+        public bool EquipById(string slot, string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                return false;
+            if (slot == "Weapon")
+            {
+                var options = AllWeaponOptions();
+                int index = options.FindIndex(o => o.Item != null && o.Item.Id == id);
+                if (index < 0)
+                    return false;
+                Hero.Equip(options[index].Item, options[index].Part);
+                return true;
+            }
+
+            var items = AllItems(slot);
+            var match = items.Find(i => i != null && i.Id == id);
+            if (match == null)
+                return false;
+            Apply(slot, match);
+            return true;
+        }
+
+        public List<string> LootIds(string slot)
+        {
+            var ids = new List<string>();
+            if (slot == "Weapon")
+            {
+                foreach (var option in AllWeaponOptions())
+                {
+                    if (option.Item != null && IsLootItem(option.Item, slot))
+                        ids.Add(option.Item.Id);
+                }
+
+                return ids;
+            }
+
+            foreach (var item in AllItems(slot))
+            {
+                if (item != null && IsLootItem(item, slot) && !string.IsNullOrEmpty(item.Id))
+                    ids.Add(item.Id);
+            }
+
+            return ids;
+        }
+
+        public bool WearingStarter(string slot)
+        {
+            string id = SlotId(slot);
+            if (slot == "Weapon")
+            {
+                var options = AllWeaponOptions();
+                var match = options.Find(o => o.Item != null && o.Item.Id == id);
+                return match.Item == null || IsStarterItem(match.Item, slot);
+            }
+
+            var items = AllItems(slot);
+            var item = items.Find(i => i != null && i.Id == id);
+            return item == null || IsStarterItem(item, slot);
+        }
+
         List<ItemSprite> ItemsFor(string slot)
+        {
+            return Filter(AllItems(slot), slot);
+        }
+
+        List<ItemSprite> AllItems(string slot)
         {
             if (Hero?.SpriteCollection == null)
                 return new List<ItemSprite>();
             switch (slot)
             {
-                case "Hair": return Preferred(Hero.SpriteCollection.Hair);
-                case "Eyes": return Preferred(Hero.SpriteCollection.Eyes);
-                case "Armor": return FullArmorSets(Hero.SpriteCollection.Armor);
-                case "Helmet": return Preferred(Hero.SpriteCollection.Helmet);
-                case "Cape": return Preferred(Hero.SpriteCollection.Cape);
+                case "Hair": return Usable(Hero.SpriteCollection.Hair);
+                case "Eyes": return Usable(Hero.SpriteCollection.Eyes);
+                case "Armor": return Usable(Hero.SpriteCollection.Armor).Where(IsFullArmor).ToList();
+                case "Helmet": return Usable(Hero.SpriteCollection.Helmet);
+                case "Cape": return Usable(Hero.SpriteCollection.Cape);
                 default: return new List<ItemSprite>();
             }
         }
@@ -208,28 +283,106 @@ namespace MyClicker.Character
 
         List<WeaponOption> WeaponOptions()
         {
+            return FilterWeapons(AllWeaponOptions());
+        }
+
+        List<WeaponOption> AllWeaponOptions()
+        {
             var options = new List<WeaponOption>();
             if (Hero?.SpriteCollection == null)
                 return options;
-            foreach (var item in Preferred(Hero.SpriteCollection.MeleeWeapon1H))
+            foreach (var item in Usable(Hero.SpriteCollection.MeleeWeapon1H))
             {
                 if (WorldSprite(item) != null)
                     options.Add(new WeaponOption { Item = item, Part = EquipmentPart.MeleeWeapon1H });
             }
 
-            foreach (var item in Preferred(Hero.SpriteCollection.MeleeWeapon2H))
+            foreach (var item in Usable(Hero.SpriteCollection.MeleeWeapon2H))
             {
                 if (WorldSprite(item) != null)
                     options.Add(new WeaponOption { Item = item, Part = EquipmentPart.MeleeWeapon2H });
             }
 
-            foreach (var item in Preferred(Hero.SpriteCollection.Bow))
+            foreach (var item in Usable(Hero.SpriteCollection.Bow))
             {
                 if (item.Sprites != null && item.Sprites.Count > 0)
                     options.Add(new WeaponOption { Item = item, Part = EquipmentPart.Bow });
             }
 
             return options;
+        }
+
+        List<ItemSprite> Filter(List<ItemSprite> source, string slot)
+        {
+            var result = new List<ItemSprite>();
+            foreach (var item in source)
+            {
+                if (Allowed(item, slot))
+                    result.Add(item);
+            }
+
+            return result;
+        }
+
+        List<WeaponOption> FilterWeapons(List<WeaponOption> source)
+        {
+            var result = new List<WeaponOption>();
+            foreach (var option in source)
+            {
+                if (Allowed(option.Item, "Weapon"))
+                    result.Add(option);
+            }
+
+            return result;
+        }
+
+        bool Allowed(ItemSprite item, string slot)
+        {
+            if (item == null)
+                return false;
+            switch (Pool)
+            {
+                case GearPool.Loot:
+                    return IsLootItem(item, slot);
+                case GearPool.Owned:
+                    if (IsCurrent(slot, item))
+                        return true;
+                    return IsLootItem(item, slot) && Owned(item.Id);
+                default:
+                    return IsStarterItem(item, slot);
+            }
+        }
+
+        bool Owned(string id)
+        {
+            return !string.IsNullOrEmpty(id) && IsOwned != null && IsOwned(id);
+        }
+
+        public static bool IsStarterItem(ItemSprite item, string slot)
+        {
+            if (item == null || IsSeasonal(item))
+                return false;
+            if (slot == "Hair" || slot == "Eyes")
+                return true;
+            if (slot == "Cape")
+                return IsHumbleCape(item);
+            return IsBasic(item);
+        }
+
+        public static bool IsLootItem(ItemSprite item, string slot)
+        {
+            if (item == null || IsSeasonal(item))
+                return false;
+            if (slot == "Hair" || slot == "Eyes")
+                return false;
+            return !IsStarterItem(item, slot);
+        }
+
+        static bool IsHumbleCape(ItemSprite item)
+        {
+            string id = (item.Id ?? "").ToLowerInvariant();
+            return id.Contains("oldcape") || id.Contains("cotttoncape") || id.Contains("cottoncape")
+                   || id.Contains("grandmacape");
         }
 
         static string Pretty(ItemSprite item)
@@ -267,11 +420,6 @@ namespace MyClicker.Character
             return torso != null && Hero.Armor.Contains(torso);
         }
 
-        static List<ItemSprite> FullArmorSets(List<ItemSprite> source)
-        {
-            return Preferred(source).Where(IsFullArmor).ToList();
-        }
-
         static bool IsFullArmor(ItemSprite item)
         {
             if (item?.Sprites == null || item.Sprites.Count < 3)
@@ -280,14 +428,11 @@ namespace MyClicker.Character
             return names.Contains("Torso") && (names.Contains("Pelvis") || names.Contains("ArmL") || names.Contains("ArmR"));
         }
 
-        static List<ItemSprite> Preferred(List<ItemSprite> source)
+        static List<ItemSprite> Usable(List<ItemSprite> source)
         {
             if (source == null)
                 return new List<ItemSprite>();
-
-            var usable = source.Where(i => i != null && !IsSeasonal(i)).ToList();
-            var basic = usable.Where(IsBasic).ToList();
-            return basic.Count > 0 ? basic : usable;
+            return source.Where(i => i != null && !IsSeasonal(i)).ToList();
         }
 
         static bool IsBasic(ItemSprite item)
