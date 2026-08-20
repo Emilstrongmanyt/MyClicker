@@ -553,7 +553,7 @@ MonoBehaviour:
     enemyPrefabs: []
     spawnInterval: 0.85
     maxAlive: 6
-    enemySpeed: 2.15
+    enemySpeed: 2.7
     tapDamage: 10
     enemyBaseHp: 26
     enemyHpPerWave: 7.5

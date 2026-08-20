@@ -51,7 +51,7 @@ namespace MyClicker.Data
             public GameObject[] enemyPrefabs;
             public float spawnInterval = 0.85f;
             public int maxAlive = 6;
-            public float enemySpeed = 2.15f;
+            public float enemySpeed = 2.7f;
             public float tapDamage = 10f;
             public float enemyBaseHp = 26f;
             public float enemyHpPerWave = 7.5f;

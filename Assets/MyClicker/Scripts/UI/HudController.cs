@@ -42,32 +42,34 @@ namespace MyClicker.UI
             var skin = services.Config != null ? services.Config.ui : new GameConfig.UiSkin();
             var icons = services.Catalog.icons;
 
-            var top = StoneUi.Panel(parent, "TopBar", skin);
-            StoneUi.Place(top, 0.03f, 0.905f, 0.97f, 0.985f);
+            var left = StoneUi.Panel(parent, "TopLeft", skin);
+            StoneUi.Place(left, 0.02f, 0.855f, 0.31f, 0.985f);
+            SoftPanel(left, 0.72f);
+            _name = StoneUi.Label(left.transform, "Name", "", 24, TextAnchor.MiddleLeft);
+            StoneUi.Place(_name, 0.07f, 0.62f, 0.94f, 0.96f);
+            _zone = StoneUi.Label(left.transform, "Zone", "", 18, TextAnchor.MiddleLeft);
+            StoneUi.Place(_zone, 0.07f, 0.32f, 0.94f, 0.64f);
+            _wave = StoneUi.Label(left.transform, "Wave", "", 18, TextAnchor.MiddleLeft);
+            StoneUi.Place(_wave, 0.07f, 0.04f, 0.94f, 0.34f);
 
-            _name = StoneUi.Label(top.transform, "Name", "", 28, TextAnchor.MiddleLeft);
-            StoneUi.Place(_name, 0.03f, 0.12f, 0.38f, 0.88f);
-            _zone = StoneUi.Label(top.transform, "Zone", "", 22, TextAnchor.MiddleCenter);
-            StoneUi.Place(_zone, 0.36f, 0.50f, 0.70f, 0.92f);
-            _wave = StoneUi.Label(top.transform, "Wave", "", 20, TextAnchor.MiddleCenter);
-            StoneUi.Place(_wave, 0.36f, 0.08f, 0.70f, 0.50f);
+            var right = StoneUi.Panel(parent, "TopRight", skin);
+            StoneUi.Place(right, 0.69f, 0.855f, 0.98f, 0.985f);
+            SoftPanel(right, 0.72f);
+            _goldIcon = StoneUi.Icon(right.transform, "GoldIcon", icons != null ? icons.gold : skin.coinIcon);
+            StoneUi.Place(_goldIcon, 0.04f, 0.52f, 0.24f, 0.92f);
+            _gold = StoneUi.Label(right.transform, "Gold", "", 26, TextAnchor.MiddleRight);
+            StoneUi.Place(_gold, 0.24f, 0.50f, 0.96f, 0.94f);
+            _dustIcon = StoneUi.Icon(right.transform, "DustIcon", icons != null ? icons.dust : null);
+            StoneUi.Place(_dustIcon, 0.04f, 0.08f, 0.24f, 0.48f);
+            _dust = StoneUi.Label(right.transform, "Dust", "", 22, TextAnchor.MiddleRight);
+            StoneUi.Place(_dust, 0.24f, 0.06f, 0.96f, 0.50f);
 
-            _goldIcon = StoneUi.Icon(top.transform, "GoldIcon", icons != null ? icons.gold : skin.coinIcon);
-            StoneUi.Place(_goldIcon, 0.70f, 0.18f, 0.78f, 0.82f);
-            _gold = StoneUi.Label(top.transform, "Gold", "", 28, TextAnchor.MiddleRight);
-            StoneUi.Place(_gold, 0.77f, 0.12f, 0.97f, 0.88f);
-
-            var sub = StoneUi.Panel(parent, "SubBar", skin);
-            StoneUi.Place(sub, 0.03f, 0.845f, 0.97f, 0.90f);
-            _dustIcon = StoneUi.Icon(sub.transform, "DustIcon", icons != null ? icons.dust : null);
-            StoneUi.Place(_dustIcon, 0.03f, 0.15f, 0.11f, 0.85f);
-            _dust = StoneUi.Label(sub.transform, "Dust", "", 24, TextAnchor.MiddleLeft);
-            StoneUi.Place(_dust, 0.12f, 0.1f, 0.42f, 0.9f);
-            _dps = StoneUi.Label(sub.transform, "Dps", "", 24, TextAnchor.MiddleRight);
-            StoneUi.Place(_dps, 0.44f, 0.1f, 0.97f, 0.9f);
+            _dps = StoneUi.Label(parent, "Dps", "", 18, TextAnchor.MiddleRight);
+            StoneUi.Place(_dps, 0.50f, 0.808f, 0.98f, 0.850f);
 
             _bossBar = StoneUi.HealthBar(parent, "BossBar", skin);
-            StoneUi.Place(_bossBar.root.GetComponent<RectTransform>(), 0.08f, 0.745f, 0.92f, 0.835f);
+            StoneUi.Place(_bossBar.root.GetComponent<RectTransform>(), 0.64f, 0.718f, 0.98f, 0.802f);
+            SoftPanel(_bossBar.root.GetComponent<Image>(), 0.58f);
             _bossBar.SetVisible(false);
 
             _focus = StoneUi.HealthBar(parent, "FocusBar", skin);
@@ -281,6 +283,16 @@ namespace MyClicker.UI
             if (left <= 0f)
                 return;
             line += "   " + name + " " + EconomyService.FormatBuff(left);
+        }
+
+        static void SoftPanel(Image panel, float alpha)
+        {
+            if (panel == null)
+                return;
+            var color = panel.color;
+            color.a = alpha;
+            panel.color = color;
+            panel.raycastTarget = false;
         }
     }
 }
