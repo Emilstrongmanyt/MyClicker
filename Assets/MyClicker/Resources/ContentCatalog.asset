@@ -1378,7 +1378,7 @@ MonoBehaviour:
     hpMul: 1.5
     goldMul: 1.4
     background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
-    battleCue: battle
+    battleCue: day-2
     bossCue: boss
   - id: labyrinth-gate
     displayName: Labyrinth Gate
@@ -1393,7 +1393,7 @@ MonoBehaviour:
     hpMul: 1.8
     goldMul: 1.65
     background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
-    battleCue: battle
+    battleCue: day-3
     bossCue: boss
   - id: blight-ducts
     displayName: Blight Ducts
@@ -1423,7 +1423,7 @@ MonoBehaviour:
     hpMul: 2.55
     goldMul: 2.2
     background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
-    battleCue: battle
+    battleCue: day-2
     bossCue: boss
   - id: bone-yard
     displayName: Bone Yard
@@ -1438,7 +1438,7 @@ MonoBehaviour:
     hpMul: 3.05
     goldMul: 2.55
     background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
-    battleCue: battle
+    battleCue: night-2
     bossCue: boss
   - id: black-pool
     displayName: Black Pool
@@ -1470,7 +1470,7 @@ MonoBehaviour:
     hpMul: 4.3
     goldMul: 3.4
     background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
-    battleCue: battle
+    battleCue: day-3
     bossCue: boss
   - id: harvest-night
     displayName: Harvest Night
@@ -1503,7 +1503,7 @@ MonoBehaviour:
     hpMul: 5.1
     goldMul: 4
     background: {fileID: 21300000, guid: f6a737996a4a842e58ba28428e71d711, type: 3}
-    battleCue: night
+    battleCue: night-3
     bossCue: boss
   upgrades:
   - id: might
@@ -1616,3 +1616,7 @@ MonoBehaviour:
     battle: {fileID: 8300000, guid: 4a612a32142943c4684efd84514ac0dd, type: 3}
     boss: {fileID: 8300000, guid: 9edd24cd30949294099f04effdbccb18, type: 3}
     night: {fileID: 8300000, guid: a0dca571fd18fff438237e3788d94176, type: 3}
+    day2: {fileID: 8300000, guid: 585cca58291245c2a208e93297fc4324, type: 3}
+    day3: {fileID: 8300000, guid: 984cf8fd08a74f4ca6fd0702ee907adf, type: 3}
+    night2: {fileID: 8300000, guid: 952f95069ec0416eb9e5533f9722dc71, type: 3}
+    night3: {fileID: 8300000, guid: 72870429bc8b45ce83ea6ded0a9025ef, type: 3}

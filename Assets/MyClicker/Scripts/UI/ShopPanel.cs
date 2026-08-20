@@ -151,8 +151,24 @@ namespace MyClicker.UI
         void Buy(string id)
         {
             var services = GameServices.Instance;
-            if (services == null || !services.Economy.TryBuy(id, _buyMode))
+            if (services == null)
                 return;
+            var economy = services.Economy;
+            float tap = economy.TapDamage;
+            float auto = economy.AutoInterval;
+            float crit = economy.CritChance;
+            if (!economy.TryBuy(id, _buyMode))
+                return;
+            MyClicker.Audio.AudioDirector.Ensure().PlaySfx("forge");
+            var battle = Object.FindFirstObjectByType<MyClicker.Combat.TapCombatController>();
+            if (id == ContentIds.Might && economy.TapDamage > tap + 0.2f)
+                battle?.Announce("Might  Tap " + Mathf.RoundToInt(economy.TapDamage), 1.6f);
+            else if (id == ContentIds.Swift && economy.AutoInterval < auto - 0.005f)
+                battle?.Announce("Swift  Auto " + economy.AutoInterval.ToString("0.00") + "s", 1.6f);
+            else if (id == ContentIds.Crit && economy.CritChance > crit + 0.001f)
+                battle?.Announce("Crit  " + Mathf.RoundToInt(economy.CritChance * 100f) + "%", 1.6f);
+            else if (id == ContentIds.Fortune)
+                battle?.Announce("Fortune  Gold x" + economy.GoldMultiplier.ToString("0.00"), 1.6f);
             Refresh();
         }
 

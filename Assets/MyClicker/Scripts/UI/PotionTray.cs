@@ -62,7 +62,11 @@ namespace MyClicker.UI
 
         void Use(string id)
         {
-            GameServices.Instance?.Economy.TryUsePotion(id);
+            if (GameServices.Instance == null || !GameServices.Instance.Economy.TryUsePotion(id))
+                return;
+            var hero = Object.FindFirstObjectByType<MyClicker.Character.HeroCharacterAdapter>();
+            Vector3 at = hero != null ? hero.transform.position + Vector3.up * 0.35f : Vector3.zero;
+            MyClicker.Audio.FxDirector.Ensure().Potion(id, at);
             Refresh();
         }
 

@@ -94,6 +94,7 @@ namespace MyClicker.Economy
                 return false;
             Profile.SetTemperLevel(slot, Profile.TemperLevel(slot) + 1);
             _services.Save.MarkDirty();
+            MyClicker.Audio.AudioDirector.Ensure().PlaySfx("armory");
             return true;
         }
 
@@ -121,6 +122,7 @@ namespace MyClicker.Economy
             _hero.Cycle(slot, delta);
             Profile.heroJson = _hero.ToJson();
             _services.Save.MarkDirty();
+            MyClicker.Audio.AudioDirector.Ensure().PlaySfx("equip");
         }
 
         public string TryRollDrop(bool boss)
@@ -161,8 +163,17 @@ namespace MyClicker.Economy
 
                 _services.Save.MarkDirty();
                 _services.Save.PersistNow();
-                LastDrop = "You found " + PrettyId(id);
-                LastDropLife = 4.4f;
+                if (!Profile.seenArmoryHint)
+                {
+                    Profile.seenArmoryHint = true;
+                    LastDrop = "You found " + PrettyId(id) + "\nEquip it in Armory";
+                }
+                else
+                    LastDrop = "You found " + PrettyId(id);
+                LastDropLife = 4.8f;
+                MyClicker.Audio.AudioDirector.Ensure().PlaySfx("relic");
+                if (_hero != null)
+                    MyClicker.Audio.FxDirector.Ensure().Relic(_hero.transform.position + Vector3.up * 0.6f);
                 return LastDrop;
             }
 

@@ -24,12 +24,20 @@ namespace MyClicker.Combat
         float _toastLife;
         float _strikeAnimLock;
         readonly Queue<float> _tapTimes = new Queue<float>();
+        readonly List<float> _dmgAt = new List<float>();
+        readonly List<float> _dmgVal = new List<float>();
         const float TapWindow = 1.25f;
+        const float DmgWindow = 2f;
+        bool _furyFxOn;
+        float _furyRestartAt;
 
         void Start()
         {
             var services = GameServices.Ensure();
-            AudioDirector.Ensure().PlayBattle();
+            AudioDirector.Ensure();
+            FxDirector.Ensure();
+            var startZone = services.Catalog.ZoneAt(services.Save.Profile.zone);
+            AudioDirector.Ensure().PlayZone(startZone.battleCue);
             StoneUi.EnsureCanvas();
             if (FindFirstObjectByType<HudController>() == null)
                 gameObject.AddComponent<HudController>();
@@ -63,6 +71,7 @@ namespace MyClicker.Combat
 
             TickSpawns(Time.deltaTime);
             TickAuto(Time.deltaTime);
+            TickFuryFx();
             if (_strikeAnimLock > 0f)
                 _strikeAnimLock -= Time.deltaTime;
 
@@ -70,6 +79,7 @@ namespace MyClicker.Combat
                 return;
 
             RegisterTap();
+            AudioDirector.Ensure().PlaySfx("swing");
             var cam = Camera.main;
             if (cam == null)
                 return;
@@ -138,6 +148,8 @@ namespace MyClicker.Combat
             if (crit)
                 damage *= services.Economy.CritMultiplier;
 
+            if (tap)
+                AudioDirector.Ensure().PlaySfx(enemy.IsBoss ? "hitArmor" : "hit");
             AnimateHero(enemy);
             Vector3 pos = enemy.transform.position;
             ApplyHit(enemy, damage, crit, tap);
@@ -165,7 +177,7 @@ namespace MyClicker.Combat
             if (visual == null && services.Catalog.bosses != null && services.Catalog.bosses.Length > 0)
                 visual = services.Catalog.bosses[Mathf.Clamp(services.Save.Profile.zone, 0, services.Catalog.bosses.Length - 1)];
             _spawner.SpawnBoss(visual, EnemyHp(true));
-            AudioDirector.Ensure().PlayCue(string.IsNullOrEmpty(zone.bossCue) ? "boss" : zone.bossCue);
+            PlayZoneMusic(zone);
         }
 
         void PrepareWave(int wave, bool fresh)
@@ -175,14 +187,12 @@ namespace MyClicker.Combat
             _awaitingClear = false;
             _spawnTimer = fresh ? 0.15f : 0.4f;
             _bossWave = wave > 0 && wave % Mathf.Max(1, combat.wavesPerBoss) == 0;
+            var zone = GameServices.Instance.Catalog.ZoneAt(GameServices.Instance.Save.Profile.zone);
+            PlayZoneMusic(zone);
             if (_bossWave)
             {
                 _spawner.Clear();
                 SpawnBoss();
-            }
-            else
-            {
-                AudioDirector.Ensure().PlayBattle();
             }
         }
 
@@ -202,6 +212,18 @@ namespace MyClicker.Combat
             }
 
             services.Save.MarkDirty();
+            if (wasBoss)
+            {
+                var zone = services.Catalog.ZoneAt(services.Save.Profile.zone);
+                Announce(zone.displayName, 2.6f);
+                FxDirector.Ensure().ZoneChange(HeroSlot() + Vector3.up * 1.4f);
+            }
+            else
+            {
+                Announce("Wave " + services.Save.Profile.wave, 1.7f);
+                FxDirector.Ensure().WaveClear(HeroSlot() + Vector3.up * 1.1f);
+            }
+
             _spawner.Clear();
             PrepareWave(services.Save.Profile.wave, fresh: true);
         }
@@ -218,7 +240,10 @@ namespace MyClicker.Combat
             var economy = GameServices.Instance != null ? GameServices.Instance.Economy : null;
             if (economy == null || !economy.TrySpendFocus(Settings().slamCost))
                 return false;
+            AudioDirector.Ensure().PlaySfx("slam");
+            AudioDirector.Ensure().PlaySfx("twoHand");
             var enemy = _spawner != null ? _spawner.Nearest(HeroSlot()) : null;
+            FxDirector.Ensure().Slam(enemy != null ? enemy.transform.position : HeroSlot());
             if (enemy == null || !enemy.Alive)
                 return true;
             StrikeMul(enemy, GameServices.Instance.Config.economy.slamDamageMul, tap: true);
@@ -230,6 +255,8 @@ namespace MyClicker.Combat
             var economy = GameServices.Instance != null ? GameServices.Instance.Economy : null;
             if (economy == null || !economy.TrySpendFocus(Settings().sweepCost))
                 return false;
+            AudioDirector.Ensure().PlaySfx("sweep");
+            FxDirector.Ensure().Sweep(HeroSlot() + Vector3.up * 0.4f);
             if (_spawner == null)
                 return true;
             float mul = GameServices.Instance.Config.economy.sweepDamageMul;
@@ -248,7 +275,12 @@ namespace MyClicker.Combat
         public bool TryFocusFury()
         {
             var economy = GameServices.Instance != null ? GameServices.Instance.Economy : null;
-            return economy != null && economy.TryStartFocusFury();
+            if (economy == null || !economy.TryStartFocusFury())
+                return false;
+            AudioDirector.Ensure().PlaySfx("fury");
+            FxDirector.Ensure().SetFury(_hero != null ? _hero.transform : null, true);
+            _furyFxOn = true;
+            return true;
         }
 
         void StrikeMul(EnemyController enemy, float mul, bool tap)
@@ -309,7 +341,10 @@ namespace MyClicker.Combat
 
         bool ApplyHit(EnemyController enemy, float damage, bool crit, bool tap)
         {
+            RecordDamage(damage);
             bool killed = enemy.Hit(damage);
+            if (killed)
+                FxDirector.Ensure().Kill(enemy.transform.position, enemy.IsBoss);
             FloatingCombatText.Show(
                 enemy.transform.position,
                 crit ? Mathf.RoundToInt(damage) + "!" : Mathf.RoundToInt(damage).ToString(),
@@ -338,7 +373,8 @@ namespace MyClicker.Combat
             if (gold <= 0)
                 return;
             services.Save.AddGold(gold);
-            ShowToast("While you were away\n+" + NumberFmt.Compact(gold) + " gold", 4.8f);
+            ShowToast("While you were away\n+" + NumberFmt.Compact(gold) + " gold", 8f);
+            FxDirector.Ensure().WaveClear(HeroSlot() + Vector3.up * 1.2f);
         }
 
         public string ToastMessage => _toastLife > 0f ? _toast : null;
@@ -349,6 +385,18 @@ namespace MyClicker.Combat
             {
                 PruneTaps();
                 return _tapTimes.Count / TapWindow;
+            }
+        }
+
+        public float DamagePerSecond
+        {
+            get
+            {
+                PruneDamage();
+                float sum = 0f;
+                for (int i = 0; i < _dmgVal.Count; i++)
+                    sum += _dmgVal[i];
+                return sum / DmgWindow;
             }
         }
 
@@ -363,6 +411,50 @@ namespace MyClicker.Combat
             float cutoff = Time.unscaledTime - TapWindow;
             while (_tapTimes.Count > 0 && _tapTimes.Peek() < cutoff)
                 _tapTimes.Dequeue();
+        }
+
+        void RecordDamage(float value)
+        {
+            _dmgAt.Add(Time.unscaledTime);
+            _dmgVal.Add(value);
+            PruneDamage();
+        }
+
+        void PruneDamage()
+        {
+            float cutoff = Time.unscaledTime - DmgWindow;
+            while (_dmgAt.Count > 0 && _dmgAt[0] < cutoff)
+            {
+                _dmgAt.RemoveAt(0);
+                _dmgVal.RemoveAt(0);
+            }
+        }
+
+        void TickFuryFx()
+        {
+            var economy = GameServices.Instance != null ? GameServices.Instance.Economy : null;
+            bool on = economy != null && economy.FocusFuryLeft > 0f;
+            if (on)
+            {
+                if (!_furyFxOn || Time.unscaledTime >= _furyRestartAt)
+                {
+                    _furyFxOn = true;
+                    _furyRestartAt = Time.unscaledTime + 1.8f;
+                    FxDirector.Ensure().SetFury(_hero != null ? _hero.transform : null, true);
+                }
+                return;
+            }
+
+            if (!_furyFxOn)
+                return;
+            _furyFxOn = false;
+            FxDirector.Ensure().SetFury(_hero != null ? _hero.transform : null, false);
+        }
+
+        static void PlayZoneMusic(ZoneDef zone)
+        {
+            string cue = zone != null && !string.IsNullOrEmpty(zone.battleCue) ? zone.battleCue : "battle";
+            AudioDirector.Ensure().PlayZone(cue);
         }
 
         void LateUpdate()

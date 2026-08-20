@@ -10,6 +10,7 @@ namespace MyClicker.Data
         public CombatSettings combat = new CombatSettings();
         public WorldSettings world = new WorldSettings();
         public EconomySettings economy = new EconomySettings();
+        public FxLibrary fx = new FxLibrary();
 
         [System.Serializable]
         public class UiSkin
@@ -136,6 +137,23 @@ namespace MyClicker.Data
             public float focusFuryBonus = 1.25f;
             public float slamDamageMul = 5.5f;
             public float sweepDamageMul = 3f;
+        }
+
+        [System.Serializable]
+        public class FxLibrary
+        {
+            public GameObject furyFire;
+            public GameObject killPoof;
+            public GameObject bossDeath;
+            public GameObject slamHit;
+            public GameObject sweepTrail;
+            public GameObject relicGlow;
+            public GameObject potionFire;
+            public GameObject potionWind;
+            public GameObject potionFlash;
+            public GameObject waveFlash;
+            public GameObject zoneGlow;
+            public GameObject ascendBurst;
         }
     }
 }

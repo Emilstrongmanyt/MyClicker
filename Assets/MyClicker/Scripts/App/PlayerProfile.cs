@@ -42,6 +42,7 @@ namespace MyClicker.App
         public float swiftBuffLeft;
         public float goldBuffLeft;
         public bool seenTapHint;
+        public bool seenArmoryHint;
         public long lastSeenUnix;
         public string heroJson;
         public string[] unlockedGear = new string[0];

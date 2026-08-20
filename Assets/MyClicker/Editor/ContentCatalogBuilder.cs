@@ -74,6 +74,7 @@ namespace MyClicker.Editor
             {
                 config.world.backgroundSprites = AllBackgroundSlices();
                 AssignCainosTiles(config.world);
+                AssignFx(config);
                 EditorUtility.SetDirty(config);
             }
             EditorUtility.SetDirty(catalog);
@@ -255,9 +256,7 @@ namespace MyClicker.Editor
                     hpMul = zone.hp,
                     goldMul = zone.gold,
                     background = bg,
-                    battleCue = zone.id == "moon-fen" || zone.id == "black-pool" || zone.id == "harvest-night"
-                        ? "night"
-                        : "battle",
+                    battleCue = BattleCueFor(zone.id),
                     bossCue = "boss"
                 });
             }
@@ -290,6 +289,28 @@ namespace MyClicker.Editor
             };
         }
 
+        static string BattleCueFor(string zoneId)
+        {
+            switch (zoneId)
+            {
+                case "moon-fen":
+                case "black-pool":
+                    return "night";
+                case "bone-yard":
+                    return "night-2";
+                case "harvest-night":
+                    return "night-3";
+                case "chitter-deep":
+                case "howling-wood":
+                    return "day-2";
+                case "labyrinth-gate":
+                case "titan-stair":
+                    return "day-3";
+                default:
+                    return "battle";
+            }
+        }
+
         static AudioLibrary BuildAudio()
         {
             return new AudioLibrary
@@ -298,7 +319,33 @@ namespace MyClicker.Editor
                 battle = Clip("ES_Dawn of the Long Road - Dian Shuai"),
                 boss = Clip("ES_Return of the Longship - Dian Shuai"),
                 night = Clip("ES_Beneath the Old Moon - Adriel Fair"),
+                day2 = Clip("BGM Day"),
+                day3 = Clip("BGM Day (2)"),
+                night2 = Clip("BGM Night"),
+                night3 = Clip("BGM Night (2)")
             };
+        }
+
+        static void AssignFx(GameConfig config)
+        {
+            const string root = "Assets/JMO Assets/Cartoon FX Remaster/CFXR Prefabs/";
+            config.fx.furyFire = Prefab(root + "Fire/CFXR Fire.prefab");
+            config.fx.killPoof = Prefab(root + "Misc/CFXR Magic Poof.prefab");
+            config.fx.bossDeath = Prefab(root + "Explosions/CFXR3 Fire Explosion B.prefab");
+            config.fx.slamHit = Prefab(root + "Impacts/CFXR2 Ground Hit.prefab");
+            config.fx.sweepTrail = Prefab(root + "Sword Trails/Plain/CFXR4 Sword Trail PLAIN (360 Spiral).prefab");
+            config.fx.relicGlow = Prefab(root + "Magic Misc/CFXR4 Falling Stars.prefab");
+            config.fx.potionFire = Prefab(root + "Fire/CFXR3 Hit Fire B (Air).prefab");
+            config.fx.potionWind = Prefab(root + "Nature/CFXR4 Wind Trails.prefab");
+            config.fx.potionFlash = Prefab(root + "Light/CFXR3 LightGlow A (Loop).prefab");
+            config.fx.waveFlash = Prefab(root + "Misc/CFXR Flash.prefab");
+            config.fx.zoneGlow = Prefab(root + "Misc/CFXR3 Ambient Glows.prefab");
+            config.fx.ascendBurst = Prefab(root + "Explosions/CFXR4 Firework 1 Cyan-Purple (HDR).prefab");
+        }
+
+        static GameObject Prefab(string path)
+        {
+            return AssetDatabase.LoadAssetAtPath<GameObject>(path);
         }
 
         static UpgradeDef[] BuildUpgrades(IconLibrary icons)

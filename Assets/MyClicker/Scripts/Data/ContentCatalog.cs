@@ -318,5 +318,9 @@ namespace MyClicker.Data
         public AudioClip battle;
         public AudioClip boss;
         public AudioClip night;
+        public AudioClip day2;
+        public AudioClip day3;
+        public AudioClip night2;
+        public AudioClip night3;
     }
 }

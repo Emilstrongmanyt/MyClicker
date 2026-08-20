@@ -195,9 +195,9 @@ namespace MyClicker.UI
             if (_dps != null)
             {
                 float taps = _battle != null ? _battle.TapsPerSecond : 0f;
-                _dps.text = taps.ToString("0.0") + " taps/s  Tap " + Mathf.RoundToInt(economy.TapDamage) +
-                            "  Auto " + Mathf.RoundToInt(economy.AutoDps) + "/s  " +
-                            NumberFmt.Compact(Mathf.Max(0, Mathf.RoundToInt(economy.GoldPerSecond))) + "g/s" +
+                float dps = _battle != null ? _battle.DamagePerSecond : 0f;
+                _dps.text = taps.ToString("0.0") + " taps/s  DPS " + Mathf.RoundToInt(dps) +
+                            "  " + NumberFmt.Compact(Mathf.Max(0, Mathf.RoundToInt(economy.GoldPerSecond))) + "g/s" +
                             BuffLine(profile);
             }
 
