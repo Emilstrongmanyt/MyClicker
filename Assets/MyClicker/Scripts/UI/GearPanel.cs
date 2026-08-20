@@ -145,17 +145,18 @@ namespace MyClicker.UI
                 return;
             int rank = GameServices.Instance.Save.Profile.TemperLevel(row.slot);
             int owned = gear.OwnedCount(row.slot);
+            bool canCycle = gear.CanCycle(row.slot);
             row.name.text = row.slot + "  " + gear.Label(row.slot);
-            row.detail.text = owned <= 1
+            row.detail.text = owned <= 0
                 ? "Starter look. Relics drop in battle."
                 : gear.BonusText(row.slot) + "   T" + rank + "   " + owned + " relics";
             if (row.price != null)
                 row.price.Set(NumberFmt.Compact(gear.TemperCost(row.slot)), DustIcon());
             row.temper.interactable = GameServices.Instance.Save.Profile.dust >= gear.TemperCost(row.slot);
             if (row.prev != null)
-                row.prev.interactable = owned > 1;
+                row.prev.interactable = canCycle;
             if (row.next != null)
-                row.next.interactable = owned > 1;
+                row.next.interactable = canCycle;
         }
 
         void RefreshCraft(CraftRow row)

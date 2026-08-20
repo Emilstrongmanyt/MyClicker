@@ -112,51 +112,44 @@ namespace MyClicker.Character
         public int SlotIndex(string slot)
         {
             if (slot == "Weapon")
-            {
-                var options = WeaponOptions();
-                int index = options.FindIndex(IsEquippedWeapon);
-                return index < 0 ? 0 : index;
-            }
+                return WeaponOptions().FindIndex(IsEquippedWeapon);
 
-            var items = ItemsFor(slot);
-            int found = items.FindIndex(i => IsCurrent(slot, i));
-            return found < 0 ? 0 : found;
+            return ItemsFor(slot).FindIndex(i => IsCurrent(slot, i));
         }
 
         public string SlotId(string slot)
         {
             if (slot == "Weapon")
             {
-                var options = WeaponOptions();
-                int index = SlotIndex(slot);
-                if (options.Count == 0 || index < 0 || index >= options.Count)
+                var options = AllWeaponOptions();
+                int equipped = options.FindIndex(IsEquippedWeapon);
+                if (equipped < 0 || options[equipped].Item == null)
                     return slot;
-                return options[index].Item != null ? options[index].Item.Id : slot;
+                return options[equipped].Item.Id ?? slot;
             }
 
-            var items = ItemsFor(slot);
-            int i = SlotIndex(slot);
-            if (items.Count == 0 || i < 0 || i >= items.Count || items[i] == null)
-                return slot;
-            return items[i].Id ?? slot;
+            var current = AllItems(slot).Find(i => IsCurrent(slot, i));
+            return current != null && !string.IsNullOrEmpty(current.Id) ? current.Id : slot;
         }
 
         public string SlotLabel(string slot)
         {
+            int index = SlotIndex(slot);
+            if (index < 0)
+                return WearingStarter(slot) ? "Starter" : "None";
+
             if (slot == "Weapon")
             {
                 var options = WeaponOptions();
-                int index = SlotIndex(slot);
-                if (options.Count == 0 || index < 0 || index >= options.Count)
+                if (index >= options.Count)
                     return "None";
                 return Pretty(options[index].Item);
             }
 
             var items = ItemsFor(slot);
-            int i = SlotIndex(slot);
-            if (items.Count == 0 || i < 0 || i >= items.Count)
+            if (index >= items.Count)
                 return "None";
-            return Pretty(items[i]);
+            return Pretty(items[index]);
         }
 
         public void Cycle(string slot, int delta)
@@ -164,7 +157,11 @@ namespace MyClicker.Character
             int count = SlotCount(slot);
             if (count <= 0)
                 return;
-            SetSlotIndex(slot, SlotIndex(slot) + delta);
+            int current = SlotIndex(slot);
+            int next = current < 0
+                ? (delta >= 0 ? 0 : count - 1)
+                : current + delta;
+            SetSlotIndex(slot, next);
         }
 
         public void SetSlotIndex(string slot, int index)
@@ -374,8 +371,6 @@ namespace MyClicker.Character
                 case GearPool.Loot:
                     return IsLootItem(item, slot);
                 case GearPool.Owned:
-                    if (IsCurrent(slot, item))
-                        return true;
                     return IsLootItem(item, slot) && Owned(item.Id);
                 default:
                     return IsStarterItem(item, slot);

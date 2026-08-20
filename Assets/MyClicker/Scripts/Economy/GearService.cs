@@ -102,9 +102,21 @@ namespace MyClicker.Economy
             return _hero != null ? _hero.SlotCount(slot) : 0;
         }
 
+        public bool CanCycle(string slot)
+        {
+            if (_hero == null)
+                return false;
+            int n = _hero.SlotCount(slot);
+            if (n > 1)
+                return true;
+            if (n <= 0)
+                return false;
+            return _hero.SlotIndex(slot) < 0 || _hero.WearingStarter(slot);
+        }
+
         public void Cycle(string slot, int delta)
         {
-            if (_hero == null || _hero.SlotCount(slot) <= 1)
+            if (_hero == null || OwnedCount(slot) <= 0)
                 return;
             _hero.Cycle(slot, delta);
             Profile.heroJson = _hero.ToJson();
