@@ -51,42 +51,13 @@ namespace MyClicker.Economy
             }
         }
 
-        public float AutoInterval
-        {
-            get
-            {
-                float interval = Eco.autoIntervalStart * Mathf.Pow(Eco.autoIntervalDecay, Profile.swiftLevel);
-                if (_services.Gear != null)
-                    interval *= 1f - Mathf.Clamp01(_services.Gear.SwiftBonus);
-                if (Profile.swiftBuffLeft > 0f)
-                    interval *= 1f - Eco.swiftPotionBonus;
-                interval *= 1f - Mathf.Min(0.55f, Mutation(Profile.mutationSwift, Eco.mutationSwiftPerDecade));
-                return Mathf.Max(Eco.autoIntervalMin, interval);
-            }
-        }
+        public float AutoInterval => AutoIntervalAt(Profile.swiftLevel, includeBuffs: true);
 
-        public float CritChance
-        {
-            get
-            {
-                float value = Profile.critLevel * Eco.critPerLevel;
-                if (_services.Gear != null)
-                    value += _services.Gear.CritBonus;
-                return Mathf.Min(Eco.critChanceCap, value);
-            }
-        }
+        public float CritChance => CritChanceAt(Profile.critLevel);
 
         public float CritMultiplier => Eco.critMultiplier + Profile.furyLevel * 0.25f;
 
-        public float CleaveFraction
-        {
-            get
-            {
-                if (Profile.cleaveLevel <= 0)
-                    return 0f;
-                return Eco.cleaveBase + (Profile.cleaveLevel - 1) * 0.05f;
-            }
-        }
+        public float CleaveFraction => CleaveAt(Profile.cleaveLevel);
 
         public float AutoDps => TapDamage / Mathf.Max(0.2f, AutoInterval);
 
@@ -197,7 +168,52 @@ namespace MyClicker.Economy
         {
             var def = _services.Catalog.FindUpgrade(id);
             int cap = def != null ? def.maxLevel : 200;
-            return Profile.UpgradeLevel(id) >= cap;
+            if (Profile.UpgradeLevel(id) >= cap)
+                return true;
+            return !NextRankHelps(id);
+        }
+
+        bool NextRankHelps(string id)
+        {
+            int level = Profile.UpgradeLevel(id);
+            switch (id)
+            {
+                case ContentIds.Crit:
+                    return CritChanceAt(level + 1) > CritChanceAt(level) + 0.0001f;
+                case ContentIds.Swift:
+                    return AutoIntervalAt(level + 1, includeBuffs: false)
+                           < AutoIntervalAt(level, includeBuffs: false) - 0.0001f;
+                case ContentIds.Cleave:
+                    return CleaveAt(level + 1) > CleaveAt(level) + 0.0001f;
+                default:
+                    return true;
+            }
+        }
+
+        float CritChanceAt(int level)
+        {
+            float value = Mathf.Max(0, level) * Eco.critPerLevel;
+            if (_services.Gear != null)
+                value += _services.Gear.CritBonus;
+            return Mathf.Min(Eco.critChanceCap, value);
+        }
+
+        float AutoIntervalAt(int level, bool includeBuffs)
+        {
+            float interval = Eco.autoIntervalStart * Mathf.Pow(Eco.autoIntervalDecay, Mathf.Max(0, level));
+            if (_services.Gear != null)
+                interval *= 1f - Mathf.Clamp01(_services.Gear.SwiftBonus);
+            if (includeBuffs && Profile.swiftBuffLeft > 0f)
+                interval *= 1f - Eco.swiftPotionBonus;
+            interval *= 1f - Mathf.Min(0.55f, Mutation(Profile.mutationSwift, Eco.mutationSwiftPerDecade));
+            return Mathf.Max(Eco.autoIntervalMin, interval);
+        }
+
+        float CleaveAt(int level)
+        {
+            if (level <= 0)
+                return 0f;
+            return Mathf.Min(1f, Eco.cleaveBase + (level - 1) * 0.05f);
         }
 
         public bool TryBuy(string id) => TryBuy(id, 1);

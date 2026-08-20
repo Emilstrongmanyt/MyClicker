@@ -333,7 +333,8 @@ namespace MyClicker.Editor
                     icon = icons.swift,
                     baseCost = 40,
                     costGrowth = 1.22f,
-                    perLevel = 0.07f
+                    perLevel = 0.07f,
+                    maxLevel = 40
                 },
                 new UpgradeDef
                 {
@@ -343,7 +344,8 @@ namespace MyClicker.Editor
                     icon = icons.crit,
                     baseCost = 50,
                     costGrowth = 1.25f,
-                    perLevel = 0.02f
+                    perLevel = 0.02f,
+                    maxLevel = 30
                 },
                 new UpgradeDef
                 {
@@ -354,6 +356,7 @@ namespace MyClicker.Editor
                     baseCost = 80,
                     costGrowth = 1.23f,
                     perLevel = 0.05f,
+                    maxLevel = 13,
                     requiresId = ContentIds.Might,
                     requiresLevel = 6
                 },

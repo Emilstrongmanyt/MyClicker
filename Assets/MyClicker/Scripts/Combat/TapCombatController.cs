@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using MyClicker.App;
 using MyClicker.Audio;
 using MyClicker.Character;
@@ -22,6 +23,8 @@ namespace MyClicker.Combat
         string _toast;
         float _toastLife;
         float _strikeAnimLock;
+        readonly Queue<float> _tapTimes = new Queue<float>();
+        const float TapWindow = 1.25f;
 
         void Start()
         {
@@ -66,6 +69,7 @@ namespace MyClicker.Combat
             if (!WasTap(out var screen) || OverUi())
                 return;
 
+            RegisterTap();
             var cam = Camera.main;
             if (cam == null)
                 return;
@@ -338,6 +342,28 @@ namespace MyClicker.Combat
         }
 
         public string ToastMessage => _toastLife > 0f ? _toast : null;
+
+        public float TapsPerSecond
+        {
+            get
+            {
+                PruneTaps();
+                return _tapTimes.Count / TapWindow;
+            }
+        }
+
+        void RegisterTap()
+        {
+            _tapTimes.Enqueue(Time.unscaledTime);
+            PruneTaps();
+        }
+
+        void PruneTaps()
+        {
+            float cutoff = Time.unscaledTime - TapWindow;
+            while (_tapTimes.Count > 0 && _tapTimes.Peek() < cutoff)
+                _tapTimes.Dequeue();
+        }
 
         void LateUpdate()
         {

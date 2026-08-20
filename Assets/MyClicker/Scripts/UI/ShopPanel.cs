@@ -170,7 +170,7 @@ namespace MyClicker.UI
             bool maxed = economy.IsMaxed(row.id);
             bool can = economy.CanBuy(row.id);
             row.name.text = TitleFor(row.id) + "  Lv " + level;
-            row.detail.text = unlocked ? DetailFor(row.id, economy) : economy.LockReason(row.id);
+            row.detail.text = unlocked ? DetailFor(row.id, economy, maxed) : economy.LockReason(row.id);
             if (row.price != null)
             {
                 if (!unlocked)
@@ -209,27 +209,30 @@ namespace MyClicker.UI
             }
         }
 
-        static string DetailFor(string id, EconomyService economy)
+        static string DetailFor(string id, EconomyService economy, bool maxed)
         {
+            string cap = maxed ? "  MAX" : "";
             switch (id)
             {
                 case ContentIds.Might:
-                    return "Tap  " + Mathf.RoundToInt(economy.TapDamage) + "   next +" +
-                           Mathf.RoundToInt(GameServices.Instance.Config.economy.mightPerLevel);
+                    return "Tap  " + Mathf.RoundToInt(economy.TapDamage) +
+                           (maxed ? cap : "   next +" + Mathf.RoundToInt(GameServices.Instance.Config.economy.mightPerLevel));
                 case ContentIds.Fortune:
-                    return "Gold  x" + economy.GoldMultiplier.ToString("0.00") + "   next +12%";
+                    return "Gold  x" + economy.GoldMultiplier.ToString("0.00") +
+                           (maxed ? cap : "   next +12%");
                 case ContentIds.Swift:
                     return "Auto  " + economy.AutoInterval.ToString("0.00") + "s   DPS " +
-                           Mathf.RoundToInt(economy.AutoDps);
+                           Mathf.RoundToInt(economy.AutoDps) + cap;
                 case ContentIds.Crit:
                     return "Crit  " + Mathf.RoundToInt(economy.CritChance * 100f) + "%  x" +
-                           economy.CritMultiplier.ToString("0.#");
+                           economy.CritMultiplier.ToString("0.#") + cap;
                 case ContentIds.Cleave:
-                    return "Splash  " + Mathf.RoundToInt(economy.CleaveFraction * 100f) + "% to a nearby foe";
+                    return "Splash  " + Mathf.RoundToInt(economy.CleaveFraction * 100f) + "% to a nearby foe" + cap;
                 case ContentIds.Fury:
-                    return "Crit damage  x" + economy.CritMultiplier.ToString("0.00") + "   next +0.25";
+                    return "Crit damage  x" + economy.CritMultiplier.ToString("0.00") +
+                           (maxed ? cap : "   next +0.25");
                 case ContentIds.Harvest:
-                    return "More dust and potion drops each rank";
+                    return "More dust and potion drops each rank" + cap;
                 default:
                     return "";
             }

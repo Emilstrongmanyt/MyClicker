@@ -1004,14 +1004,14 @@ MonoBehaviour:
     temperCostGrowth: 1.35
     gearDropChance: 0.01
     gearBossDropChance: 0.18
-    offlineCapHours: 8
-    offlineGoldFactor: 0.55
+    offlineCapHours: 3
+    offlineGoldFactor: 0.12
     harvestGearPerLevel: 0.0025
     gloryPerBoss: 2
     gloryPerBossPerZone: 0.5
     mutationPerDecade: 0.85
     mutationSwiftPerDecade: 0.55
-    unspentGloryOffline: 0.035
+    unspentGloryOffline: 0.008
     focusFurySeconds: 8
     focusFuryBonus: 1.25
     slamDamageMul: 5.5
