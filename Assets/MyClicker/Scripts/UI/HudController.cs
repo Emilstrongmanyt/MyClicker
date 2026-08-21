@@ -18,6 +18,7 @@ namespace MyClicker.UI
         Text _dps;
         Text _hint;
         StoneUi.BannerView _banner;
+        Text _sting;
         StoneUi.HealthBarView _bossBar;
         ShopPanel _shop;
         GearPanel _gear;
@@ -109,6 +110,18 @@ namespace MyClicker.UI
                 _hintFade.alpha = 0f;
             _banner = StoneUi.Banner(parent, "Toast", skin);
             StoneUi.Place(_banner.root.GetComponent<RectTransform>(), 0.07f, 0.41f, 0.93f, 0.59f);
+            _sting = StoneUi.Label(parent, "Sting", "", 52, TextAnchor.MiddleCenter);
+            StoneUi.Place(_sting, 0.08f, 0.44f, 0.92f, 0.58f);
+            _sting.fontStyle = FontStyle.Bold;
+            _sting.resizeTextMinSize = 28;
+            _sting.resizeTextMaxSize = 56;
+            var stingOutline = _sting.gameObject.AddComponent<Outline>();
+            stingOutline.effectColor = new Color(0.04f, 0.02f, 0.01f, 1f);
+            stingOutline.effectDistance = new Vector2(2.8f, -2.8f);
+            var stingShadow = _sting.gameObject.AddComponent<Shadow>();
+            stingShadow.effectColor = new Color(0f, 0f, 0f, 0.8f);
+            stingShadow.effectDistance = new Vector2(0f, -3f);
+            _sting.gameObject.SetActive(false);
 
             _shop = gameObject.AddComponent<ShopPanel>();
             _shop.Build(parent, skin);
@@ -201,14 +214,18 @@ namespace MyClicker.UI
                             BuffLine(profile);
             }
 
-            if (_banner != null)
+            string toast = _battle != null ? _battle.ToastMessage : null;
+            string drop = services.Gear != null && services.Gear.LastDropLife > 0f
+                ? services.Gear.LastDrop
+                : null;
+            bool plain = toast != null && _battle != null && !_battle.ToastPlaque;
+            if (_sting != null)
             {
-                string toast = _battle != null ? _battle.ToastMessage : null;
-                string drop = services.Gear != null && services.Gear.LastDropLife > 0f
-                    ? services.Gear.LastDrop
-                    : null;
-                _banner.Show(toast ?? drop);
+                _sting.gameObject.SetActive(plain);
+                _sting.text = plain ? toast : "";
             }
+            if (_banner != null)
+                _banner.Show(plain ? null : (toast ?? drop));
 
             var boss = _spawner != null ? _spawner.CurrentBoss : null;
             bool showBoss = boss != null && boss.Alive;

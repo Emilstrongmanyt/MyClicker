@@ -9,6 +9,7 @@ namespace MyClicker.Audio
         public static FxDirector Instance { get; private set; }
 
         GameObject _furyFire;
+        Transform _furyHero;
         float _killGate;
         int _live;
 
@@ -35,29 +36,41 @@ namespace MyClicker.Audio
             CartoonFX.CFXR_Effect.GlobalDisableLights = true;
         }
 
+        void LateUpdate()
+        {
+            if (_furyFire == null || _furyHero == null)
+                return;
+            _furyFire.transform.position = _furyHero.position + Vector3.up * 0.35f;
+        }
+
         public void SetFury(Transform hero, bool on)
         {
             if (!on)
             {
+                _furyHero = null;
                 if (_furyFire != null)
                     Destroy(_furyFire);
                 _furyFire = null;
                 return;
             }
 
+            _furyHero = hero;
             if (hero == null)
                 return;
-            var prefab = Prefab(c => c.furyFire);
-            if (prefab == null)
-                return;
             if (_furyFire == null)
-                _furyFire = Spawn(prefab, hero, new Vector3(0f, -0.18f, 0.2f), 0.42f, -2);
-            else if (_furyFire.transform.parent != hero)
-                _furyFire.transform.SetParent(hero, false);
+            {
+                var prefab = Prefab(c => c.furyFire);
+                _furyFire = prefab != null
+                    ? Spawn(prefab, null, hero.position + Vector3.up * 0.35f, 1.35f, 8)
+                    : MakeFallbackFire(hero.position + Vector3.up * 0.35f);
+                KeepAlive(_furyFire);
+            }
 
             if (_furyFire != null)
             {
                 _furyFire.SetActive(true);
+                _furyFire.transform.position = hero.position + Vector3.up * 0.35f;
+                _furyFire.transform.localScale = Vector3.one * 1.35f;
                 RestartParticles(_furyFire);
             }
         }
@@ -166,6 +179,55 @@ namespace MyClicker.Audio
                 systems[i].Clear(true);
                 systems[i].Play(true);
             }
+        }
+
+        static void KeepAlive(GameObject go)
+        {
+            if (go == null)
+                return;
+            var effects = go.GetComponentsInChildren<CartoonFX.CFXR_Effect>(true);
+            for (int i = 0; i < effects.Length; i++)
+                effects[i].clearBehavior = CartoonFX.CFXR_Effect.ClearBehavior.None;
+            var systems = go.GetComponentsInChildren<ParticleSystem>(true);
+            for (int i = 0; i < systems.Length; i++)
+            {
+                var main = systems[i].main;
+                main.loop = true;
+                main.playOnAwake = true;
+                systems[i].Play(true);
+            }
+        }
+
+        static GameObject MakeFallbackFire(Vector3 world)
+        {
+            var go = new GameObject("FuryAura");
+            go.transform.position = world;
+            var ps = go.AddComponent<ParticleSystem>();
+            var main = ps.main;
+            main.loop = true;
+            main.playOnAwake = true;
+            main.startLifetime = 0.55f;
+            main.startSpeed = 0.55f;
+            main.startSize = 0.42f;
+            main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 0.55f, 0.12f, 0.95f), new Color(1f, 0.2f, 0.05f, 0.7f));
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            main.maxParticles = 48;
+            var emission = ps.emission;
+            emission.rateOverTime = 36f;
+            var shape = ps.shape;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 0.62f;
+            var color = ps.colorOverLifetime;
+            color.enabled = true;
+            var grad = new Gradient();
+            grad.SetKeys(
+                new[] { new GradientColorKey(new Color(1f, 0.7f, 0.15f), 0f), new GradientColorKey(new Color(1f, 0.15f, 0.02f), 1f) },
+                new[] { new GradientAlphaKey(0.9f, 0f), new GradientAlphaKey(0f, 1f) });
+            color.color = grad;
+            var render = go.GetComponent<ParticleSystemRenderer>();
+            render.sortingOrder = 8;
+            ps.Play(true);
+            return go;
         }
 
         static GameObject Prefab(System.Func<Data.GameConfig.FxLibrary, GameObject> pick)

@@ -29,7 +29,6 @@ namespace MyClicker.Combat
         const float TapWindow = 1.25f;
         const float DmgWindow = 2f;
         bool _furyFxOn;
-        float _furyRestartAt;
 
         void Start()
         {
@@ -215,12 +214,12 @@ namespace MyClicker.Combat
             if (wasBoss)
             {
                 var zone = services.Catalog.ZoneAt(services.Save.Profile.zone);
-                Announce(zone.displayName, 2.6f);
+                Announce(zone.displayName, 2.6f, false);
                 FxDirector.Ensure().ZoneChange(HeroSlot() + Vector3.up * 1.4f);
             }
             else
             {
-                Announce("Wave " + services.Save.Profile.wave, 1.7f);
+                Announce("Wave " + services.Save.Profile.wave, 1.7f, false);
                 FxDirector.Ensure().WaveClear(HeroSlot() + Vector3.up * 1.1f);
             }
 
@@ -312,8 +311,11 @@ namespace MyClicker.Combat
             _strikeAnimLock = 0.16f;
         }
 
-        public void Announce(string message, float life = 3f)
+        public bool ToastPlaque { get; private set; } = true;
+
+        public void Announce(string message, float life = 3f, bool plaque = true)
         {
+            ToastPlaque = plaque;
             ShowToast(message, life);
         }
 
@@ -434,21 +436,10 @@ namespace MyClicker.Combat
         {
             var economy = GameServices.Instance != null ? GameServices.Instance.Economy : null;
             bool on = economy != null && economy.FocusFuryLeft > 0f;
-            if (on)
-            {
-                if (!_furyFxOn || Time.unscaledTime >= _furyRestartAt)
-                {
-                    _furyFxOn = true;
-                    _furyRestartAt = Time.unscaledTime + 1.8f;
-                    FxDirector.Ensure().SetFury(_hero != null ? _hero.transform : null, true);
-                }
+            if (on == _furyFxOn)
                 return;
-            }
-
-            if (!_furyFxOn)
-                return;
-            _furyFxOn = false;
-            FxDirector.Ensure().SetFury(_hero != null ? _hero.transform : null, false);
+            _furyFxOn = on;
+            FxDirector.Ensure().SetFury(_hero != null ? _hero.transform : null, on);
         }
 
         static void PlayZoneMusic(ZoneDef zone)

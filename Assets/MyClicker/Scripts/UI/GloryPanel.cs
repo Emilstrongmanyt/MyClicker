@@ -142,7 +142,6 @@ namespace MyClicker.UI
                 return;
             var battle = Object.FindFirstObjectByType<TapCombatController>();
             int gained = services.Economy.LastAscendGlory;
-            MyClicker.Audio.AudioDirector.Ensure().PlaySfx("ascend");
             Vector3 at = battle != null
                 ? new Vector3(0f, -2.2f, 0f)
                 : Vector3.zero;
