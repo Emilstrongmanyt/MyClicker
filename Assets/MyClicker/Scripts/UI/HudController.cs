@@ -251,7 +251,7 @@ namespace MyClicker.UI
 
             var combat = services.Config != null ? services.Config.combat : new GameConfig.CombatSettings();
             if (_focus != null)
-                _focus.Set("Focus", economy.Focus, combat.focusMax > 0f ? combat.focusMax : 100f);
+                _focus.Set("Focus", economy.Focus, economy.FocusMax);
 
             if (_slam != null)
                 _slam.interactable = economy.Focus >= combat.slamCost;

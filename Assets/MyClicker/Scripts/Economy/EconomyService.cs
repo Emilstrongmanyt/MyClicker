@@ -27,6 +27,8 @@ namespace MyClicker.Economy
                 float value = Combat.tapDamage + Profile.mightLevel * Eco.mightPerLevel;
                 if (_services.Gear != null)
                     value += _services.Gear.TapBonus;
+                if (HasGlory(GloryIds.Steel))
+                    value += TemperSum() * 1.5f;
                 if (Profile.mightBuffLeft > 0f)
                     value *= 1f + Eco.mightPotionBonus;
                 if (_focusFuryLeft > 0f)
@@ -50,6 +52,10 @@ namespace MyClicker.Economy
                 value *= 1f + 0.08f * Profile.oathTithe;
                 value *= 1f + Renown();
                 value *= 1f + Mutation(Profile.mutationFortune, Eco.mutationPerDecade);
+                if (HasGlory(GloryIds.UnspentTithe))
+                    value *= 1f + Mathf.Min(0.4f, 0.004f * Mathf.Max(0, Profile.glory));
+                if (HasGlory(GloryIds.Hoard))
+                    value *= 1f + RelicCount() * 0.015f;
                 var zone = _services.Catalog.ZoneAt(Profile.zone);
                 return value * Mathf.Max(0.25f, zone.goldMul);
             }
@@ -89,6 +95,42 @@ namespace MyClicker.Economy
         public float Focus => Profile.focus;
         public float FocusFuryLeft => _focusFuryLeft;
         float _focusFuryLeft;
+
+        public float FocusMax
+        {
+            get
+            {
+                float max = Combat.focusMax > 0f ? Combat.focusMax : 100f;
+                if (HasGlory(GloryIds.FocusWell))
+                    max *= 1.25f;
+                return max;
+            }
+        }
+
+        public float FocusRegen
+        {
+            get
+            {
+                float regen = Combat.focusRegen > 0f ? Combat.focusRegen : 10f;
+                if (HasGlory(GloryIds.FocusWell))
+                    regen *= 1.2f;
+                return regen;
+            }
+        }
+
+        public bool HasGlory(string id) => GloryTree.Has(Profile, id);
+
+        public bool HasDeepRoad => HasGlory(GloryIds.DeepRoad);
+
+        int RelicCount()
+        {
+            return Profile.unlockedGear != null ? Profile.unlockedGear.Length : 0;
+        }
+
+        int TemperSum()
+        {
+            return Profile.temperWeapon + Profile.temperArmor + Profile.temperHelmet + Profile.temperCape;
+        }
 
         public long UpgradeCost(string id) => CostAt(id, Profile.UpgradeLevel(id));
 
@@ -369,9 +411,7 @@ namespace MyClicker.Economy
 
         void TickFocus(float dt)
         {
-            float max = Combat.focusMax > 0f ? Combat.focusMax : 100f;
-            float regen = Combat.focusRegen > 0f ? Combat.focusRegen : 10f;
-            Profile.focus = Mathf.Min(max, Profile.focus + regen * dt);
+            Profile.focus = Mathf.Min(FocusMax, Profile.focus + FocusRegen * dt);
         }
 
         public bool TrySpendFocus(float cost)
@@ -402,8 +442,32 @@ namespace MyClicker.Economy
                 return false;
             Profile.glory -= cost;
             Profile.SetMutationLevel(id, Profile.MutationLevel(id) + 1);
+            Profile.tapDamage = TapDamage;
             _services.Save.MarkDirty();
             return true;
+        }
+
+        public bool TryBuyGloryNode(string id)
+        {
+            var node = GloryTree.Find(id);
+            if (!GloryTree.CanBuy(Profile, node))
+                return false;
+            if (!GloryTree.Unlock(Profile, node.id))
+                return false;
+            if (node.cost > 0)
+                Profile.glory -= node.cost;
+            Profile.tapDamage = TapDamage;
+            _services.Save.MarkDirty();
+            return true;
+        }
+
+        public void EnsureLegacy()
+        {
+            if (Profile.ascendCount < 1)
+                return;
+            if (!GloryTree.Unlock(Profile, GloryIds.Legacy))
+                return;
+            _services.Save.MarkDirty();
         }
 
         public int LastAscendGlory { get; private set; }
@@ -431,11 +495,13 @@ namespace MyClicker.Economy
             Profile.pendingGlory = 0;
             Profile.runBosses = 0;
             Profile.ascendCount++;
+            int keepMight = HasGlory(GloryIds.KeepMight) ? Profile.mightLevel : 0;
+            int keepFortune = HasGlory(GloryIds.KeepFortune) ? Profile.fortuneLevel : 0;
             Profile.wave = 1;
             Profile.zone = 0;
             Profile.gold = 0;
-            Profile.mightLevel = 0;
-            Profile.fortuneLevel = 0;
+            Profile.mightLevel = keepMight;
+            Profile.fortuneLevel = keepFortune;
             Profile.swiftLevel = 0;
             Profile.critLevel = 0;
             Profile.cleaveLevel = 0;
@@ -452,6 +518,7 @@ namespace MyClicker.Economy
             Profile.goldBuffLeft = 0f;
             Profile.focus = 0f;
             _focusFuryLeft = 0f;
+            GloryTree.Unlock(Profile, GloryIds.Legacy);
             Profile.tapDamage = TapDamage;
             _services.Save.MarkDirty();
             return true;
@@ -499,6 +566,8 @@ namespace MyClicker.Economy
             float hp = Combat.enemyBaseHp + Combat.enemyHpPerWave * Mathf.Max(0, Profile.wave - 1);
             float kills = AutoDps * usable / Mathf.Max(8f, hp);
             float factor = eco.offlineGoldFactor + Profile.glory * eco.unspentGloryOffline;
+            if (HasGlory(GloryIds.NightMarket))
+                factor += 0.08f;
             return Math.Max(0, (long)Math.Floor(kills * GoldForKill(Mathf.Max(1, Profile.wave), false) * factor));
         }
 

@@ -13,10 +13,11 @@ namespace MyClicker.UI
         bool _open;
         Text _summary;
         Button _ascend;
-        MutRow[] _rows;
+        MutRow[] _muts;
+        NodeRow[] _nodes;
         public System.Action RequestDeeds;
 
-        static readonly string[] Order =
+        static readonly string[] MutOrder =
         {
             ContentIds.MutMight,
             ContentIds.MutFortune,
@@ -39,15 +40,58 @@ namespace MyClicker.UI
             var close = StoneUi.Button(panel.transform, "Close", "X", skin, Hide);
             StoneUi.Place(close, 0.82f, 0.88f, 0.96f, 0.98f);
 
-            _summary = StoneUi.Label(panel.transform, "Summary", "", 22, TextAnchor.UpperLeft);
-            StoneUi.Place(_summary, 0.06f, 0.72f, 0.94f, 0.86f);
+            _summary = StoneUi.Label(panel.transform, "Summary", "", 20, TextAnchor.UpperLeft);
+            StoneUi.Place(_summary, 0.06f, 0.76f, 0.94f, 0.87f);
 
             _ascend = StoneUi.Button(panel.transform, "Ascend", "Ascend", skin, Ascend);
-            StoneUi.Place(_ascend, 0.08f, 0.60f, 0.92f, 0.70f);
+            StoneUi.Place(_ascend, 0.08f, 0.64f, 0.92f, 0.74f);
 
-            _rows = new MutRow[Order.Length];
-            for (int i = 0; i < Order.Length; i++)
-                _rows[i] = BuildRow(panel.transform, skin, Order[i], i);
+            var viewportGo = new GameObject("Viewport", typeof(RectTransform), typeof(Image), typeof(Mask));
+            viewportGo.transform.SetParent(panel.transform, false);
+            StoneUi.Place(viewportGo.GetComponent<RectTransform>(), 0.04f, 0.04f, 0.96f, 0.62f);
+            viewportGo.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.02f);
+            viewportGo.GetComponent<Mask>().showMaskGraphic = false;
+
+            var contentGo = new GameObject("Content", typeof(RectTransform));
+            contentGo.transform.SetParent(viewportGo.transform, false);
+            var content = contentGo.GetComponent<RectTransform>();
+            content.anchorMin = new Vector2(0f, 1f);
+            content.anchorMax = new Vector2(1f, 1f);
+            content.pivot = new Vector2(0.5f, 1f);
+            content.offsetMin = Vector2.zero;
+            content.offsetMax = Vector2.zero;
+
+            var scroll = panel.gameObject.AddComponent<ScrollRect>();
+            scroll.viewport = viewportGo.GetComponent<RectTransform>();
+            scroll.content = content;
+            scroll.horizontal = false;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.scrollSensitivity = 40f;
+
+            const float headerH = 36f;
+            const float rowH = 112f;
+            int muts = MutOrder.Length;
+            int nodes = GloryTree.All.Length;
+            content.sizeDelta = new Vector2(0f, headerH * 2f + (muts + nodes) * rowH + 16f);
+
+            float y = -6f;
+            AddHeader(content, "Mutations", y, headerH);
+            y -= headerH;
+            _muts = new MutRow[muts];
+            for (int i = 0; i < muts; i++)
+            {
+                _muts[i] = BuildMutRow(content, skin, MutOrder[i], y, rowH);
+                y -= rowH;
+            }
+
+            AddHeader(content, "Glory tree", y, headerH);
+            y -= headerH;
+            _nodes = new NodeRow[nodes];
+            for (int i = 0; i < nodes; i++)
+            {
+                _nodes[i] = BuildNodeRow(content, skin, GloryTree.All[i], y, rowH);
+                y -= rowH;
+            }
 
             Hide();
         }
@@ -93,9 +137,11 @@ namespace MyClicker.UI
                     ? "This run: " + bosses + (bosses == 1 ? " boss, +" : " bosses, +") + pending + " Glory on ascend."
                     : "Beat bosses this run to bank Glory for your next ascend.";
                 int renown = services.Deeds != null ? Mathf.RoundToInt(services.Deeds.Renown * 100f) : 0;
+                int owned = profile.gloryNodes != null ? profile.gloryNodes.Length : 0;
                 _summary.text = "Glory  " + profile.glory + "    Ascensions  " + profile.ascendCount +
                                 "    Renown  +" + renown + "%" +
-                                "\n" + pendingLine + " Unspent Glory still helps offline gold. Relics and Deeds stay.";
+                                "    Nodes  " + owned + "/" + GloryTree.All.Length +
+                                "\n" + pendingLine + " Mutations and nodes persist. Relics and Deeds stay.";
             }
 
             if (_ascend != null)
@@ -113,20 +159,31 @@ namespace MyClicker.UI
                 _ascend.interactable = economy.CanAscend();
             }
 
-            for (int i = 0; i < _rows.Length; i++)
-                RefreshRow(_rows[i]);
+            for (int i = 0; i < _muts.Length; i++)
+                RefreshMut(_muts[i]);
+            for (int i = 0; i < _nodes.Length; i++)
+                RefreshNode(_nodes[i]);
         }
 
-        MutRow BuildRow(Transform parent, GameConfig.UiSkin skin, string id, int index)
+        static void AddHeader(RectTransform parent, string title, float y, float height)
         {
-            var row = StoneUi.Panel(parent, "Mut_" + id, skin);
-            float top = 0.56f - index * 0.13f;
-            StoneUi.Place(row, 0.05f, top - 0.12f, 0.95f, top);
-            var name = StoneUi.Label(row.transform, "Name", Title(id), 24, TextAnchor.MiddleLeft);
-            StoneUi.Place(name, 0.04f, 0.52f, 0.62f, 0.92f);
+            var label = StoneUi.Label(parent, "Head_" + title, title, 22, TextAnchor.MiddleLeft);
+            var rt = label.rectTransform;
+            rt.anchorMin = new Vector2(0.04f, 1f);
+            rt.anchorMax = new Vector2(0.96f, 1f);
+            rt.pivot = new Vector2(0.5f, 1f);
+            rt.anchoredPosition = new Vector2(0f, y);
+            rt.sizeDelta = new Vector2(0f, height);
+        }
+
+        MutRow BuildMutRow(RectTransform parent, GameConfig.UiSkin skin, string id, float y, float rowH)
+        {
+            var row = PlaceRow(parent, "Mut_" + id, skin, y, rowH);
+            var name = StoneUi.Label(row.transform, "Name", MutTitle(id), 24, TextAnchor.MiddleLeft);
+            StoneUi.Place(name, 0.04f, 0.52f, 0.64f, 0.92f);
             var detail = StoneUi.Label(row.transform, "Detail", "", 18, TextAnchor.UpperLeft);
-            StoneUi.Place(detail, 0.04f, 0.08f, 0.62f, 0.54f);
-            var buy = StoneUi.Button(row.transform, "Buy", "", skin, () => Buy(id));
+            StoneUi.Place(detail, 0.04f, 0.08f, 0.64f, 0.54f);
+            var buy = StoneUi.Button(row.transform, "Buy", "", skin, () => BuyMut(id));
             StoneUi.Place(buy, 0.66f, 0.14f, 0.96f, 0.86f);
             StoneUi.HideDefaultLabel(buy);
             var price = StoneUi.Price(buy.transform, "Price", 24);
@@ -134,9 +191,42 @@ namespace MyClicker.UI
             return new MutRow { id = id, name = name, detail = detail, buy = buy, price = price };
         }
 
-        void Buy(string id)
+        NodeRow BuildNodeRow(RectTransform parent, GameConfig.UiSkin skin, GloryNode node, float y, float rowH)
+        {
+            var row = PlaceRow(parent, "Node_" + node.id, skin, y, rowH);
+            var name = StoneUi.Label(row.transform, "Name", node.title, 24, TextAnchor.MiddleLeft);
+            StoneUi.Place(name, 0.04f, 0.52f, 0.64f, 0.92f);
+            var detail = StoneUi.Label(row.transform, "Detail", node.blurb, 18, TextAnchor.UpperLeft);
+            StoneUi.Place(detail, 0.04f, 0.08f, 0.64f, 0.54f);
+            var buy = StoneUi.Button(row.transform, "Buy", "", skin, () => BuyNode(node.id));
+            StoneUi.Place(buy, 0.66f, 0.14f, 0.96f, 0.86f);
+            StoneUi.HideDefaultLabel(buy);
+            var price = StoneUi.Price(buy.transform, "Price", 22);
+            StoneUi.Place(price.root, 0.04f, 0.10f, 0.96f, 0.90f);
+            return new NodeRow { node = node, name = name, detail = detail, buy = buy, price = price, panel = row };
+        }
+
+        static Image PlaceRow(RectTransform parent, string name, GameConfig.UiSkin skin, float y, float rowH)
+        {
+            var row = StoneUi.Panel(parent, name, skin);
+            var rt = row.rectTransform;
+            rt.anchorMin = new Vector2(0.02f, 1f);
+            rt.anchorMax = new Vector2(0.98f, 1f);
+            rt.pivot = new Vector2(0.5f, 1f);
+            rt.anchoredPosition = new Vector2(0f, y);
+            rt.sizeDelta = new Vector2(0f, rowH - 10f);
+            return row;
+        }
+
+        void BuyMut(string id)
         {
             GameServices.Instance?.Economy.TryBuyMutation(id);
+            Refresh();
+        }
+
+        void BuyNode(string id)
+        {
+            GameServices.Instance?.Economy.TryBuyGloryNode(id);
             Refresh();
         }
 
@@ -157,7 +247,7 @@ namespace MyClicker.UI
             Hide();
         }
 
-        void RefreshRow(MutRow row)
+        void RefreshMut(MutRow row)
         {
             var services = GameServices.Instance;
             if (services == null || row.name == null)
@@ -165,12 +255,43 @@ namespace MyClicker.UI
             int rank = services.Save.Profile.MutationLevel(row.id);
             int cost = services.Economy.MutationCost(row.id);
             float bonus = EconomyService.Mutation(rank, PerDecade(row.id));
-            row.name.text = Title(row.id) + "  R" + rank;
-            row.detail.text = Blurb(row.id) + "  +" + Mathf.RoundToInt(bonus * 100f) + "%";
+            row.name.text = MutTitle(row.id) + "  R" + rank;
+            row.detail.text = MutBlurb(row.id) + "  +" + Mathf.RoundToInt(bonus * 100f) + "%";
             if (row.price != null)
                 row.price.Set(cost.ToString(), GloryIcon());
             if (row.buy != null)
                 row.buy.interactable = services.Save.Profile.glory >= cost;
+        }
+
+        void RefreshNode(NodeRow row)
+        {
+            var services = GameServices.Instance;
+            if (services == null || row.node == null || row.name == null)
+                return;
+            var profile = services.Save.Profile;
+            bool owned = GloryTree.Has(profile, row.node.id);
+            bool can = GloryTree.CanBuy(profile, row.node);
+            string lockReason = GloryTree.LockReason(profile, row.node);
+            row.name.text = (owned ? "✓  " : "") + row.node.title;
+            row.detail.text = row.node.blurb;
+            if (row.panel != null)
+                row.panel.color = owned
+                    ? new Color(1f, 0.92f, 0.7f, 0.95f)
+                    : Color.white;
+            if (row.price != null)
+            {
+                if (owned)
+                    row.price.Set("Owned", null);
+                else if (!can)
+                    row.price.Set(string.IsNullOrEmpty(lockReason) ? "Locked" : lockReason, null);
+                else if (row.node.cost <= 0)
+                    row.price.Set("Free", null);
+                else
+                    row.price.Set(row.node.cost.ToString(), GloryIcon());
+            }
+
+            if (row.buy != null)
+                row.buy.interactable = can;
         }
 
         static float PerDecade(string id)
@@ -181,7 +302,7 @@ namespace MyClicker.UI
             return id == ContentIds.MutSwift ? eco.mutationSwiftPerDecade : eco.mutationPerDecade;
         }
 
-        static string Title(string id)
+        static string MutTitle(string id)
         {
             switch (id)
             {
@@ -193,7 +314,7 @@ namespace MyClicker.UI
             }
         }
 
-        static string Blurb(string id)
+        static string MutBlurb(string id)
         {
             switch (id)
             {
@@ -218,6 +339,16 @@ namespace MyClicker.UI
             public Text detail;
             public Button buy;
             public StoneUi.PriceView price;
+        }
+
+        struct NodeRow
+        {
+            public GloryNode node;
+            public Text name;
+            public Text detail;
+            public Button buy;
+            public StoneUi.PriceView price;
+            public Image panel;
         }
     }
 }

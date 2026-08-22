@@ -61,7 +61,16 @@ namespace MyClicker.Economy
             }
         }
 
-        public float Renown => Count * RenownPerDeed;
+        public float Renown
+        {
+            get
+            {
+                float value = Count * RenownPerDeed;
+                if (GloryTree.Has(Profile, GloryIds.DeedAngel))
+                    value *= 1.5f;
+                return value;
+            }
+        }
 
         public bool Has(string id)
         {
