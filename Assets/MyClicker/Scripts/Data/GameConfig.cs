@@ -133,6 +133,7 @@ namespace MyClicker.Data
             public float mutationPerDecade = 0.85f;
             public float mutationSwiftPerDecade = 0.55f;
             public float unspentGloryOffline = 0.008f;
+            public float endlessCycleGrowth = 1.35f;
             public float focusFurySeconds = 8f;
             public float focusFuryBonus = 1.25f;
             public float slamDamageMul = 5.5f;

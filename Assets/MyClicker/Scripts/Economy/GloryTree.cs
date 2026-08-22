@@ -100,7 +100,7 @@ namespace MyClicker.Economy
             {
                 id = GloryIds.DeepRoad,
                 title = "Deep Road",
-                blurb = "Unlocks Endless Road after Harvest Night.",
+                blurb = "After Harvest Night the road loops. Cycles pay a little extra.",
                 cost = 20,
                 requiresId = GloryIds.Legacy,
                 requiresBestZone = 9

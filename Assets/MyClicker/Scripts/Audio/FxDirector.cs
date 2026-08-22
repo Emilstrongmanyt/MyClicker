@@ -61,8 +61,9 @@ namespace MyClicker.Audio
             {
                 var prefab = Prefab(c => c.furyFire);
                 _furyFire = prefab != null
-                    ? Spawn(prefab, null, hero.position + Vector3.up * 0.35f, 1.35f, 8)
-                    : MakeFallbackFire(hero.position + Vector3.up * 0.35f);
+                    ? Spawn(prefab, null, hero.position + Vector3.up * 0.35f, 1.05f, 8)
+                    : MakeFallbackLightning(hero.position + Vector3.up * 0.35f);
+                StripSmoke(_furyFire);
                 KeepAlive(_furyFire);
             }
 
@@ -70,7 +71,7 @@ namespace MyClicker.Audio
             {
                 _furyFire.SetActive(true);
                 _furyFire.transform.position = hero.position + Vector3.up * 0.35f;
-                _furyFire.transform.localScale = Vector3.one * 1.35f;
+                _furyFire.transform.localScale = Vector3.one * 1.05f;
                 RestartParticles(_furyFire);
             }
         }
@@ -198,7 +199,25 @@ namespace MyClicker.Audio
             }
         }
 
-        static GameObject MakeFallbackFire(Vector3 world)
+        static void StripSmoke(GameObject go)
+        {
+            if (go == null)
+                return;
+            var transforms = go.GetComponentsInChildren<Transform>(true);
+            for (int i = 0; i < transforms.Length; i++)
+            {
+                var child = transforms[i];
+                if (child == null || child.gameObject == go)
+                    continue;
+                string name = child.name;
+                if (name.IndexOf("smoke", System.StringComparison.OrdinalIgnoreCase) < 0
+                    && name.IndexOf("cloud", System.StringComparison.OrdinalIgnoreCase) < 0)
+                    continue;
+                child.gameObject.SetActive(false);
+            }
+        }
+
+        static GameObject MakeFallbackLightning(Vector3 world)
         {
             var go = new GameObject("FuryAura");
             go.transform.position = world;
@@ -206,26 +225,31 @@ namespace MyClicker.Audio
             var main = ps.main;
             main.loop = true;
             main.playOnAwake = true;
-            main.startLifetime = 0.55f;
-            main.startSpeed = 0.55f;
-            main.startSize = 0.42f;
-            main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 0.55f, 0.12f, 0.95f), new Color(1f, 0.2f, 0.05f, 0.7f));
+            main.startLifetime = 0.22f;
+            main.startSpeed = 1.8f;
+            main.startSize = 0.08f;
+            main.startColor = new ParticleSystem.MinMaxGradient(new Color(0.75f, 0.95f, 1f, 0.95f), new Color(0.45f, 0.7f, 1f, 0.8f));
             main.simulationSpace = ParticleSystemSimulationSpace.World;
-            main.maxParticles = 48;
+            main.maxParticles = 40;
             var emission = ps.emission;
-            emission.rateOverTime = 36f;
+            emission.rateOverTime = 48f;
             var shape = ps.shape;
             shape.shapeType = ParticleSystemShapeType.Sphere;
-            shape.radius = 0.62f;
+            shape.radius = 0.55f;
+            var trails = ps.trails;
+            trails.enabled = true;
+            trails.lifetime = 0.12f;
+            trails.dieWithParticles = true;
             var color = ps.colorOverLifetime;
             color.enabled = true;
             var grad = new Gradient();
             grad.SetKeys(
-                new[] { new GradientColorKey(new Color(1f, 0.7f, 0.15f), 0f), new GradientColorKey(new Color(1f, 0.15f, 0.02f), 1f) },
-                new[] { new GradientAlphaKey(0.9f, 0f), new GradientAlphaKey(0f, 1f) });
+                new[] { new GradientColorKey(new Color(0.85f, 0.95f, 1f), 0f), new GradientColorKey(new Color(0.35f, 0.55f, 1f), 1f) },
+                new[] { new GradientAlphaKey(0.95f, 0f), new GradientAlphaKey(0f, 1f) });
             color.color = grad;
             var render = go.GetComponent<ParticleSystemRenderer>();
             render.sortingOrder = 8;
+            render.trailMaterial = render.sharedMaterial;
             ps.Play(true);
             return go;
         }

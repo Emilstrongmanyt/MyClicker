@@ -329,7 +329,7 @@ namespace MyClicker.Editor
         static void AssignFx(GameConfig config)
         {
             const string root = "Assets/JMO Assets/Cartoon FX Remaster/CFXR Prefabs/";
-            config.fx.furyFire = Prefab(root + "Fire/CFXR Fire.prefab");
+            config.fx.furyFire = Prefab(root + "Electric/CFXR Electrified 3.prefab");
             config.fx.killPoof = Prefab(root + "Misc/CFXR Magic Poof.prefab");
             config.fx.bossDeath = Prefab(root + "Explosions/CFXR3 Fire Explosion B.prefab");
             config.fx.slamHit = Prefab(root + "Impacts/CFXR2 Ground Hit.prefab");

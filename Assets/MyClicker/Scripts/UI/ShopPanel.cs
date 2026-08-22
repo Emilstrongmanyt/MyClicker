@@ -184,7 +184,7 @@ namespace MyClicker.UI
             var profile = services.Save.Profile;
             int level = profile.UpgradeLevel(row.id);
             int planned = economy.PlannedLevels(row.id, _buyMode);
-            long cost = economy.CostFor(row.id, Mathf.Max(1, planned));
+            double cost = economy.CostFor(row.id, Mathf.Max(1, planned));
             bool unlocked = economy.IsUnlocked(row.id);
             bool maxed = economy.IsMaxed(row.id);
             bool can = economy.CanBuy(row.id);
@@ -234,14 +234,14 @@ namespace MyClicker.UI
             switch (id)
             {
                 case ContentIds.Might:
-                    return "Tap  " + Mathf.RoundToInt(economy.TapDamage) +
+                    return "Tap  " + NumberFmt.Compact(economy.TapDamage) +
                            (maxed ? cap : "   next +" + Mathf.RoundToInt(GameServices.Instance.Config.economy.mightPerLevel));
                 case ContentIds.Fortune:
                     return "Gold  x" + economy.GoldMultiplier.ToString("0.00") +
                            (maxed ? cap : "   next +12%");
                 case ContentIds.Swift:
                     return "Auto  " + economy.AutoInterval.ToString("0.00") + "s   DPS " +
-                           Mathf.RoundToInt(economy.AutoDps) +
+                           NumberFmt.Compact(economy.AutoDps) +
                            (maxed ? "  MAX — buy Oaths" : "");
                 case ContentIds.Crit:
                     return "Crit  " + Mathf.RoundToInt(economy.CritChance * 100f) + "%  x" +
@@ -258,7 +258,7 @@ namespace MyClicker.UI
                     return "Gold  x" + economy.GoldMultiplier.ToString("0.00") +
                            (maxed ? cap : "   +8% gold per rank");
                 case ContentIds.OathVow:
-                    return "Tap  " + Mathf.RoundToInt(economy.TapDamage) +
+                    return "Tap  " + NumberFmt.Compact(economy.TapDamage) +
                            (maxed ? cap : "   +8% tap and auto per rank");
                 case ContentIds.OathOverclock:
                     return "Auto  x" + economy.OverclockMul.ToString("0.00") +

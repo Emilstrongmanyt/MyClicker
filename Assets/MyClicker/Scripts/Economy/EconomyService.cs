@@ -58,6 +58,7 @@ namespace MyClicker.Economy
                 if (HasGlory(GloryIds.Hoard))
                     value *= 1f + RelicCount() * 0.015f;
                 value *= MilestoneMul();
+                value *= CycleMul();
                 var zone = _services.Catalog.ZoneAt(Profile.zone);
                 return value * Mathf.Max(0.25f, zone.goldMul);
             }
@@ -80,7 +81,35 @@ namespace MyClicker.Economy
 
         public float AutoDps => TapDamage * OverclockMul / Mathf.Max(0.2f, AutoInterval);
 
-        public float GoldPerSecond
+        public float CycleMul()
+        {
+            int cycle = Mathf.Max(0, Profile.cycle);
+            if (cycle <= 0)
+                return 1f;
+            float growth = Eco.endlessCycleGrowth;
+            if (growth < 1.05f)
+                growth = 1.35f;
+            float value = Mathf.Pow(growth, cycle);
+            if (HasGlory(GloryIds.DeepRoad))
+                value *= 1.08f;
+            return value;
+        }
+
+        public bool EndlessOpen
+        {
+            get { return Profile.endlessUnlocked || HasGlory(GloryIds.DeepRoad); }
+        }
+
+        public bool TryUnlockEndless()
+        {
+            if (Profile.endlessUnlocked)
+                return true;
+            Profile.endlessUnlocked = true;
+            _services.Save.MarkDirty();
+            return true;
+        }
+
+        public double GoldPerSecond
         {
             get
             {
@@ -89,6 +118,7 @@ namespace MyClicker.Economy
                 float hp = combat.enemyBaseHp + combat.enemyHpPerWave * (wave - 1);
                 var zone = _services.Catalog.ZoneAt(Profile.zone);
                 hp *= Mathf.Max(0.25f, zone.hpMul);
+                hp *= CycleMul();
                 float kills = AutoDps / Mathf.Max(8f, hp);
                 return kills * GoldForKill(wave, false);
             }
@@ -224,21 +254,21 @@ namespace MyClicker.Economy
             return Profile.temperWeapon + Profile.temperArmor + Profile.temperHelmet + Profile.temperCape;
         }
 
-        public long UpgradeCost(string id) => CostAt(id, Profile.UpgradeLevel(id));
+        public double UpgradeCost(string id) => CostAt(id, Profile.UpgradeLevel(id));
 
-        public long CostAt(string id, int level)
+        public double CostAt(string id, int level)
         {
             var def = _services.Catalog.FindUpgrade(id);
             int baseCost = def != null ? def.baseCost : 15;
             float growth = def != null ? def.costGrowth : 1.18f;
-            return Math.Max(1, (long)Math.Round(baseCost * Math.Pow(growth, level)));
+            return Math.Max(1d, Math.Round(baseCost * Math.Pow(growth, level)));
         }
 
-        public long CostFor(string id, int levels)
+        public double CostFor(string id, int levels)
         {
             if (levels <= 0)
-                return 0;
-            long sum = 0;
+                return 0d;
+            double sum = 0d;
             int start = Profile.UpgradeLevel(id);
             for (int i = 0; i < levels; i++)
                 sum += CostAt(id, start + i);
@@ -251,12 +281,12 @@ namespace MyClicker.Economy
                 return 0;
             var def = _services.Catalog.FindUpgrade(id);
             int cap = (def != null ? def.maxLevel : 200) - Profile.UpgradeLevel(id);
-            long gold = Profile.gold;
+            double gold = Profile.gold;
             int n = 0;
             int start = Profile.UpgradeLevel(id);
             while (n < cap && n < 500)
             {
-                long cost = CostAt(id, start + n);
+                double cost = CostAt(id, start + n);
                 if (gold < cost)
                     break;
                 gold -= cost;
@@ -395,7 +425,7 @@ namespace MyClicker.Economy
             int n = PlannedLevels(id, mode);
             if (n <= 0)
                 return false;
-            long cost = CostFor(id, n);
+            double cost = CostFor(id, n);
             if (!_services.Save.TrySpendGold(cost))
                 return false;
             Profile.SetUpgradeLevel(id, Profile.UpgradeLevel(id) + n);
@@ -406,7 +436,7 @@ namespace MyClicker.Economy
             return true;
         }
 
-        public long GoldForKill(int wave, bool boss)
+        public double GoldForKill(int wave, bool boss)
         {
             var eco = Eco;
             double raw = boss
@@ -415,7 +445,7 @@ namespace MyClicker.Economy
             int late = Mathf.Max(0, wave - Mathf.RoundToInt(eco.lateGoldStartWave));
             if (late > 0)
                 raw *= Math.Pow(Mathf.Max(1.001f, eco.lateGoldGrowth), late);
-            return Math.Max(1, (long)Math.Round(raw * GoldMultiplier));
+            return Math.Max(1d, raw * GoldMultiplier);
         }
 
         public int DustForKill(bool boss)
@@ -548,6 +578,8 @@ namespace MyClicker.Economy
                 return false;
             if (node.cost > 0)
                 Profile.glory -= node.cost;
+            if (node.id == GloryIds.DeepRoad)
+                Profile.endlessUnlocked = true;
             Profile.tapDamage = TapDamage;
             _services.Save.MarkDirty();
             return true;
@@ -562,6 +594,14 @@ namespace MyClicker.Economy
             _services.Save.MarkDirty();
         }
 
+        public void EnsureEndless()
+        {
+            if (!HasGlory(GloryIds.DeepRoad) || Profile.endlessUnlocked)
+                return;
+            Profile.endlessUnlocked = true;
+            _services.Save.MarkDirty();
+        }
+
         public int LastAscendGlory { get; private set; }
         public int PendingGlory => Mathf.Max(0, Profile.pendingGlory);
         public int RunBosses => Mathf.Max(0, Profile.runBosses);
@@ -569,6 +609,7 @@ namespace MyClicker.Economy
         public int GloryForBoss(int zone)
         {
             int glory = Eco.gloryPerBoss + Mathf.FloorToInt(Eco.gloryPerBossPerZone * Mathf.Max(0, zone));
+            glory += Mathf.Max(0, Profile.cycle);
             return Mathf.Max(2, glory);
         }
 
@@ -591,6 +632,7 @@ namespace MyClicker.Economy
             int keepFortune = HasGlory(GloryIds.KeepFortune) ? Profile.fortuneLevel : 0;
             Profile.wave = 1;
             Profile.zone = 0;
+            Profile.cycle = 0;
             Profile.gold = 0;
             Profile.mightLevel = keepMight;
             Profile.fortuneLevel = keepFortune;
@@ -623,9 +665,9 @@ namespace MyClicker.Economy
             return Mathf.Max(0.01f, perDecade) * Mathf.Log10(1f + spent);
         }
 
-        public long AwardKill(int wave, bool boss)
+        public double AwardKill(int wave, bool boss)
         {
-            long gold = GoldForKill(wave, boss);
+            double gold = GoldForKill(wave, boss);
             _services.Save.AddGold(gold);
             int dust = DustForKill(boss);
             if (dust > 0)
@@ -648,19 +690,20 @@ namespace MyClicker.Economy
             return gold;
         }
 
-        public long EstimateOfflineGold(long seconds)
+        public double EstimateOfflineGold(long seconds)
         {
             var eco = Eco;
             long cap = Math.Max(60, (long)eco.offlineCapHours * 3600L);
             long usable = Math.Min(Math.Max(0, seconds), cap);
             if (usable < 15)
-                return 0;
+                return 0d;
             float hp = Combat.enemyBaseHp + Combat.enemyHpPerWave * Mathf.Max(0, Profile.wave - 1);
+            hp *= CycleMul();
             float kills = AutoDps * usable / Mathf.Max(8f, hp);
             float factor = eco.offlineGoldFactor + Profile.glory * eco.unspentGloryOffline;
             if (HasGlory(GloryIds.NightMarket))
                 factor += 0.08f;
-            return Math.Max(0, (long)Math.Floor(kills * GoldForKill(Mathf.Max(1, Profile.wave), false) * factor));
+            return Math.Max(0d, Math.Floor(kills * GoldForKill(Mathf.Max(1, Profile.wave), false) * factor));
         }
 
         static bool Tick(ref float value, float dt)

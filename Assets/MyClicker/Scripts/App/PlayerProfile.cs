@@ -8,7 +8,7 @@ namespace MyClicker.App
     {
         public string displayName = "Hero";
         public bool hasCharacter;
-        public long gold;
+        public double gold;
         public int dust;
         public int glory;
         public int zone;
@@ -56,6 +56,9 @@ namespace MyClicker.App
         public string[] unlockedDeeds = new string[0];
         public string[] gloryNodes = new string[0];
         public string[] bossShards = new string[0];
+        public int cycle;
+        public int bestCycle;
+        public bool endlessUnlocked;
         public long lastSeenUnix;
         public string heroJson;
         public string[] unlockedGear = new string[0];

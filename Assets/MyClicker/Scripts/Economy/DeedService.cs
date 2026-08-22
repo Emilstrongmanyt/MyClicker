@@ -35,6 +35,9 @@ namespace MyClicker.Economy
             new DeedDef { id = "zone_3", title = "Labyrinth Gate", hint = "Reach Labyrinth Gate.", kind = DeedKind.BestZone, need = 3 },
             new DeedDef { id = "zone_6", title = "Bone Yard", hint = "Reach Bone Yard.", kind = DeedKind.BestZone, need = 6 },
             new DeedDef { id = "zone_9", title = "Harvest Night", hint = "Reach Harvest Night.", kind = DeedKind.BestZone, need = 9 },
+            new DeedDef { id = "endless_1", title = "Endless Road", hint = "Loop the map once.", kind = DeedKind.BestCycle, need = 1 },
+            new DeedDef { id = "endless_3", title = "Thrice Around", hint = "Reach Endless cycle 3.", kind = DeedKind.BestCycle, need = 3 },
+            new DeedDef { id = "endless_5", title = "Deep Cycle", hint = "Reach Endless cycle 5.", kind = DeedKind.BestCycle, need = 5 },
             new DeedDef { id = "ascend_1", title = "First Ascent", hint = "Ascend once.", kind = DeedKind.Ascend, need = 1 },
             new DeedDef { id = "ascend_3", title = "Thrice Returned", hint = "Ascend 3 times.", kind = DeedKind.Ascend, need = 3 },
             new DeedDef { id = "ascend_10", title = "Cycle Walker", hint = "Ascend 10 times.", kind = DeedKind.Ascend, need = 10 },
@@ -105,6 +108,7 @@ namespace MyClicker.Economy
                 case DeedKind.Temper: return Profile.usedTemper ? 1 : 0;
                 case DeedKind.Might: return Profile.mightLevel;
                 case DeedKind.SwiftMax: return _services.Economy != null && _services.Economy.IsMaxed(ContentIds.Swift) ? 1 : 0;
+                case DeedKind.BestCycle: return Profile.bestCycle;
                 default: return 0;
             }
         }
@@ -162,7 +166,8 @@ namespace MyClicker.Economy
         Potion,
         Temper,
         Might,
-        SwiftMax
+        SwiftMax,
+        BestCycle
     }
 
     [System.Serializable]

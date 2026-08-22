@@ -26,11 +26,13 @@ namespace MyClicker.App
             PersistNow();
         }
 
-        public void AddGold(long amount)
+        public void AddGold(double amount)
         {
-            if (amount == 0)
+            if (amount == 0d || double.IsNaN(amount))
                 return;
-            Profile.gold = Math.Max(0, Profile.gold + amount);
+            if (double.IsInfinity(amount))
+                amount = 0d;
+            Profile.gold = Math.Max(0d, Profile.gold + amount);
             MarkDirty();
         }
 
@@ -53,11 +55,11 @@ namespace MyClicker.App
             return true;
         }
 
-        public bool TrySpendGold(long amount)
+        public bool TrySpendGold(double amount)
         {
-            if (amount <= 0)
+            if (amount <= 0d)
                 return true;
-            if (Profile.gold < amount)
+            if (double.IsNaN(amount) || double.IsInfinity(amount) || Profile.gold < amount)
                 return false;
             Profile.gold -= amount;
             MarkDirty();
@@ -102,6 +104,8 @@ namespace MyClicker.App
                     {
                         if (loaded.wave < 1)
                             loaded.wave = 1;
+                        if (double.IsNaN(loaded.gold) || loaded.gold < 0d)
+                            loaded.gold = 0d;
                         return loaded;
                     }
                 }

@@ -206,30 +206,56 @@ namespace MyClicker.Combat
             services.Save.AddGold(wasBoss ? 0 : eco.goldPerWave);
             services.Save.Profile.wave++;
             bool shard = false;
+            bool looped = false;
             ZoneDef cleared = null;
             if (wasBoss)
             {
                 var catalog = services.Catalog;
-                cleared = catalog.ZoneAt(services.Save.Profile.zone);
+                var profile = services.Save.Profile;
+                cleared = catalog.ZoneAt(profile.zone);
                 shard = services.Economy.TryGrantBossShard(cleared != null ? cleared.id : null);
-                if (catalog.zones != null && catalog.zones.Length > 0)
-                    services.Save.Profile.zone = Mathf.Min(services.Save.Profile.zone + 1, catalog.zones.Length - 1);
-                if (services.Save.Profile.zone > services.Save.Profile.bestZone)
-                    services.Save.Profile.bestZone = services.Save.Profile.zone;
+                int last = catalog.zones != null && catalog.zones.Length > 0 ? catalog.zones.Length - 1 : 0;
+                bool atEnd = profile.zone >= last;
+                if (atEnd && services.Economy.TryUnlockEndless())
+                {
+                    profile.cycle++;
+                    if (profile.cycle > profile.bestCycle)
+                        profile.bestCycle = profile.cycle;
+                    profile.zone = 0;
+                    profile.wave = 1;
+                    looped = true;
+                }
+                else if (catalog.zones != null && catalog.zones.Length > 0)
+                {
+                    profile.zone = Mathf.Min(profile.zone + 1, last);
+                    if (profile.zone > profile.bestZone)
+                        profile.bestZone = profile.zone;
+                }
             }
 
             services.Save.MarkDirty();
             if (wasBoss)
             {
                 var zone = services.Catalog.ZoneAt(services.Save.Profile.zone);
-                string sting = zone.displayName;
-                if (shard && cleared != null)
+                string sting;
+                if (looped)
                 {
-                    if (zone != null && zone.id == cleared.id)
-                        sting = "Shard  " + cleared.displayName;
-                    else
-                        sting = zone.displayName + "  ·  " + cleared.displayName + " shard";
+                    sting = "Endless Road  " + services.Save.Profile.cycle;
+                    if (shard && cleared != null)
+                        sting += "  ·  " + cleared.displayName + " shard";
                 }
+                else
+                {
+                    sting = zone.displayName;
+                    if (shard && cleared != null)
+                    {
+                        if (zone != null && zone.id == cleared.id)
+                            sting = "Shard  " + cleared.displayName;
+                        else
+                            sting = zone.displayName + "  ·  " + cleared.displayName + " shard";
+                    }
+                }
+
                 Announce(sting, 2.6f, false);
                 FxDirector.Ensure().ZoneChange(HeroSlot() + Vector3.up * 1.4f);
             }
@@ -358,6 +384,7 @@ namespace MyClicker.Combat
             if (late > 0)
                 hp *= Mathf.Pow(Mathf.Max(1.001f, combat.lateHpGrowth), late);
             hp *= Mathf.Max(0.25f, zone.hpMul);
+            hp *= services.Economy.CycleMul();
             if (boss)
                 hp *= combat.bossHpMul * (1f + 0.08f * services.Save.Profile.zone);
             return hp;
@@ -369,16 +396,17 @@ namespace MyClicker.Combat
             bool killed = enemy.Hit(damage);
             if (killed)
                 FxDirector.Ensure().Kill(enemy.transform.position, enemy.IsBoss);
+            string amount = damage >= 1000f ? NumberFmt.Compact(damage) : Mathf.RoundToInt(damage).ToString();
             FloatingCombatText.Show(
                 enemy.transform.position,
-                crit ? Mathf.RoundToInt(damage) + "!" : Mathf.RoundToInt(damage).ToString(),
+                crit ? amount + "!" : amount,
                 crit ? new Color(1f, 0.86f, 0.28f) : (tap ? Color.white : new Color(0.85f, 0.9f, 1f)),
                 crit ? 44 : 34);
             if (!killed)
                 return false;
 
             int wave = GameServices.Instance.Save.Profile.wave;
-            long gold = GameServices.Instance.Economy.AwardKill(wave, enemy.IsBoss);
+            double gold = GameServices.Instance.Economy.AwardKill(wave, enemy.IsBoss);
             FloatingCombatText.Show(enemy.transform.position + Vector3.up * 0.45f, NumberFmt.Signed(gold) + "g", new Color(1f, 0.84f, 0.28f), 30);
             _killsThisWave++;
             if (enemy.IsBoss || _killsThisWave >= Settings().killsPerWave)
@@ -393,8 +421,8 @@ namespace MyClicker.Combat
             if (last <= 0)
                 return;
             long now = System.DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            long gold = services.Economy.EstimateOfflineGold(now - last);
-            if (gold <= 0)
+            double gold = services.Economy.EstimateOfflineGold(now - last);
+            if (gold <= 0d)
                 return;
             services.Save.AddGold(gold);
             ShowToast("While you were away\n+" + NumberFmt.Compact(gold) + " gold", 8f);

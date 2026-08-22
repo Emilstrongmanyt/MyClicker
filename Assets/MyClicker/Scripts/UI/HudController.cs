@@ -211,7 +211,11 @@ namespace MyClicker.UI
             if (_name != null)
                 _name.text = profile.displayName;
             if (_zone != null)
-                _zone.text = zone.displayName;
+            {
+                _zone.text = profile.cycle > 0
+                    ? zone.displayName + "  " + profile.cycle
+                    : zone.displayName;
+            }
             if (_wave != null)
                 _wave.text = WaveText(profile, services);
             if (_gold != null)
@@ -222,8 +226,8 @@ namespace MyClicker.UI
             {
                 float taps = _battle != null ? _battle.TapsPerSecond : 0f;
                 float dps = _battle != null ? _battle.DamagePerSecond : 0f;
-                _dps.text = taps.ToString("0.0") + " taps/s  DPS " + Mathf.RoundToInt(dps) +
-                            "  " + NumberFmt.Compact(Mathf.Max(0, Mathf.RoundToInt(economy.GoldPerSecond))) + "g/s" +
+                _dps.text = taps.ToString("0.0") + " taps/s  DPS " + NumberFmt.Compact(dps) +
+                            "  " + NumberFmt.Compact(Math.Max(0d, economy.GoldPerSecond)) + "g/s" +
                             BuffLine(profile);
             }
 

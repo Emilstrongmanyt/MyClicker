@@ -140,9 +140,12 @@ namespace MyClicker.UI
                 int owned = profile.gloryNodes != null ? profile.gloryNodes.Length : 0;
                 int col = Mathf.RoundToInt(economy.CollectionBonus * 100f);
                 int shard = Mathf.RoundToInt(economy.ShardBonus * 100f);
+                string endless = economy.EndlessOpen
+                    ? (profile.cycle > 0 ? "    Endless  " + profile.cycle : "    Endless open")
+                    : "";
                 _summary.text = "Glory  " + profile.glory + "    Ascensions  " + profile.ascendCount +
                                 "    Renown  +" + renown + "%" +
-                                "    Nodes  " + owned + "/" + GloryTree.All.Length +
+                                "    Nodes  " + owned + "/" + GloryTree.All.Length + endless +
                                 "\n" + pendingLine +
                                 " Relics " + economy.Relics + "  +" + col +
                                 "%    Shards " + economy.Shards + "/" + economy.ShardCap +
