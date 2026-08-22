@@ -1576,6 +1576,36 @@ MonoBehaviour:
     maxLevel: 200
     requiresId: fortune
     requiresLevel: 6
+  - id: oath_tithe
+    displayName: Blood Tithe
+    description: A late oath. +8% gold from kills each rank.
+    icon: {fileID: 21300000, guid: ffdbc2fbce7304ab9b7e5955ecba69fc, type: 3}
+    baseCost: 180
+    costGrowth: 1.22
+    perLevel: 0.08
+    maxLevel: 40
+    requiresId: 
+    requiresLevel: 0
+  - id: oath_vow
+    displayName: Iron Vow
+    description: A late oath. +8% tap and auto damage each rank.
+    icon: {fileID: 21300000, guid: 3eb5b0c92903f49b29b80b4160762fe5, type: 3}
+    baseCost: 220
+    costGrowth: 1.22
+    perLevel: 0.08
+    maxLevel: 40
+    requiresId: 
+    requiresLevel: 0
+  - id: oath_overclock
+    displayName: Overclock
+    description: After Swift maxes, auto hits harder. Does not swing faster.
+    icon: {fileID: 21300000, guid: 443967e98c2b54ebaa7d13993dd6025f, type: 3}
+    baseCost: 280
+    costGrowth: 1.24
+    perLevel: 0.12
+    maxLevel: 40
+    requiresId: 
+    requiresLevel: 0
   potions:
   - id: pot_might
     displayName: Ember Vial

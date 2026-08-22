@@ -431,6 +431,39 @@ namespace MyClicker.Editor
                     requiresId = ContentIds.Fortune,
                     requiresLevel = 6
                 },
+                new UpgradeDef
+                {
+                    id = ContentIds.OathTithe,
+                    displayName = "Blood Tithe",
+                    description = "A late oath. +8% gold from kills each rank.",
+                    icon = icons.fortune != null ? icons.fortune : icons.gold,
+                    baseCost = 180,
+                    costGrowth = 1.22f,
+                    perLevel = 0.08f,
+                    maxLevel = 40
+                },
+                new UpgradeDef
+                {
+                    id = ContentIds.OathVow,
+                    displayName = "Iron Vow",
+                    description = "A late oath. +8% tap and auto damage each rank.",
+                    icon = icons.might,
+                    baseCost = 220,
+                    costGrowth = 1.22f,
+                    perLevel = 0.08f,
+                    maxLevel = 40
+                },
+                new UpgradeDef
+                {
+                    id = ContentIds.OathOverclock,
+                    displayName = "Overclock",
+                    description = "After Swift maxes, auto hits harder. Does not swing faster.",
+                    icon = icons.swift,
+                    baseCost = 280,
+                    costGrowth = 1.24f,
+                    perLevel = 0.12f,
+                    maxLevel = 40
+                },
             };
         }
 

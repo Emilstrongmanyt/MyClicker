@@ -31,6 +31,7 @@ namespace MyClicker.Economy
                     value *= 1f + Eco.mightPotionBonus;
                 if (_focusFuryLeft > 0f)
                     value *= 1f + Eco.focusFuryBonus;
+                value *= 1f + 0.08f * Profile.oathVow;
                 value *= 1f + Mutation(Profile.mutationMight, Eco.mutationPerDecade);
                 return value;
             }
@@ -45,6 +46,7 @@ namespace MyClicker.Economy
                     value += _services.Gear.GoldBonus;
                 if (Profile.goldBuffLeft > 0f)
                     value *= 1f + Eco.goldPotionBonus;
+                value *= 1f + 0.08f * Profile.oathTithe;
                 value *= 1f + Mutation(Profile.mutationFortune, Eco.mutationPerDecade);
                 var zone = _services.Catalog.ZoneAt(Profile.zone);
                 return value * Mathf.Max(0.25f, zone.goldMul);
@@ -59,7 +61,9 @@ namespace MyClicker.Economy
 
         public float CleaveFraction => CleaveAt(Profile.cleaveLevel);
 
-        public float AutoDps => TapDamage / Mathf.Max(0.2f, AutoInterval);
+        public float OverclockMul => 1f + 0.12f * Mathf.Max(0, Profile.oathOverclock);
+
+        public float AutoDps => TapDamage * OverclockMul / Mathf.Max(0.2f, AutoInterval);
 
         public float GoldPerSecond
         {
@@ -135,6 +139,16 @@ namespace MyClicker.Economy
 
         public bool IsUnlocked(string id)
         {
+            switch (id)
+            {
+                case ContentIds.OathTithe:
+                    return Profile.kills >= 500;
+                case ContentIds.OathVow:
+                    return Profile.mightLevel >= 20 || Profile.runBosses > 0;
+                case ContentIds.OathOverclock:
+                    return IsMaxed(ContentIds.Swift);
+            }
+
             var def = _services.Catalog.FindUpgrade(id);
             if (def == null || string.IsNullOrEmpty(def.requiresId) || def.requiresLevel <= 0)
                 return true;
@@ -143,8 +157,20 @@ namespace MyClicker.Economy
 
         public string LockReason(string id)
         {
+            if (IsUnlocked(id))
+                return null;
+            switch (id)
+            {
+                case ContentIds.OathTithe:
+                    return "Needs 500 kills  (" + Profile.kills + ")";
+                case ContentIds.OathVow:
+                    return "Needs Might 20 or a boss this run";
+                case ContentIds.OathOverclock:
+                    return "Needs Swift MAX";
+            }
+
             var def = _services.Catalog.FindUpgrade(id);
-            if (def == null || IsUnlocked(id))
+            if (def == null)
                 return null;
             return "Needs " + Title(def.requiresId) + " " + def.requiresLevel;
         }
@@ -160,6 +186,9 @@ namespace MyClicker.Economy
                 case ContentIds.Cleave: return "Cleave";
                 case ContentIds.Fury: return "Fury";
                 case ContentIds.Harvest: return "Harvest";
+                case ContentIds.OathTithe: return "Blood Tithe";
+                case ContentIds.OathVow: return "Iron Vow";
+                case ContentIds.OathOverclock: return "Overclock";
                 default: return id;
             }
         }
@@ -402,6 +431,9 @@ namespace MyClicker.Economy
             Profile.cleaveLevel = 0;
             Profile.furyLevel = 0;
             Profile.harvestLevel = 0;
+            Profile.oathTithe = 0;
+            Profile.oathVow = 0;
+            Profile.oathOverclock = 0;
             Profile.potMight = 0;
             Profile.potSwift = 0;
             Profile.potGold = 0;

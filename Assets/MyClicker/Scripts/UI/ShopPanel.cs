@@ -24,7 +24,10 @@ namespace MyClicker.UI
             ContentIds.Harvest,
             ContentIds.Swift,
             ContentIds.Crit,
-            ContentIds.Fury
+            ContentIds.Fury,
+            ContentIds.OathTithe,
+            ContentIds.OathVow,
+            ContentIds.OathOverclock
         };
 
         public bool Open => _open;
@@ -238,10 +241,12 @@ namespace MyClicker.UI
                            (maxed ? cap : "   next +12%");
                 case ContentIds.Swift:
                     return "Auto  " + economy.AutoInterval.ToString("0.00") + "s   DPS " +
-                           Mathf.RoundToInt(economy.AutoDps) + cap;
+                           Mathf.RoundToInt(economy.AutoDps) +
+                           (maxed ? "  MAX — buy Oaths" : "");
                 case ContentIds.Crit:
                     return "Crit  " + Mathf.RoundToInt(economy.CritChance * 100f) + "%  x" +
-                           economy.CritMultiplier.ToString("0.#") + cap;
+                           economy.CritMultiplier.ToString("0.#") +
+                           (maxed ? "  MAX — buy Oaths" : "");
                 case ContentIds.Cleave:
                     return "Splash  " + Mathf.RoundToInt(economy.CleaveFraction * 100f) + "% to a nearby foe" + cap;
                 case ContentIds.Fury:
@@ -249,6 +254,15 @@ namespace MyClicker.UI
                            (maxed ? cap : "   next +0.25");
                 case ContentIds.Harvest:
                     return "More dust and potion drops each rank" + cap;
+                case ContentIds.OathTithe:
+                    return "Gold  x" + economy.GoldMultiplier.ToString("0.00") +
+                           (maxed ? cap : "   +8% gold per rank");
+                case ContentIds.OathVow:
+                    return "Tap  " + Mathf.RoundToInt(economy.TapDamage) +
+                           (maxed ? cap : "   +8% tap and auto per rank");
+                case ContentIds.OathOverclock:
+                    return "Auto  x" + economy.OverclockMul.ToString("0.00") +
+                           (maxed ? cap : "   +12% auto damage per rank");
                 default:
                     return "";
             }
@@ -291,6 +305,9 @@ namespace MyClicker.UI
                 case ContentIds.Cleave: return icons.skull != null ? icons.skull : icons.might;
                 case ContentIds.Fury: return icons.crit != null ? icons.crit : icons.might;
                 case ContentIds.Harvest: return icons.dust != null ? icons.dust : icons.fortune;
+                case ContentIds.OathTithe: return icons.fortune != null ? icons.fortune : icons.gold;
+                case ContentIds.OathVow: return icons.might;
+                case ContentIds.OathOverclock: return icons.swift;
                 default: return icons.shop;
             }
         }

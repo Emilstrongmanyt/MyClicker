@@ -25,6 +25,9 @@ namespace MyClicker.App
         public int cleaveLevel;
         public int furyLevel;
         public int harvestLevel;
+        public int oathTithe;
+        public int oathVow;
+        public int oathOverclock;
         public int mutationMight;
         public int mutationFortune;
         public int mutationSwift;
@@ -85,6 +88,9 @@ namespace MyClicker.App
                 case Data.ContentIds.Cleave: return cleaveLevel;
                 case Data.ContentIds.Fury: return furyLevel;
                 case Data.ContentIds.Harvest: return harvestLevel;
+                case Data.ContentIds.OathTithe: return oathTithe;
+                case Data.ContentIds.OathVow: return oathVow;
+                case Data.ContentIds.OathOverclock: return oathOverclock;
                 default: return 0;
             }
         }
@@ -101,6 +107,9 @@ namespace MyClicker.App
                 case Data.ContentIds.Cleave: cleaveLevel = value; break;
                 case Data.ContentIds.Fury: furyLevel = value; break;
                 case Data.ContentIds.Harvest: harvestLevel = value; break;
+                case Data.ContentIds.OathTithe: oathTithe = value; break;
+                case Data.ContentIds.OathVow: oathVow = value; break;
+                case Data.ContentIds.OathOverclock: oathOverclock = value; break;
             }
         }
 

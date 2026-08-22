@@ -174,6 +174,9 @@ namespace MyClicker.Data
         public const string Cleave = "cleave";
         public const string Fury = "fury";
         public const string Harvest = "harvest";
+        public const string OathTithe = "oath_tithe";
+        public const string OathVow = "oath_vow";
+        public const string OathOverclock = "oath_overclock";
 
         public const string PotMight = "pot_might";
         public const string PotSwift = "pot_swift";
