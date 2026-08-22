@@ -673,9 +673,9 @@ namespace MyClicker.Economy
             if (cost <= 0 || Profile.glory < cost)
                 return false;
             Profile.glory -= cost;
-            Profile.gloryTapMul = Mathf.Max(mul, Profile.gloryTapMul);
+            Profile.gloryTapMul = mul;
             Profile.gloryTapDuration = seconds;
-            Profile.gloryTapLeft = Mathf.Max(Profile.gloryTapLeft, seconds);
+            Profile.gloryTapLeft = seconds;
             Profile.tapDamage = TapDamage;
             _services.Save.MarkDirty();
             return true;

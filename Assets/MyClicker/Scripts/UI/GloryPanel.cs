@@ -297,13 +297,17 @@ namespace MyClicker.UI
             int cost = row.godstrike ? EconomyService.GodstrikeCost : EconomyService.WarCryCost;
             bool locked = row.godstrike && profile.ascendCount < 1;
             float left = economy.GloryTapLeft;
-            if (row.detail != null && left > 0f)
-                row.detail.text = "Active  " + EconomyService.FormatBuff(left);
-            else if (row.detail != null)
+            bool mine = left > 0f && (row.godstrike
+                ? profile.gloryTapMul >= 3f
+                : profile.gloryTapMul > 1f && profile.gloryTapMul < 3f);
+            if (row.detail != null)
             {
-                row.detail.text = row.godstrike
-                    ? "Spend Glory for x3.5 tap for 12s."
-                    : "Spend Glory for x2 tap for 15s.";
+                if (mine)
+                    row.detail.text = "Active  " + EconomyService.FormatBuff(left);
+                else
+                    row.detail.text = row.godstrike
+                        ? "Spend Glory for x3.5 tap for 12s."
+                        : "Spend Glory for x2 tap for 15s.";
             }
 
             if (row.price != null)

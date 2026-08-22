@@ -77,6 +77,8 @@ namespace MyClicker.UI
             _focus = StoneUi.HealthBar(parent, "FocusBar", skin);
             StoneUi.Place(_focus.root.GetComponent<RectTransform>(), 0.04f, 0.155f, 0.48f, 0.212f);
             StoneUi.Bare(_focus.root.GetComponent<Image>());
+            OutlineBar(_bossBar);
+            OutlineBar(_focus);
             _slam = StoneUi.Button(parent, "Slam", "Slam", skin, null);
             StoneUi.Place(_slam, 0.50f, 0.155f, 0.65f, 0.212f);
             _fury = StoneUi.Button(parent, "FocusFury", "Fury", skin, null);
@@ -302,5 +304,21 @@ namespace MyClicker.UI
             return "Wave " + profile.wave;
         }
 
+        static void OutlineBar(StoneUi.HealthBarView bar)
+        {
+            if (bar == null)
+                return;
+            OutlineHud(bar.title);
+            OutlineHud(bar.value);
+        }
+
+        static void OutlineHud(Text label)
+        {
+            if (label == null || label.GetComponent<Outline>() != null)
+                return;
+            var outline = label.gameObject.AddComponent<Outline>();
+            outline.effectColor = new Color(0.03f, 0.02f, 0.01f, 0.95f);
+            outline.effectDistance = new Vector2(1.4f, -1.4f);
+        }
     }
 }

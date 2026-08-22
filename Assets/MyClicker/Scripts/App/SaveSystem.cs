@@ -106,6 +106,16 @@ namespace MyClicker.App
                             loaded.wave = 1;
                         if (double.IsNaN(loaded.gold) || loaded.gold < 0d)
                             loaded.gold = 0d;
+                        if (loaded.gloryTapMul < 1f)
+                            loaded.gloryTapMul = 1f;
+                        if (loaded.unlockedDeeds == null)
+                            loaded.unlockedDeeds = new string[0];
+                        if (loaded.gloryNodes == null)
+                            loaded.gloryNodes = new string[0];
+                        if (loaded.bossShards == null)
+                            loaded.bossShards = new string[0];
+                        if (loaded.unlockedGear == null)
+                            loaded.unlockedGear = new string[0];
                         return loaded;
                     }
                 }

@@ -56,9 +56,19 @@ namespace MyClicker.UI
             Button button = null;
             if (clickable)
             {
-                button = Button(parent, name, "", skin, null);
-                HideDefaultLabel(button);
-                frame = button.GetComponent<Image>();
+                var go = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button));
+                go.transform.SetParent(parent, false);
+                frame = go.GetComponent<Image>();
+                frame.sprite = SolidSprite();
+                frame.color = new Color(1f, 1f, 1f, 0.02f);
+                frame.raycastTarget = true;
+                button = go.GetComponent<Button>();
+                var colors = button.colors;
+                colors.normalColor = Color.white;
+                colors.highlightedColor = Color.white;
+                colors.pressedColor = new Color(0.92f, 0.92f, 0.92f, 1f);
+                button.colors = colors;
+                button.targetGraphic = frame;
             }
             else
             {
@@ -367,7 +377,7 @@ namespace MyClicker.UI
             Place(inset.GetComponent<RectTransform>(), 0.035f, 0.10f, 0.965f, 0.58f);
             var track = inset.GetComponent<Image>();
             track.sprite = SolidSprite();
-            track.color = new Color(0.08f, 0.07f, 0.06f, 0.96f);
+            track.color = new Color(0.08f, 0.07f, 0.06f, 0.5f);
 
             var fillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
             fillGo.transform.SetParent(inset.transform, false);
