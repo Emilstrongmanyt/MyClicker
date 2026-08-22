@@ -14,6 +14,7 @@ namespace MyClicker.UI
         Text _summary;
         Button _ascend;
         MutRow[] _rows;
+        public System.Action RequestDeeds;
 
         static readonly string[] Order =
         {
@@ -32,7 +33,9 @@ namespace MyClicker.UI
             StoneUi.Place(panel, 0.05f, 0.16f, 0.95f, 0.78f);
 
             var title = StoneUi.Label(panel.transform, "Title", "Glory", 40, TextAnchor.MiddleCenter);
-            StoneUi.Place(title, 0.08f, 0.88f, 0.78f, 0.98f);
+            StoneUi.Place(title, 0.08f, 0.88f, 0.52f, 0.98f);
+            var deeds = StoneUi.Button(panel.transform, "DeedsBtn", "Deeds", skin, () => RequestDeeds?.Invoke());
+            StoneUi.Place(deeds, 0.54f, 0.88f, 0.78f, 0.98f);
             var close = StoneUi.Button(panel.transform, "Close", "X", skin, Hide);
             StoneUi.Place(close, 0.82f, 0.88f, 0.96f, 0.98f);
 
@@ -89,8 +92,10 @@ namespace MyClicker.UI
                 string pendingLine = bosses > 0
                     ? "This run: " + bosses + (bosses == 1 ? " boss, +" : " bosses, +") + pending + " Glory on ascend."
                     : "Beat bosses this run to bank Glory for your next ascend.";
+                int renown = services.Deeds != null ? Mathf.RoundToInt(services.Deeds.Renown * 100f) : 0;
                 _summary.text = "Glory  " + profile.glory + "    Ascensions  " + profile.ascendCount +
-                                "\n" + pendingLine + " Unspent Glory still helps offline gold. Relics stay.";
+                                "    Renown  +" + renown + "%" +
+                                "\n" + pendingLine + " Unspent Glory still helps offline gold. Relics and Deeds stay.";
             }
 
             if (_ascend != null)

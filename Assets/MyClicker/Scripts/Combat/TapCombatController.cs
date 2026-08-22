@@ -210,6 +210,8 @@ namespace MyClicker.Combat
                 var catalog = services.Catalog;
                 if (catalog.zones != null && catalog.zones.Length > 0)
                     services.Save.Profile.zone = Mathf.Min(services.Save.Profile.zone + 1, catalog.zones.Length - 1);
+                if (services.Save.Profile.zone > services.Save.Profile.bestZone)
+                    services.Save.Profile.bestZone = services.Save.Profile.zone;
             }
 
             services.Save.MarkDirty();
@@ -243,6 +245,8 @@ namespace MyClicker.Combat
                 return false;
             AudioDirector.Ensure().PlaySfx("slam");
             AudioDirector.Ensure().PlaySfx("twoHand");
+            GameServices.Instance.Save.Profile.usedSlam = true;
+            GameServices.Instance.Save.MarkDirty();
             var enemy = _spawner != null ? _spawner.Nearest(HeroSlot()) : null;
             FxDirector.Ensure().Slam(enemy != null ? enemy.transform.position : HeroSlot());
             if (enemy == null || !enemy.Alive)
@@ -257,6 +261,8 @@ namespace MyClicker.Combat
             if (economy == null || !economy.TrySpendFocus(Settings().sweepCost))
                 return false;
             AudioDirector.Ensure().PlaySfx("sweep");
+            GameServices.Instance.Save.Profile.usedSweep = true;
+            GameServices.Instance.Save.MarkDirty();
             FxDirector.Ensure().Sweep(HeroSlot() + Vector3.up * 0.4f);
             if (_spawner == null)
                 return true;
@@ -279,6 +285,8 @@ namespace MyClicker.Combat
             if (economy == null || !economy.TryStartFocusFury())
                 return false;
             AudioDirector.Ensure().PlaySfx("fury");
+            GameServices.Instance.Save.Profile.usedFury = true;
+            GameServices.Instance.Save.MarkDirty();
             FxDirector.Ensure().SetFury(_hero != null ? _hero.transform : null, true);
             _furyFxOn = true;
             return true;

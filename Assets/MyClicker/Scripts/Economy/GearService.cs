@@ -93,6 +93,7 @@ namespace MyClicker.Economy
             if (!_services.Save.TrySpendDust(TemperCost(slot)))
                 return false;
             Profile.SetTemperLevel(slot, Profile.TemperLevel(slot) + 1);
+            Profile.usedTemper = true;
             _services.Save.MarkDirty();
             MyClicker.Audio.AudioDirector.Ensure().PlaySfx("armory");
             return true;

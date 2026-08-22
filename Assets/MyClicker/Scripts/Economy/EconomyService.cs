@@ -32,6 +32,7 @@ namespace MyClicker.Economy
                 if (_focusFuryLeft > 0f)
                     value *= 1f + Eco.focusFuryBonus;
                 value *= 1f + 0.08f * Profile.oathVow;
+                value *= 1f + Renown();
                 value *= 1f + Mutation(Profile.mutationMight, Eco.mutationPerDecade);
                 return value;
             }
@@ -47,6 +48,7 @@ namespace MyClicker.Economy
                 if (Profile.goldBuffLeft > 0f)
                     value *= 1f + Eco.goldPotionBonus;
                 value *= 1f + 0.08f * Profile.oathTithe;
+                value *= 1f + Renown();
                 value *= 1f + Mutation(Profile.mutationFortune, Eco.mutationPerDecade);
                 var zone = _services.Catalog.ZoneAt(Profile.zone);
                 return value * Mathf.Max(0.25f, zone.goldMul);
@@ -62,6 +64,11 @@ namespace MyClicker.Economy
         public float CleaveFraction => CleaveAt(Profile.cleaveLevel);
 
         public float OverclockMul => 1f + 0.12f * Mathf.Max(0, Profile.oathOverclock);
+
+        float Renown()
+        {
+            return _services.Deeds != null ? _services.Deeds.Renown : 0f;
+        }
 
         public float AutoDps => TapDamage * OverclockMul / Mathf.Max(0.2f, AutoInterval);
 
@@ -258,8 +265,10 @@ namespace MyClicker.Economy
             if (!_services.Save.TrySpendGold(cost))
                 return false;
             Profile.SetUpgradeLevel(id, Profile.UpgradeLevel(id) + n);
+            Profile.forgeBought += n;
             Profile.tapDamage = TapDamage;
             _services.Save.MarkDirty();
+            _services.Deeds?.Evaluate();
             return true;
         }
 
@@ -341,6 +350,7 @@ namespace MyClicker.Economy
             }
 
             Profile.SetPotionCount(id, Profile.PotionCount(id) - 1);
+            Profile.usedPotion = true;
             _services.Save.MarkDirty();
             return true;
         }

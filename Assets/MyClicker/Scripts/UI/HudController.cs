@@ -23,6 +23,7 @@ namespace MyClicker.UI
         ShopPanel _shop;
         GearPanel _gear;
         GloryPanel _glory;
+        DeedPanel _deeds;
         PotionTray _potions;
         StoneUi.HealthBarView _focus;
         Button _slam;
@@ -86,6 +87,7 @@ namespace MyClicker.UI
             {
                 _shop.Hide();
                 _glory.Hide();
+                _deeds.Hide();
                 _gear.Toggle();
             });
             StoneUi.Place(armoryBtn, 0.42f, 0.018f, 0.68f, 0.108f);
@@ -96,6 +98,7 @@ namespace MyClicker.UI
             {
                 _gear.Hide();
                 _glory.Hide();
+                _deeds.Hide();
                 _shop.Toggle();
             });
             StoneUi.Place(shopBtn, 0.70f, 0.018f, 0.96f, 0.108f);
@@ -129,11 +132,21 @@ namespace MyClicker.UI
             _gear.Build(parent, skin);
             _glory = gameObject.AddComponent<GloryPanel>();
             _glory.Build(parent, skin);
+            _deeds = gameObject.AddComponent<DeedPanel>();
+            _deeds.Build(parent, skin);
             _shop.RequestGlory = () =>
             {
                 _gear.Hide();
                 _shop.Hide();
+                _deeds.Hide();
                 _glory.Toggle();
+            };
+            _glory.RequestDeeds = () =>
+            {
+                _gear.Hide();
+                _shop.Hide();
+                _glory.Hide();
+                _deeds.Toggle();
             };
             _potions = gameObject.AddComponent<PotionTray>();
             _potions.Build(parent, skin);
@@ -250,6 +263,7 @@ namespace MyClicker.UI
             _shop?.Refresh();
             _gear?.Refresh();
             _glory?.Refresh();
+            _deeds?.Refresh();
             _potions?.Refresh();
         }
 

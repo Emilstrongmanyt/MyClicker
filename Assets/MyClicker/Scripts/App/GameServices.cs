@@ -14,6 +14,7 @@ namespace MyClicker.App
         public ContentCatalog Catalog { get; private set; }
         public EconomyService Economy { get; private set; }
         public GearService Gear { get; private set; }
+        public DeedService Deeds { get; private set; }
 
         public event Action ProfileChanged;
 
@@ -72,6 +73,7 @@ namespace MyClicker.App
 
         public void NotifyProfile()
         {
+            Deeds?.Evaluate();
             ProfileChanged?.Invoke();
         }
 
@@ -90,6 +92,8 @@ namespace MyClicker.App
             Catalog = ContentCatalog.Load();
             Economy = new EconomyService(this);
             Gear = new GearService(this);
+            Deeds = new DeedService(this);
+            Deeds.Evaluate();
         }
     }
 }
