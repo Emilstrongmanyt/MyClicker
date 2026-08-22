@@ -94,6 +94,7 @@ namespace MyClicker.App
             Gear = new GearService(this);
             Deeds = new DeedService(this);
             Economy.EnsureLegacy();
+            Economy.EnsureBossShards();
             Deeds.Evaluate();
         }
     }

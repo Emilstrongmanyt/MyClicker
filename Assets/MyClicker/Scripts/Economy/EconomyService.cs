@@ -36,6 +36,7 @@ namespace MyClicker.Economy
                 value *= 1f + 0.08f * Profile.oathVow;
                 value *= 1f + Renown();
                 value *= 1f + Mutation(Profile.mutationMight, Eco.mutationPerDecade);
+                value *= MilestoneMul();
                 return value;
             }
         }
@@ -56,6 +57,7 @@ namespace MyClicker.Economy
                     value *= 1f + Mathf.Min(0.4f, 0.004f * Mathf.Max(0, Profile.glory));
                 if (HasGlory(GloryIds.Hoard))
                     value *= 1f + RelicCount() * 0.015f;
+                value *= MilestoneMul();
                 var zone = _services.Catalog.ZoneAt(Profile.zone);
                 return value * Mathf.Max(0.25f, zone.goldMul);
             }
@@ -121,6 +123,96 @@ namespace MyClicker.Economy
         public bool HasGlory(string id) => GloryTree.Has(Profile, id);
 
         public bool HasDeepRoad => HasGlory(GloryIds.DeepRoad);
+
+        public int Relics => RelicCount();
+        public int Shards => Profile.bossShards != null ? Profile.bossShards.Length : 0;
+        public int ShardCap
+        {
+            get
+            {
+                var zones = _services.Catalog != null ? _services.Catalog.zones : null;
+                return zones != null && zones.Length > 0 ? zones.Length : 10;
+            }
+        }
+
+        public float CollectionBonus
+        {
+            get
+            {
+                int n = RelicCount();
+                if (n >= 12) return 0.10f;
+                if (n >= 8) return 0.05f;
+                if (n >= 4) return 0.02f;
+                return 0f;
+            }
+        }
+
+        public float ShardBonus => Shards * 0.02f;
+
+        float MilestoneMul() => 1f + CollectionBonus + ShardBonus;
+
+        public bool HasShard(string zoneId)
+        {
+            if (string.IsNullOrEmpty(zoneId) || Profile.bossShards == null)
+                return false;
+            for (int i = 0; i < Profile.bossShards.Length; i++)
+            {
+                if (Profile.bossShards[i] == zoneId)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool TryGrantBossShard(string zoneId)
+        {
+            if (!UnlockShard(zoneId))
+                return false;
+            Profile.tapDamage = TapDamage;
+            _services.Save.MarkDirty();
+            return true;
+        }
+
+        public void EnsureBossShards()
+        {
+            var zones = _services.Catalog != null ? _services.Catalog.zones : null;
+            if (zones == null)
+                return;
+            bool any = false;
+            int cleared = Mathf.Clamp(Profile.bestZone, 0, zones.Length);
+            for (int i = 0; i < cleared; i++)
+            {
+                if (zones[i] == null)
+                    continue;
+                if (UnlockShard(zones[i].id))
+                    any = true;
+            }
+
+            if (!any)
+                return;
+            Profile.tapDamage = TapDamage;
+            _services.Save.MarkDirty();
+        }
+
+        public string CollectionUnlockLine(int relicCount)
+        {
+            if (relicCount != 4 && relicCount != 8 && relicCount != 12)
+                return null;
+            return "Collection  " + relicCount + " relics  +" + Mathf.RoundToInt(CollectionBonus * 100f) + "%";
+        }
+
+        bool UnlockShard(string zoneId)
+        {
+            if (string.IsNullOrEmpty(zoneId) || HasShard(zoneId))
+                return false;
+            int n = Profile.bossShards != null ? Profile.bossShards.Length : 0;
+            var next = new string[n + 1];
+            if (n > 0)
+                Array.Copy(Profile.bossShards, next, n);
+            next[n] = zoneId;
+            Profile.bossShards = next;
+            return true;
+        }
 
         int RelicCount()
         {

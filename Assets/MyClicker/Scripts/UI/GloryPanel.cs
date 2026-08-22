@@ -138,10 +138,15 @@ namespace MyClicker.UI
                     : "Beat bosses this run to bank Glory for your next ascend.";
                 int renown = services.Deeds != null ? Mathf.RoundToInt(services.Deeds.Renown * 100f) : 0;
                 int owned = profile.gloryNodes != null ? profile.gloryNodes.Length : 0;
+                int col = Mathf.RoundToInt(economy.CollectionBonus * 100f);
+                int shard = Mathf.RoundToInt(economy.ShardBonus * 100f);
                 _summary.text = "Glory  " + profile.glory + "    Ascensions  " + profile.ascendCount +
                                 "    Renown  +" + renown + "%" +
                                 "    Nodes  " + owned + "/" + GloryTree.All.Length +
-                                "\n" + pendingLine + " Mutations and nodes persist. Relics and Deeds stay.";
+                                "\n" + pendingLine +
+                                " Relics " + economy.Relics + "  +" + col +
+                                "%    Shards " + economy.Shards + "/" + economy.ShardCap +
+                                "  +" + shard + "%. Mutations, nodes, relics, Deeds, and shards stay.";
             }
 
             if (_ascend != null)

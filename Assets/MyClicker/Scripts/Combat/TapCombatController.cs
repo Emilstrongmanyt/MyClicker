@@ -205,9 +205,13 @@ namespace MyClicker.Combat
             bool wasBoss = _bossWave;
             services.Save.AddGold(wasBoss ? 0 : eco.goldPerWave);
             services.Save.Profile.wave++;
+            bool shard = false;
+            ZoneDef cleared = null;
             if (wasBoss)
             {
                 var catalog = services.Catalog;
+                cleared = catalog.ZoneAt(services.Save.Profile.zone);
+                shard = services.Economy.TryGrantBossShard(cleared != null ? cleared.id : null);
                 if (catalog.zones != null && catalog.zones.Length > 0)
                     services.Save.Profile.zone = Mathf.Min(services.Save.Profile.zone + 1, catalog.zones.Length - 1);
                 if (services.Save.Profile.zone > services.Save.Profile.bestZone)
@@ -218,7 +222,15 @@ namespace MyClicker.Combat
             if (wasBoss)
             {
                 var zone = services.Catalog.ZoneAt(services.Save.Profile.zone);
-                Announce(zone.displayName, 2.6f, false);
+                string sting = zone.displayName;
+                if (shard && cleared != null)
+                {
+                    if (zone != null && zone.id == cleared.id)
+                        sting = "Shard  " + cleared.displayName;
+                    else
+                        sting = zone.displayName + "  ·  " + cleared.displayName + " shard";
+                }
+                Announce(sting, 2.6f, false);
                 FxDirector.Ensure().ZoneChange(HeroSlot() + Vector3.up * 1.4f);
             }
             else

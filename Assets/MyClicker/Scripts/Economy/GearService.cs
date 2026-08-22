@@ -171,6 +171,11 @@ namespace MyClicker.Economy
                 }
                 else
                     LastDrop = "You found " + PrettyId(id);
+                string collection = _services.Economy != null
+                    ? _services.Economy.CollectionUnlockLine(Profile.unlockedGear != null ? Profile.unlockedGear.Length : 0)
+                    : null;
+                if (!string.IsNullOrEmpty(collection))
+                    LastDrop += "\n" + collection;
                 LastDropLife = 4.8f;
                 MyClicker.Audio.AudioDirector.Ensure().PlaySfx("relic");
                 if (_hero != null)

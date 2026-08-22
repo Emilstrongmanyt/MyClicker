@@ -55,6 +55,7 @@ namespace MyClicker.App
         public bool usedTemper;
         public string[] unlockedDeeds = new string[0];
         public string[] gloryNodes = new string[0];
+        public string[] bossShards = new string[0];
         public long lastSeenUnix;
         public string heroJson;
         public string[] unlockedGear = new string[0];

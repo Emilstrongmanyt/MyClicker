@@ -11,6 +11,7 @@ namespace MyClicker.UI
     {
         GameObject _root;
         bool _open;
+        Text _summary;
         GearRow[] _rows;
         CraftRow[] _crafts;
 
@@ -34,6 +35,9 @@ namespace MyClicker.UI
             StoneUi.Place(title, 0.08f, 0.90f, 0.78f, 0.98f);
             var close = StoneUi.Button(panel.transform, "Close", "X", skin, Hide);
             StoneUi.Place(close, 0.82f, 0.90f, 0.96f, 0.98f);
+
+            _summary = StoneUi.Label(panel.transform, "Summary", "", 18, TextAnchor.UpperLeft);
+            StoneUi.Place(_summary, 0.05f, 0.82f, 0.95f, 0.89f);
 
             _rows = new GearRow[Slots.Length];
             for (int i = 0; i < Slots.Length; i++)
@@ -77,6 +81,28 @@ namespace MyClicker.UI
         {
             if (!_open)
                 return;
+            if (_summary != null)
+            {
+                var economy = GameServices.Instance != null ? GameServices.Instance.Economy : null;
+                if (economy != null)
+                {
+                    int col = Mathf.RoundToInt(economy.CollectionBonus * 100f);
+                    int shard = Mathf.RoundToInt(economy.ShardBonus * 100f);
+                    int relics = economy.Relics;
+                    string next = relics >= 12
+                        ? "Collection max"
+                        : relics >= 8
+                            ? "Next  12 relics  +10%"
+                            : relics >= 4
+                                ? "Next  8 relics  +5%"
+                                : "Next  4 relics  +2%";
+                    _summary.text = "Relics  " + relics + "  Collection +" + col +
+                                    "%    Shards  " + economy.Shards + "/" + economy.ShardCap +
+                                    "  +" + shard + "% tap and gold\n" + next +
+                                    ". First-clear bosses grant shards. Both persist.";
+                }
+            }
+
             for (int i = 0; i < _rows.Length; i++)
                 RefreshGear(_rows[i]);
             for (int i = 0; i < _crafts.Length; i++)
@@ -86,8 +112,8 @@ namespace MyClicker.UI
         GearRow BuildGearRow(Transform parent, GameConfig.UiSkin skin, string slot, int index)
         {
             var row = StoneUi.Panel(parent, "Gear_" + slot, skin);
-            float top = 0.88f - index * 0.15f;
-            StoneUi.Place(row, 0.04f, top - 0.14f, 0.96f, top);
+            float top = 0.81f - index * 0.135f;
+            StoneUi.Place(row, 0.04f, top - 0.125f, 0.96f, top);
 
             var name = StoneUi.Label(row.transform, "Name", slot, 24, TextAnchor.MiddleLeft);
             StoneUi.Place(name, 0.03f, 0.52f, 0.46f, 0.92f);
