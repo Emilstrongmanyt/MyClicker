@@ -15,6 +15,7 @@ namespace MyClicker.UI
         Button _ascend;
         MutRow[] _muts;
         NodeRow[] _nodes;
+        CryRow[] _cries;
         public System.Action RequestDeeds;
 
         static readonly string[] MutOrder =
@@ -72,7 +73,8 @@ namespace MyClicker.UI
             const float rowH = 112f;
             int muts = MutOrder.Length;
             int nodes = GloryTree.All.Length;
-            content.sizeDelta = new Vector2(0f, headerH * 2f + (muts + nodes) * rowH + 16f);
+            int cries = 2;
+            content.sizeDelta = new Vector2(0f, headerH * 3f + (muts + nodes + cries) * rowH + 16f);
 
             float y = -6f;
             AddHeader(content, "Mutations", y, headerH);
@@ -92,6 +94,13 @@ namespace MyClicker.UI
                 _nodes[i] = BuildNodeRow(content, skin, GloryTree.All[i], y, rowH);
                 y -= rowH;
             }
+
+            AddHeader(content, "War cries", y, headerH);
+            y -= headerH;
+            _cries = new CryRow[cries];
+            _cries[0] = BuildCryRow(content, skin, "war_cry", "War Cry", "Spend Glory for x2 tap for 15s.", y, rowH, false);
+            y -= rowH;
+            _cries[1] = BuildCryRow(content, skin, "godstrike", "Godstrike", "Spend Glory for x3.5 tap for 12s.", y, rowH, true);
 
             Hide();
         }
@@ -167,10 +176,23 @@ namespace MyClicker.UI
                 _ascend.interactable = economy.CanAscend();
             }
 
-            for (int i = 0; i < _muts.Length; i++)
-                RefreshMut(_muts[i]);
-            for (int i = 0; i < _nodes.Length; i++)
-                RefreshNode(_nodes[i]);
+            if (_muts != null)
+            {
+                for (int i = 0; i < _muts.Length; i++)
+                    RefreshMut(_muts[i]);
+            }
+
+            if (_nodes != null)
+            {
+                for (int i = 0; i < _nodes.Length; i++)
+                    RefreshNode(_nodes[i]);
+            }
+
+            if (_cries != null)
+            {
+                for (int i = 0; i < _cries.Length; i++)
+                    RefreshCry(_cries[i]);
+            }
         }
 
         static void AddHeader(RectTransform parent, string title, float y, float height)
@@ -236,6 +258,64 @@ namespace MyClicker.UI
         {
             GameServices.Instance?.Economy.TryBuyGloryNode(id);
             Refresh();
+        }
+
+        CryRow BuildCryRow(RectTransform parent, GameConfig.UiSkin skin, string id, string title, string blurb, float y, float rowH, bool godstrike)
+        {
+            var row = PlaceRow(parent, "Cry_" + id, skin, y, rowH);
+            var name = StoneUi.Label(row.transform, "Name", title, 24, TextAnchor.MiddleLeft);
+            StoneUi.Place(name, 0.04f, 0.52f, 0.64f, 0.92f);
+            var detail = StoneUi.Label(row.transform, "Detail", blurb, 18, TextAnchor.UpperLeft);
+            StoneUi.Place(detail, 0.04f, 0.08f, 0.64f, 0.54f);
+            var buy = StoneUi.Button(row.transform, "Buy", "", skin, () => BuyCry(godstrike));
+            StoneUi.Place(buy, 0.66f, 0.14f, 0.96f, 0.86f);
+            StoneUi.HideDefaultLabel(buy);
+            var price = StoneUi.Price(buy.transform, "Price", 22);
+            StoneUi.Place(price.root, 0.04f, 0.10f, 0.96f, 0.90f);
+            return new CryRow { godstrike = godstrike, name = name, detail = detail, buy = buy, price = price };
+        }
+
+        void BuyCry(bool godstrike)
+        {
+            var economy = GameServices.Instance != null ? GameServices.Instance.Economy : null;
+            if (economy == null)
+                return;
+            if (godstrike)
+                economy.TryBuyGodstrike();
+            else
+                economy.TryBuyWarCry();
+            Refresh();
+        }
+
+        void RefreshCry(CryRow row)
+        {
+            var services = GameServices.Instance;
+            if (services == null || row.name == null)
+                return;
+            var profile = services.Save.Profile;
+            var economy = services.Economy;
+            int cost = row.godstrike ? EconomyService.GodstrikeCost : EconomyService.WarCryCost;
+            bool locked = row.godstrike && profile.ascendCount < 1;
+            float left = economy.GloryTapLeft;
+            if (row.detail != null && left > 0f)
+                row.detail.text = "Active  " + EconomyService.FormatBuff(left);
+            else if (row.detail != null)
+            {
+                row.detail.text = row.godstrike
+                    ? "Spend Glory for x3.5 tap for 12s."
+                    : "Spend Glory for x2 tap for 15s.";
+            }
+
+            if (row.price != null)
+            {
+                if (locked)
+                    row.price.Set("Ascend first", null);
+                else
+                    row.price.Set(cost.ToString(), GloryIcon());
+            }
+
+            if (row.buy != null)
+                row.buy.interactable = !locked && profile.glory >= cost;
         }
 
         void Ascend()
@@ -357,6 +437,15 @@ namespace MyClicker.UI
             public Button buy;
             public StoneUi.PriceView price;
             public Image panel;
+        }
+
+        struct CryRow
+        {
+            public bool godstrike;
+            public Text name;
+            public Text detail;
+            public Button buy;
+            public StoneUi.PriceView price;
         }
     }
 }

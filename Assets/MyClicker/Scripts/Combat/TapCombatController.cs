@@ -406,8 +406,14 @@ namespace MyClicker.Combat
                 return false;
 
             int wave = GameServices.Instance.Save.Profile.wave;
-            double gold = GameServices.Instance.Economy.AwardKill(wave, enemy.IsBoss);
+            var economy = GameServices.Instance.Economy;
+            double gold = economy.AwardKill(wave, enemy.IsBoss);
             FloatingCombatText.Show(enemy.transform.position + Vector3.up * 0.45f, NumberFmt.Signed(gold) + "g", new Color(1f, 0.84f, 0.28f), 30);
+            if (economy.ConsumeSurgeProc())
+            {
+                Announce("Glory Surge", 2.4f, false);
+                FxDirector.Ensure().Potion(ContentIds.PotGold, enemy.transform.position + Vector3.up * 0.5f);
+            }
             _killsThisWave++;
             if (enemy.IsBoss || _killsThisWave >= Settings().killsPerWave)
                 _awaitingClear = true;

@@ -14,6 +14,8 @@ namespace MyClicker.Economy
         public const string DeedAngel = "deed_angel";
         public const string DeepRoad = "deep_road";
         public const string NightMarket = "night_market";
+        public const string BloodOath = "blood_oath";
+        public const string GiantsDue = "giants_due";
     }
 
     [System.Serializable]
@@ -112,6 +114,22 @@ namespace MyClicker.Economy
                 blurb = "Away gold is a bit better. Still weaker than playing.",
                 cost = 8,
                 requiresId = GloryIds.Legacy
+            },
+            new GloryNode
+            {
+                id = GloryIds.BloodOath,
+                title = "Blood Oath",
+                blurb = "Permanent +25% tap and auto.",
+                cost = 25,
+                requiresId = GloryIds.KeepMight
+            },
+            new GloryNode
+            {
+                id = GloryIds.GiantsDue,
+                title = "Giant's Due",
+                blurb = "Permanent +50% tap and auto.",
+                cost = 50,
+                requiresId = GloryIds.BloodOath
             },
         };
 

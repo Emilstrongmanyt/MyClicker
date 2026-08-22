@@ -15,7 +15,9 @@ namespace MyClicker.UI
         Text _wave;
         Text _zone;
         Text _name;
+        Text _taps;
         Text _dps;
+        Text _gps;
         Text _hint;
         StoneUi.BannerView _banner;
         Text _sting;
@@ -44,38 +46,37 @@ namespace MyClicker.UI
             var skin = services.Config != null ? services.Config.ui : new GameConfig.UiSkin();
             var icons = services.Catalog.icons;
 
-            var left = StoneUi.Panel(parent, "TopLeft", skin);
-            StoneUi.Place(left, 0.02f, 0.855f, 0.31f, 0.985f);
-            SoftPanel(left, 0.72f);
-            _name = StoneUi.Label(left.transform, "Name", "", 24, TextAnchor.MiddleLeft);
-            StoneUi.Place(_name, 0.07f, 0.62f, 0.94f, 0.96f);
-            _zone = StoneUi.Label(left.transform, "Zone", "", 18, TextAnchor.MiddleLeft);
-            StoneUi.Place(_zone, 0.07f, 0.32f, 0.94f, 0.64f);
-            _wave = StoneUi.Label(left.transform, "Wave", "", 18, TextAnchor.MiddleLeft);
-            StoneUi.Place(_wave, 0.07f, 0.04f, 0.94f, 0.34f);
+            _name = StoneUi.OutlineLabel(parent, "Name", "", 26, TextAnchor.MiddleLeft);
+            StoneUi.Place(_name, 0.03f, 0.952f, 0.42f, 0.990f);
+            _zone = StoneUi.OutlineLabel(parent, "Zone", "", 20, TextAnchor.MiddleLeft);
+            StoneUi.Place(_zone, 0.03f, 0.916f, 0.42f, 0.954f);
+            _wave = StoneUi.OutlineLabel(parent, "Wave", "", 20, TextAnchor.MiddleLeft);
+            StoneUi.Place(_wave, 0.03f, 0.880f, 0.42f, 0.918f);
 
-            var right = StoneUi.Panel(parent, "TopRight", skin);
-            StoneUi.Place(right, 0.69f, 0.855f, 0.98f, 0.985f);
-            SoftPanel(right, 0.72f);
-            _goldIcon = StoneUi.Icon(right.transform, "GoldIcon", icons != null ? icons.gold : skin.coinIcon);
-            StoneUi.Place(_goldIcon, 0.04f, 0.52f, 0.24f, 0.92f);
-            _gold = StoneUi.Label(right.transform, "Gold", "", 26, TextAnchor.MiddleRight);
-            StoneUi.Place(_gold, 0.24f, 0.50f, 0.96f, 0.94f);
-            _dustIcon = StoneUi.Icon(right.transform, "DustIcon", icons != null ? icons.dust : null);
-            StoneUi.Place(_dustIcon, 0.04f, 0.08f, 0.24f, 0.48f);
-            _dust = StoneUi.Label(right.transform, "Dust", "", 22, TextAnchor.MiddleRight);
-            StoneUi.Place(_dust, 0.24f, 0.06f, 0.96f, 0.50f);
+            _goldIcon = StoneUi.Icon(parent, "GoldIcon", icons != null ? icons.gold : skin.coinIcon);
+            StoneUi.Place(_goldIcon, 0.62f, 0.952f, 0.68f, 0.990f);
+            _gold = StoneUi.OutlineLabel(parent, "Gold", "", 26, TextAnchor.MiddleRight);
+            StoneUi.Place(_gold, 0.68f, 0.952f, 0.97f, 0.990f);
+            _dustIcon = StoneUi.Icon(parent, "DustIcon", icons != null ? icons.dust : null);
+            StoneUi.Place(_dustIcon, 0.62f, 0.910f, 0.68f, 0.950f);
+            _dust = StoneUi.OutlineLabel(parent, "Dust", "", 22, TextAnchor.MiddleRight);
+            StoneUi.Place(_dust, 0.68f, 0.910f, 0.97f, 0.950f);
 
-            _dps = StoneUi.Label(parent, "Dps", "", 18, TextAnchor.MiddleRight);
-            StoneUi.Place(_dps, 0.50f, 0.808f, 0.98f, 0.850f);
+            _taps = StoneUi.OutlineLabel(parent, "Taps", "", 20, TextAnchor.MiddleRight);
+            StoneUi.Place(_taps, 0.62f, 0.868f, 0.97f, 0.908f);
+            _dps = StoneUi.OutlineLabel(parent, "Dps", "", 20, TextAnchor.MiddleRight);
+            StoneUi.Place(_dps, 0.62f, 0.826f, 0.97f, 0.866f);
+            _gps = StoneUi.OutlineLabel(parent, "Gps", "", 20, TextAnchor.MiddleRight);
+            StoneUi.Place(_gps, 0.62f, 0.784f, 0.97f, 0.824f);
 
             _bossBar = StoneUi.HealthBar(parent, "BossBar", skin);
-            StoneUi.Place(_bossBar.root.GetComponent<RectTransform>(), 0.64f, 0.718f, 0.98f, 0.802f);
-            SoftPanel(_bossBar.root.GetComponent<Image>(), 0.58f);
+            StoneUi.Place(_bossBar.root.GetComponent<RectTransform>(), 0.58f, 0.688f, 0.97f, 0.772f);
+            StoneUi.Bare(_bossBar.root.GetComponent<Image>());
             _bossBar.SetVisible(false);
 
             _focus = StoneUi.HealthBar(parent, "FocusBar", skin);
             StoneUi.Place(_focus.root.GetComponent<RectTransform>(), 0.04f, 0.155f, 0.48f, 0.212f);
+            StoneUi.Bare(_focus.root.GetComponent<Image>());
             _slam = StoneUi.Button(parent, "Slam", "Slam", skin, null);
             StoneUi.Place(_slam, 0.50f, 0.155f, 0.65f, 0.212f);
             _fury = StoneUi.Button(parent, "FocusFury", "Fury", skin, null);
@@ -222,14 +223,12 @@ namespace MyClicker.UI
                 _gold.text = NumberFmt.Compact(profile.gold);
             if (_dust != null)
                 _dust.text = NumberFmt.Compact(profile.dust);
+            if (_taps != null)
+                _taps.text = (_battle != null ? _battle.TapsPerSecond : 0f).ToString("0.0") + " taps/s";
             if (_dps != null)
-            {
-                float taps = _battle != null ? _battle.TapsPerSecond : 0f;
-                float dps = _battle != null ? _battle.DamagePerSecond : 0f;
-                _dps.text = taps.ToString("0.0") + " taps/s  DPS " + NumberFmt.Compact(dps) +
-                            "  " + NumberFmt.Compact(Math.Max(0d, economy.GoldPerSecond)) + "g/s" +
-                            BuffLine(profile);
-            }
+                _dps.text = NumberFmt.Compact(_battle != null ? _battle.DamagePerSecond : 0f) + " dmg/s";
+            if (_gps != null)
+                _gps.text = NumberFmt.Compact(Math.Max(0d, economy.GoldPerSecond)) + " g/s";
 
             string toast = _battle != null ? _battle.ToastMessage : null;
             string drop = services.Gear != null && services.Gear.LastDropLife > 0f
@@ -271,17 +270,6 @@ namespace MyClicker.UI
             _potions?.Refresh();
         }
 
-        static string BuffLine(PlayerProfile profile)
-        {
-            string line = "";
-            AppendBuff(ref line, "Ember", profile.mightBuffLeft);
-            AppendBuff(ref line, "Gale", profile.swiftBuffLeft);
-            AppendBuff(ref line, "Gilded", profile.goldBuffLeft);
-            var fury = GameServices.Instance != null ? GameServices.Instance.Economy.FocusFuryLeft : 0f;
-            AppendBuff(ref line, "Fury", fury);
-            return line;
-        }
-
         void BindFocusTips()
         {
             var combat = GameServices.Instance != null && GameServices.Instance.Config != null
@@ -314,21 +302,5 @@ namespace MyClicker.UI
             return "Wave " + profile.wave;
         }
 
-        static void AppendBuff(ref string line, string name, float left)
-        {
-            if (left <= 0f)
-                return;
-            line += "   " + name + " " + EconomyService.FormatBuff(left);
-        }
-
-        static void SoftPanel(Image panel, float alpha)
-        {
-            if (panel == null)
-                return;
-            var color = panel.color;
-            color.a = alpha;
-            panel.color = color;
-            panel.raycastTarget = false;
-        }
     }
 }

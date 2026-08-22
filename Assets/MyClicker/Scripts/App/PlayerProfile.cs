@@ -44,6 +44,10 @@ namespace MyClicker.App
         public float mightBuffLeft;
         public float swiftBuffLeft;
         public float goldBuffLeft;
+        public float gloryTapLeft;
+        public float gloryTapMul = 1f;
+        public float gloryTapDuration;
+        public bool usedBareBoss;
         public bool seenTapHint;
         public bool seenArmoryHint;
         public int bestZone;

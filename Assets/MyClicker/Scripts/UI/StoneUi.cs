@@ -29,6 +29,106 @@ namespace MyClicker.UI
                 label.gameObject.SetActive(false);
         }
 
+        public static void Bare(Graphic graphic)
+        {
+            if (graphic == null)
+                return;
+            graphic.color = new Color(1f, 1f, 1f, 0f);
+            graphic.raycastTarget = false;
+        }
+
+        public static Text OutlineLabel(Transform parent, string name, string text, int size, TextAnchor anchor)
+        {
+            var label = Label(parent, name, text, size, anchor);
+            label.horizontalOverflow = HorizontalWrapMode.Overflow;
+            var outline = label.gameObject.AddComponent<Outline>();
+            outline.effectColor = new Color(0.03f, 0.02f, 0.01f, 0.95f);
+            outline.effectDistance = new Vector2(1.8f, -1.8f);
+            var shadow = label.gameObject.AddComponent<Shadow>();
+            shadow.effectColor = new Color(0f, 0f, 0f, 0.78f);
+            shadow.effectDistance = new Vector2(0f, -2.2f);
+            return label;
+        }
+
+        public static ChipView Chip(Transform parent, string name, GameConfig.UiSkin skin, bool clickable)
+        {
+            Image frame;
+            Button button = null;
+            if (clickable)
+            {
+                button = Button(parent, name, "", skin, null);
+                HideDefaultLabel(button);
+                frame = button.GetComponent<Image>();
+            }
+            else
+            {
+                frame = Icon(parent, name, null);
+                frame.color = new Color(1f, 1f, 1f, 0f);
+            }
+
+            var icon = Icon(frame.transform, "Icon", null);
+            Place(icon, 0.10f, 0.22f, 0.90f, 0.94f);
+            var veil = Icon(frame.transform, "Veil", SolidSprite());
+            veil.preserveAspect = false;
+            veil.type = Image.Type.Filled;
+            veil.fillMethod = Image.FillMethod.Vertical;
+            veil.fillOrigin = (int)Image.OriginVertical.Top;
+            veil.fillAmount = 0f;
+            veil.color = new Color(0.04f, 0.03f, 0.02f, 0.62f);
+            Place(veil, 0.10f, 0.22f, 0.90f, 0.94f);
+            var time = OutlineLabel(frame.transform, "Time", "", 22, TextAnchor.LowerCenter);
+            Place(time, 0.04f, 0.00f, 0.96f, 0.40f);
+            time.color = new Color(1f, 0.92f, 0.55f);
+            var badge = OutlineLabel(frame.transform, "Badge", "", 18, TextAnchor.UpperRight);
+            Place(badge, 0.42f, 0.68f, 0.96f, 0.98f);
+            return new ChipView
+            {
+                root = frame.gameObject,
+                button = button,
+                icon = icon,
+                veil = veil,
+                time = time,
+                badge = badge
+            };
+        }
+
+        public sealed class ChipView
+        {
+            public GameObject root;
+            public Button button;
+            public Image icon;
+            public Image veil;
+            public Text time;
+            public Text badge;
+
+            public void Set(Sprite sprite, float left, float duration, int count, bool lit)
+            {
+                if (icon != null)
+                {
+                    if (sprite != null)
+                        icon.sprite = sprite;
+                    icon.color = lit || left > 0f ? Color.white : new Color(1f, 1f, 1f, 0.38f);
+                }
+
+                if (veil != null)
+                {
+                    bool ticking = left > 0f && duration > 0.05f;
+                    veil.gameObject.SetActive(ticking);
+                    if (ticking)
+                        veil.fillAmount = 1f - Mathf.Clamp01(left / duration);
+                }
+
+                if (time != null)
+                {
+                    time.text = left > 0f ? Economy.EconomyService.FormatBuff(left) : "";
+                    time.fontStyle = FontStyle.Bold;
+                }
+
+                if (badge != null)
+                    badge.text = count > 0 ? count.ToString() : "";
+            }
+        }
+
         public static PriceView Price(Transform parent, string name, int size)
         {
             var go = new GameObject(name, typeof(RectTransform));

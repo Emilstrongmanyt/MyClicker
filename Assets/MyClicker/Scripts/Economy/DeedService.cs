@@ -55,6 +55,7 @@ namespace MyClicker.Economy
             new DeedDef { id = "temper", title = "Tempered", hint = "Temper a relic.", kind = DeedKind.Temper, need = 1 },
             new DeedDef { id = "might_20", title = "Iron Arm", hint = "Reach Might 20.", kind = DeedKind.Might, need = 20 },
             new DeedDef { id = "swift_max", title = "Overclocked", hint = "Max Swift.", kind = DeedKind.SwiftMax, need = 1 },
+            new DeedDef { id = "bare_boss", title = "Bare Fist", hint = "Defeat a boss with no Forge ranks this run.", kind = DeedKind.BareBoss, need = 1 },
         };
 
         public int Count
@@ -109,6 +110,7 @@ namespace MyClicker.Economy
                 case DeedKind.Might: return Profile.mightLevel;
                 case DeedKind.SwiftMax: return _services.Economy != null && _services.Economy.IsMaxed(ContentIds.Swift) ? 1 : 0;
                 case DeedKind.BestCycle: return Profile.bestCycle;
+                case DeedKind.BareBoss: return Profile.usedBareBoss ? 1 : 0;
                 default: return 0;
             }
         }
@@ -167,7 +169,8 @@ namespace MyClicker.Economy
         Temper,
         Might,
         SwiftMax,
-        BestCycle
+        BestCycle,
+        BareBoss
     }
 
     [System.Serializable]

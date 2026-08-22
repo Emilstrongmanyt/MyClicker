@@ -9,6 +9,9 @@ namespace MyClicker.UI
     public class PotionTray : MonoBehaviour
     {
         readonly PotionSlot[] _slots = new PotionSlot[3];
+        StoneUi.ChipView _fury;
+        StoneUi.ChipView _surge;
+        StoneUi.ChipView _cry;
         StoneUi.TooltipView _tip;
 
         static readonly string[] Order =
@@ -21,9 +24,18 @@ namespace MyClicker.UI
         public void Build(Transform parent, GameConfig.UiSkin skin)
         {
             var tray = StoneUi.Panel(parent, "PotionTray", skin);
-            StoneUi.Place(tray, 0.04f, 0.018f, 0.40f, 0.108f);
+            StoneUi.Place(tray, 0.02f, 0.755f, 0.58f, 0.868f);
+            StoneUi.Bare(tray);
+
             for (int i = 0; i < Order.Length; i++)
                 _slots[i] = BuildSlot(tray.transform, skin, Order[i], i);
+
+            _fury = PlaceChip(tray.transform, skin, "FuryChip", 3, false);
+            _surge = PlaceChip(tray.transform, skin, "SurgeChip", 4, false);
+            _cry = PlaceChip(tray.transform, skin, "CryChip", 5, false);
+            if (_fury.root != null) _fury.root.SetActive(false);
+            if (_surge.root != null) _surge.root.SetActive(false);
+            if (_cry.root != null) _cry.root.SetActive(false);
 
             _tip = StoneUi.Tooltip(parent, "PotionTip", skin);
             StoneUi.Place(_tip.root.GetComponent<RectTransform>(), 0.08f, 0.22f, 0.92f, 0.38f);
@@ -40,24 +52,24 @@ namespace MyClicker.UI
         {
             for (int i = 0; i < _slots.Length; i++)
                 RefreshSlot(_slots[i]);
+            RefreshBuffs();
         }
 
         PotionSlot BuildSlot(Transform parent, GameConfig.UiSkin skin, string id, int index)
         {
-            var button = StoneUi.Button(parent, id, "", skin, null);
-            float x0 = 0.04f + index * 0.32f;
-            StoneUi.Place(button, x0, 0.08f, x0 + 0.28f, 0.92f);
-            StoneUi.HideDefaultLabel(button);
-            var icon = StoneUi.Icon(button.transform, "Icon", IconFor(id));
-            StoneUi.Place(icon, 0.12f, 0.32f, 0.88f, 0.94f);
-            var count = StoneUi.Label(button.transform, "Count", "0", 18, TextAnchor.UpperRight);
-            StoneUi.Place(count, 0.42f, 0.68f, 0.96f, 0.98f);
-            var timer = StoneUi.Label(button.transform, "Timer", "", 20, TextAnchor.LowerCenter);
-            StoneUi.Place(timer, 0.04f, 0.02f, 0.96f, 0.34f);
-            timer.color = new Color(1f, 0.86f, 0.42f);
+            var chip = PlaceChip(parent, skin, id, index, true);
             string captured = id;
-            HoldPress.Bind(button.gameObject, () => Use(captured), () => ShowTip(captured), () => _tip?.Hide());
-            return new PotionSlot { id = id, button = button, icon = icon, count = count, timer = timer };
+            if (chip.button != null)
+                HoldPress.Bind(chip.button.gameObject, () => Use(captured), () => ShowTip(captured), () => _tip?.Hide());
+            return new PotionSlot { id = id, chip = chip };
+        }
+
+        static StoneUi.ChipView PlaceChip(Transform parent, GameConfig.UiSkin skin, string name, int index, bool clickable)
+        {
+            var chip = StoneUi.Chip(parent, name, skin, clickable);
+            float x0 = 0.01f + index * 0.165f;
+            StoneUi.Place(chip.root.GetComponent<RectTransform>(), x0, 0.04f, x0 + 0.155f, 0.96f);
+            return chip;
         }
 
         void Use(string id)
@@ -83,28 +95,51 @@ namespace MyClicker.UI
 
         void RefreshSlot(PotionSlot slot)
         {
-            if (slot.count == null)
+            if (slot.chip == null)
                 return;
             var services = GameServices.Instance;
+            if (services == null)
+                return;
             var profile = services.Save.Profile;
             int n = profile.PotionCount(slot.id);
             float left = services.Economy.PotionBuffLeft(slot.id);
-            slot.count.text = n.ToString();
-            if (slot.timer != null)
-            {
-                slot.timer.text = left > 0f ? EconomyService.FormatBuff(left) : "";
-                slot.timer.color = ColorFor(slot.id);
-            }
+            float duration = DurationFor(slot.id);
+            slot.chip.Set(IconFor(slot.id), left, duration, n, n > 0 || left > 0f);
+            if (slot.chip.time != null)
+                slot.chip.time.color = ColorFor(slot.id);
+        }
 
-            if (slot.icon != null)
-            {
-                if (slot.icon.sprite == null)
-                    slot.icon.sprite = IconFor(slot.id);
-                slot.icon.color = n > 0 || left > 0f ? Color.white : new Color(1f, 1f, 1f, 0.38f);
-            }
+        void RefreshBuffs()
+        {
+            var economy = GameServices.Instance != null ? GameServices.Instance.Economy : null;
+            var icons = GameServices.Instance != null ? GameServices.Instance.Catalog.icons : null;
+            if (economy == null)
+                return;
 
-            if (slot.button != null)
-                slot.button.interactable = true;
+            float fury = economy.FocusFuryLeft;
+            SetChip(_fury, icons != null ? icons.crit : null, fury, economy.FurySeconds, fury > 0f, new Color(1f, 0.45f, 0.2f));
+
+            float surge = economy.SurgeLeft;
+            SetChip(_surge, icons != null ? icons.glory : null, surge, economy.SurgeSeconds, surge > 0f, new Color(1f, 0.86f, 0.35f));
+
+            float cry = economy.GloryTapLeft;
+            SetChip(_cry, icons != null ? icons.might : null, cry, economy.GloryTapDuration, cry > 0f, new Color(1f, 0.72f, 0.42f));
+        }
+
+        static void SetChip(StoneUi.ChipView chip, Sprite icon, float left, float duration, bool on, Color timeColor)
+        {
+            if (chip == null || chip.root == null)
+                return;
+            chip.root.SetActive(on || left > 0f);
+            chip.Set(icon, left, duration, 0, on);
+            if (chip.time != null)
+                chip.time.color = timeColor;
+        }
+
+        static float DurationFor(string id)
+        {
+            var def = GameServices.Instance != null ? GameServices.Instance.Catalog.FindPotion(id) : null;
+            return def != null && def.duration > 0f ? def.duration : 20f;
         }
 
         static Color ColorFor(string id)
@@ -130,10 +165,7 @@ namespace MyClicker.UI
         struct PotionSlot
         {
             public string id;
-            public Button button;
-            public Image icon;
-            public Text count;
-            public Text timer;
+            public StoneUi.ChipView chip;
         }
     }
 }

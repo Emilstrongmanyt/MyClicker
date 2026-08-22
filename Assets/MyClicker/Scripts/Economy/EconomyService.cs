@@ -37,6 +37,14 @@ namespace MyClicker.Economy
                 value *= 1f + Renown();
                 value *= 1f + Mutation(Profile.mutationMight, Eco.mutationPerDecade);
                 value *= MilestoneMul();
+                if (HasGlory(GloryIds.BloodOath))
+                    value *= 1.25f;
+                if (HasGlory(GloryIds.GiantsDue))
+                    value *= 1.5f;
+                if (Profile.gloryTapLeft > 0f)
+                    value *= Mathf.Max(1f, Profile.gloryTapMul);
+                if (_surgeLeft > 0f)
+                    value *= SurgeMul;
                 return value;
             }
         }
@@ -127,6 +135,23 @@ namespace MyClicker.Economy
         public float Focus => Profile.focus;
         public float FocusFuryLeft => _focusFuryLeft;
         float _focusFuryLeft;
+        float _surgeLeft;
+        float _surgeCool;
+        bool _surgeProc;
+
+        public const float SurgeMul = 4f;
+        public const int WarCryCost = 12;
+        public const int GodstrikeCost = 40;
+        public const float WarCrySeconds = 15f;
+        public const float WarCryMul = 2f;
+        public const float GodstrikeSeconds = 12f;
+        public const float GodstrikeMul = 3.5f;
+
+        public float FurySeconds => Eco.focusFurySeconds > 0f ? Eco.focusFurySeconds : 8f;
+        public float SurgeSeconds => 10f;
+        public float SurgeLeft => _surgeLeft;
+        public float GloryTapLeft => Profile.gloryTapLeft;
+        public float GloryTapDuration => Profile.gloryTapDuration > 0.05f ? Profile.gloryTapDuration : WarCrySeconds;
 
         public float FocusMax
         {
@@ -247,6 +272,20 @@ namespace MyClicker.Economy
         int RelicCount()
         {
             return Profile.unlockedGear != null ? Profile.unlockedGear.Length : 0;
+        }
+
+        bool BareRun()
+        {
+            return Profile.mightLevel <= 0
+                   && Profile.fortuneLevel <= 0
+                   && Profile.swiftLevel <= 0
+                   && Profile.critLevel <= 0
+                   && Profile.cleaveLevel <= 0
+                   && Profile.furyLevel <= 0
+                   && Profile.harvestLevel <= 0
+                   && Profile.oathTithe <= 0
+                   && Profile.oathVow <= 0
+                   && Profile.oathOverclock <= 0;
         }
 
         int TemperSum()
@@ -526,6 +565,10 @@ namespace MyClicker.Economy
             changed |= Tick(ref Profile.swiftBuffLeft, dt);
             changed |= Tick(ref Profile.goldBuffLeft, dt);
             changed |= Tick(ref _focusFuryLeft, dt);
+            changed |= Tick(ref Profile.gloryTapLeft, dt);
+            if (Tick(ref _surgeLeft, dt))
+                _surgeCool = 20f;
+            Tick(ref _surgeCool, dt);
             TickFocus(dt);
             if (changed)
                 _services.NotifyProfile();
@@ -609,8 +652,54 @@ namespace MyClicker.Economy
         public int GloryForBoss(int zone)
         {
             int glory = Eco.gloryPerBoss + Mathf.FloorToInt(Eco.gloryPerBossPerZone * Mathf.Max(0, zone));
-            glory += Mathf.Max(0, Profile.cycle);
+            glory += Mathf.Max(0, Profile.cycle) * (2 + Mathf.Max(0, zone));
             return Mathf.Max(2, glory);
+        }
+
+        public bool TryBuyWarCry()
+        {
+            return TryBuyTapBuff(WarCryCost, WarCryMul, WarCrySeconds);
+        }
+
+        public bool TryBuyGodstrike()
+        {
+            if (Profile.ascendCount < 1)
+                return false;
+            return TryBuyTapBuff(GodstrikeCost, GodstrikeMul, GodstrikeSeconds);
+        }
+
+        bool TryBuyTapBuff(int cost, float mul, float seconds)
+        {
+            if (cost <= 0 || Profile.glory < cost)
+                return false;
+            Profile.glory -= cost;
+            Profile.gloryTapMul = Mathf.Max(mul, Profile.gloryTapMul);
+            Profile.gloryTapDuration = seconds;
+            Profile.gloryTapLeft = Mathf.Max(Profile.gloryTapLeft, seconds);
+            Profile.tapDamage = TapDamage;
+            _services.Save.MarkDirty();
+            return true;
+        }
+
+        public bool ConsumeSurgeProc()
+        {
+            if (!_surgeProc)
+                return false;
+            _surgeProc = false;
+            return true;
+        }
+
+        void MaybeGlorySurge()
+        {
+            if (Profile.ascendCount < 1)
+                return;
+            if (_surgeLeft > 0f || _surgeCool > 0f)
+                return;
+            if (UnityEngine.Random.value > 0.012f)
+                return;
+            _surgeLeft = SurgeSeconds;
+            _surgeProc = true;
+            Profile.tapDamage = TapDamage;
         }
 
         public bool CanAscend()
@@ -650,8 +739,14 @@ namespace MyClicker.Economy
             Profile.mightBuffLeft = 0f;
             Profile.swiftBuffLeft = 0f;
             Profile.goldBuffLeft = 0f;
+            Profile.gloryTapLeft = 0f;
+            Profile.gloryTapMul = 1f;
+            Profile.gloryTapDuration = 0f;
             Profile.focus = 0f;
             _focusFuryLeft = 0f;
+            _surgeLeft = 0f;
+            _surgeCool = 0f;
+            _surgeProc = false;
             GloryTree.Unlock(Profile, GloryIds.Legacy);
             Profile.tapDamage = TapDamage;
             _services.Save.MarkDirty();
@@ -684,8 +779,11 @@ namespace MyClicker.Economy
                 int glory = GloryForBoss(Profile.zone);
                 if (glory > 0)
                     Profile.pendingGlory += glory;
+                if (BareRun())
+                    Profile.usedBareBoss = true;
             }
 
+            MaybeGlorySurge();
             _services.Save.MarkDirty();
             return gold;
         }
