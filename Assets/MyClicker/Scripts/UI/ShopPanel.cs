@@ -240,13 +240,31 @@ namespace MyClicker.UI
                     return "Gold  x" + economy.GoldMultiplier.ToString("0.00") +
                            (maxed ? cap : "   next +12%");
                 case ContentIds.Swift:
-                    return "Auto  " + economy.AutoInterval.ToString("0.00") + "s   DPS " +
-                           NumberFmt.Compact(economy.AutoDps) +
-                           (maxed ? "  MAX — buy Oaths" : "");
+                    {
+                        string swift = "Auto  " + economy.AutoInterval.ToString("0.00") + "s   DPS " +
+                                       NumberFmt.Compact(economy.AutoDps);
+                        if (maxed)
+                            return swift + "  MAX";
+                        float floor = GameServices.Instance != null && GameServices.Instance.Config != null
+                            ? GameServices.Instance.Config.economy.autoIntervalMin
+                            : 0.28f;
+                        if (economy.AutoInterval <= floor + 0.001f)
+                            return swift + "   next +auto dmg";
+                        return swift;
+                    }
                 case ContentIds.Crit:
-                    return "Crit  " + Mathf.RoundToInt(economy.CritChance * 100f) + "%  x" +
-                           economy.CritMultiplier.ToString("0.#") +
-                           (maxed ? "  MAX — buy Oaths" : "");
+                    {
+                        string crit = "Crit  " + Mathf.RoundToInt(economy.CritChance * 100f) + "%  x" +
+                                      economy.CritMultiplier.ToString("0.#");
+                        if (maxed)
+                            return crit + "  MAX";
+                        float cap = GameServices.Instance != null && GameServices.Instance.Config != null
+                            ? GameServices.Instance.Config.economy.critChanceCap
+                            : 0.6f;
+                        if (economy.CritChance >= cap - 0.0001f)
+                            return crit + "   next +crit mul";
+                        return crit;
+                    }
                 case ContentIds.Cleave:
                     return "Splash  " + Mathf.RoundToInt(economy.CleaveFraction * 100f) + "% to a nearby foe" + cap;
                 case ContentIds.Fury:

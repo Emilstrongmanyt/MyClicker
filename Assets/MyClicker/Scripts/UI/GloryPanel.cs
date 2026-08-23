@@ -365,7 +365,7 @@ namespace MyClicker.UI
             {
                 case ContentIds.MutMight: return "Tap and auto damage";
                 case ContentIds.MutFortune: return "Gold from kills";
-                case ContentIds.MutSwift: return "Faster auto-swings";
+                case ContentIds.MutSwift: return "Faster auto. Extra speed becomes auto damage at the cap";
                 case ContentIds.MutLuck: return "Dust, potions, relics";
                 default: return "";
             }

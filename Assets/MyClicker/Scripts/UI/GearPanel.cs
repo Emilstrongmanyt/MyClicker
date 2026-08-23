@@ -102,7 +102,7 @@ namespace MyClicker.UI
                     _summary.text = "Relics  " + relics + "  Collection +" + col +
                                     "%    Shards  " + economy.Shards + "/" + economy.ShardCap +
                                     "  +" + shard + "% tap and gold\n" + next +
-                                    ". First-clear bosses grant shards. Both persist.";
+                                    ". Slot relics share stats; looks are cosmetic.";
                 }
             }
 
@@ -178,7 +178,7 @@ namespace MyClicker.UI
             row.name.text = row.slot + "  " + gear.Label(row.slot);
             row.detail.text = owned <= 0
                 ? "Starter look. Relics drop in battle."
-                : gear.BonusText(row.slot) + "   T" + rank + "   " + owned + " relics";
+                : gear.BonusText(row.slot) + "  T" + rank + "  " + owned + " looks";
             if (row.price != null)
                 row.price.Set(NumberFmt.Compact(gear.TemperCost(row.slot)), DustIcon());
             row.temper.interactable = GameServices.Instance.Save.Profile.dust >= gear.TemperCost(row.slot);

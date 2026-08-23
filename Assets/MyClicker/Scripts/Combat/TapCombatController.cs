@@ -124,7 +124,8 @@ namespace MyClicker.Combat
             _spawnTimer -= dt;
             if (_spawnTimer > 0f)
                 return;
-            float late = combat.lateSpawnBoost * Mathf.Max(0, GameServices.Instance.Save.Profile.wave - 12);
+            int depth = economy != null ? economy.DepthWave : GameServices.Instance.Save.Profile.wave;
+            float late = combat.lateSpawnBoost * Mathf.Max(0, depth - 12);
             float interval = combat.spawnInterval * (1f - Mathf.Min(0.45f, late));
             if (economy != null)
                 interval *= economy.SpawnIntervalMul;
@@ -208,7 +209,12 @@ namespace MyClicker.Combat
             var combat = Settings();
             var eco = services.Config != null ? services.Config.economy : new GameConfig.EconomySettings();
             bool wasBoss = _bossWave;
-            services.Save.AddGold(wasBoss ? 0 : eco.goldPerWave);
+            if (!wasBoss)
+            {
+                double waveGold = eco.goldPerWave * services.Economy.CycleGoldMul();
+                if (waveGold > 0d)
+                    services.Save.AddGold(waveGold);
+            }
             services.Save.Profile.wave++;
             bool shard = false;
             bool looped = false;
@@ -380,19 +386,11 @@ namespace MyClicker.Combat
 
         float EnemyHp(bool boss)
         {
-            var services = GameServices.Instance;
+            var economy = GameServices.Instance != null ? GameServices.Instance.Economy : null;
+            if (economy != null)
+                return economy.CurrentEnemyHp(boss);
             var combat = Settings();
-            var zone = services.Catalog.ZoneAt(services.Save.Profile.zone);
-            int wave = Mathf.Max(1, services.Save.Profile.wave);
-            float hp = combat.enemyBaseHp + combat.enemyHpPerWave * (wave - 1);
-            int late = Mathf.Max(0, wave - Mathf.RoundToInt(combat.lateHpStartWave));
-            if (late > 0)
-                hp *= Mathf.Pow(Mathf.Max(1.001f, combat.lateHpGrowth), late);
-            hp *= Mathf.Max(0.25f, zone.hpMul);
-            hp *= services.Economy.CycleMul();
-            if (boss)
-                hp *= combat.bossHpMul * (1f + 0.08f * services.Save.Profile.zone);
-            return hp;
+            return combat.enemyBaseHp;
         }
 
         bool ApplyHit(EnemyController enemy, float damage, bool crit, bool tap)

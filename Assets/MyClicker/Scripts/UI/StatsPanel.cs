@@ -101,12 +101,13 @@ namespace MyClicker.UI
                 "\nRenown  +" + Mathf.RoundToInt(services.Deeds != null ? services.Deeds.Renown * 100f : 0f) + "%" +
                 "\nCollection  +" + Mathf.RoundToInt(eco.CollectionBonus * 100f) +
                 "%   Shards  " + eco.Shards + "/" + eco.ShardCap + "  +" + Mathf.RoundToInt(eco.ShardBonus * 100f) + "%" +
-                "\nRelics  " + eco.Relics +
+                "\nRelics  " + eco.Relics + "  (looks cosmetic; helmet crit mul, cape auto dmg)" +
                 "\nGlory  " + profile.glory + "   pending  " + eco.PendingGlory +
                 "\nAscensions  " + profile.ascendCount + "   Endless  " + profile.cycle +
                 "   best  " + profile.bestCycle +
                 "\nCycle HP  x" + eco.CycleMul().ToString("0.00") +
                 "   gold  x" + eco.CycleGoldMul().ToString("0.00") +
+                "   depth  " + eco.DepthWave +
                 "\nWave need  " + eco.WaveKillNeed + "   spawn cap  " + eco.SpawnCap +
                 "\nWave spawn  x" + eco.SpawnIntervalMul.ToString("0.00") +
                 "   walk  x" + eco.WalkSpeedMul.ToString("0.00") +

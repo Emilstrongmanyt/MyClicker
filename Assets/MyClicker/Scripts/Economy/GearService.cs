@@ -51,14 +51,19 @@ namespace MyClicker.Economy
             get { return (RelicOn(Slot.Armor) ? 0.08f : 0f) + Profile.temperArmor * 0.02f; }
         }
 
-        public float CritBonus
+        public float CritMulBonus
         {
-            get { return (RelicOn(Slot.Helmet) ? 0.04f : 0f) + Profile.temperHelmet * 0.006f; }
+            get { return (RelicOn(Slot.Helmet) ? 0.4f : 0f) + Profile.temperHelmet * 0.06f; }
         }
 
-        public float SwiftBonus
+        public float FocusRegenBonus
         {
-            get { return (RelicOn(Slot.Cape) ? 0.06f : 0f) + Profile.temperCape * 0.018f; }
+            get { return (RelicOn(Slot.Helmet) ? 0.15f : 0f) + Profile.temperHelmet * 0.03f; }
+        }
+
+        public float OverclockBonus
+        {
+            get { return (RelicOn(Slot.Cape) ? 0.15f : 0f) + Profile.temperCape * 0.03f; }
         }
 
         public string Label(string slot)
@@ -72,13 +77,13 @@ namespace MyClicker.Economy
             switch (slot)
             {
                 case Slot.Weapon:
-                    return relic ? "+14 tap" : "Starter look";
+                    return relic ? "+14 tap. Any relic." : "Starter look";
                 case Slot.Armor:
-                    return relic ? "+5 tap   +8% gold" : "Starter look";
+                    return relic ? "+5 tap  +8% gold. Any relic." : "Starter look";
                 case Slot.Helmet:
-                    return relic ? "+4% crit" : "Starter look";
+                    return relic ? "+0.4 crit mul  +15% Focus regen. Any relic." : "Starter look";
                 case Slot.Cape:
-                    return relic ? "+6% swift" : "Starter look";
+                    return relic ? "+15% auto damage. Any relic." : "Starter look";
                 default:
                     return "";
             }
@@ -229,41 +234,6 @@ namespace MyClicker.Economy
             if (_hero == null || OwnedCount(slot) <= 0)
                 return false;
             return !_hero.WearingStarter(slot);
-        }
-
-        int Look(string slot)
-        {
-            string id = _hero != null ? _hero.SlotId(slot) : slot;
-            int seed = Stable(id);
-            int tier = CollectionTier(id);
-            return tier + seed % 5;
-        }
-
-        static int CollectionTier(string id)
-        {
-            string hay = (id ?? "").ToLowerInvariant();
-            if (hay.Contains(".basic.") || hay.Contains("oldcape") || hay.Contains("grandmacape") || hay.Contains("cottton"))
-                return 2;
-            if (hay.Contains("bonus"))
-                return 7;
-            if (hay.Contains("knight") || hay.Contains("viking"))
-                return 10;
-            if (hay.Contains("samurai") || hay.Contains("sandlord") || hay.Contains("swamplord") || hay.Contains("throne"))
-                return 13;
-            return 8;
-        }
-
-        static int Stable(string value)
-        {
-            unchecked
-            {
-                int hash = 5381;
-                if (string.IsNullOrEmpty(value))
-                    return hash;
-                for (int i = 0; i < value.Length; i++)
-                    hash = ((hash << 5) + hash) ^ value[i];
-                return hash & 0x7fffffff;
-            }
         }
 
         public static class Slot

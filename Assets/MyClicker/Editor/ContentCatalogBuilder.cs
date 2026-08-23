@@ -376,7 +376,7 @@ namespace MyClicker.Editor
                 {
                     id = ContentIds.Swift,
                     displayName = "Swift",
-                    description = "Your hero swings on their own, faster each rank.",
+                    description = "Your hero swings on their own, faster each rank. After the speed cap, extra ranks raise auto damage.",
                     icon = icons.swift,
                     baseCost = 40,
                     costGrowth = 1.22f,
@@ -387,7 +387,7 @@ namespace MyClicker.Editor
                 {
                     id = ContentIds.Crit,
                     displayName = "Crit",
-                    description = "Chance for a triple-damage strike.",
+                    description = "Chance for a triple-damage strike. Extra chance past the cap raises crit multiplier.",
                     icon = icons.crit,
                     baseCost = 50,
                     costGrowth = 1.25f,
@@ -475,7 +475,7 @@ namespace MyClicker.Editor
                 {
                     id = ContentIds.PotMight,
                     displayName = "Ember Vial",
-                    description = "A warm draught. +60% tap damage for 20 seconds.",
+                    description = "A warm draught. +60% tap damage for 20 seconds. Durations stack.",
                     icon = PotionSprite("pot3red") ?? PotionSprite("pot1red"),
                     duration = 20f,
                     potency = 0.6f
@@ -484,7 +484,7 @@ namespace MyClicker.Editor
                 {
                     id = ContentIds.PotSwift,
                     displayName = "Gale Tonic",
-                    description = "A brisk tonic. Auto-swings 35% faster for 20 seconds.",
+                    description = "A brisk tonic. Auto-swings 35% faster for 20 seconds. Durations stack. Extra speed becomes auto damage at the cap.",
                     icon = PotionSprite("pot8sky") ?? PotionSprite("pot3blue") ?? PotionSprite("pot1sky"),
                     duration = 20f,
                     potency = 0.35f
@@ -493,7 +493,7 @@ namespace MyClicker.Editor
                 {
                     id = ContentIds.PotGold,
                     displayName = "Gilded Brew",
-                    description = "A lucky brew. Double gold from every kill for 20 seconds.",
+                    description = "A lucky brew. Double gold from every kill for 20 seconds. Durations stack.",
                     icon = PotionSprite("pot5yellow") ?? PotionSprite("pot1yellow"),
                     duration = 20f,
                     potency = 1f

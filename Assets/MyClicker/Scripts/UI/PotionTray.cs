@@ -133,7 +133,8 @@ namespace MyClicker.UI
             chip.root.SetActive(on);
             if (!on)
                 return;
-            chip.Set(icon, left, duration, 0, true);
+            float bar = duration > 0f ? Mathf.Max(duration, left) : left;
+            chip.Set(icon, left, bar, 0, true);
             if (chip.time != null)
                 chip.time.color = timeColor;
         }

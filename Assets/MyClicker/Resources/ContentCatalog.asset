@@ -1528,7 +1528,7 @@ MonoBehaviour:
     requiresLevel: 0
   - id: swift
     displayName: Swift
-    description: Your hero swings on their own, faster each rank.
+    description: Your hero swings on their own, faster each rank. After the speed cap, extra ranks raise auto damage.
     icon: {fileID: 21300000, guid: 443967e98c2b54ebaa7d13993dd6025f, type: 3}
     baseCost: 40
     costGrowth: 1.22
@@ -1538,7 +1538,7 @@ MonoBehaviour:
     requiresLevel: 0
   - id: crit
     displayName: Crit
-    description: Chance for a triple-damage strike.
+    description: Chance for a triple-damage strike. Extra chance past the cap raises crit multiplier.
     icon: {fileID: 21300000, guid: 29c0424cee8c14b60a0aad285535466e, type: 3}
     baseCost: 50
     costGrowth: 1.25
@@ -1609,19 +1609,19 @@ MonoBehaviour:
   potions:
   - id: pot_might
     displayName: Ember Vial
-    description: A warm draught. +60% tap damage for 20 seconds.
+    description: A warm draught. +60% tap damage for 20 seconds. Durations stack.
     icon: {fileID: 21300000, guid: 7cc68837b8b2a2b4aa0984c7355cf06e, type: 3}
     duration: 20
     potency: 0.6
   - id: pot_swift
     displayName: Gale Tonic
-    description: A brisk tonic. Auto-swings 35% faster for 20 seconds.
+    description: A brisk tonic. Auto-swings 35% faster for 20 seconds. Durations stack. Extra speed becomes auto damage at the cap.
     icon: {fileID: 21300000, guid: 722bb967d4af2d346a97b94a7add01df, type: 3}
     duration: 20
     potency: 0.35
   - id: pot_gold
     displayName: Gilded Brew
-    description: A lucky brew. Double gold from every kill for 20 seconds.
+    description: A lucky brew. Double gold from every kill for 20 seconds. Durations stack.
     icon: {fileID: 21300000, guid: 3b114dcb5cc9798479990ceba44dfbfd, type: 3}
     duration: 20
     potency: 1

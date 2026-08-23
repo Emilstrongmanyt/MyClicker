@@ -87,9 +87,9 @@ namespace MyClicker.Data
         {
             return new[]
             {
-                new PotionDef { id = ContentIds.PotMight, displayName = "Ember Vial", description = "Hold to read. Drink for +60% tap damage for 20 seconds.", duration = 20f, potency = 0.6f },
-                new PotionDef { id = ContentIds.PotSwift, displayName = "Gale Tonic", description = "Hold to read. Drink to speed auto-swings by 35% for 20 seconds.", duration = 20f, potency = 0.35f },
-                new PotionDef { id = ContentIds.PotGold, displayName = "Gilded Brew", description = "Hold to read. Drink to double gold from kills for 20 seconds.", duration = 20f, potency = 1f },
+                new PotionDef { id = ContentIds.PotMight, displayName = "Ember Vial", description = "Hold to read. Drink for +60% tap damage for 20 seconds. Durations stack.", duration = 20f, potency = 0.6f },
+                new PotionDef { id = ContentIds.PotSwift, displayName = "Gale Tonic", description = "Hold to read. Drink to speed auto-swings by 35% for 20 seconds. Durations stack. Extra speed becomes auto damage at the cap.", duration = 20f, potency = 0.35f },
+                new PotionDef { id = ContentIds.PotGold, displayName = "Gilded Brew", description = "Hold to read. Drink to double gold from kills for 20 seconds. Durations stack.", duration = 20f, potency = 1f },
             };
         }
 
