@@ -258,10 +258,10 @@ namespace MyClicker.UI
                                       economy.CritMultiplier.ToString("0.#");
                         if (maxed)
                             return crit + "  MAX";
-                        float cap = GameServices.Instance != null && GameServices.Instance.Config != null
+                        float chanceCap = GameServices.Instance != null && GameServices.Instance.Config != null
                             ? GameServices.Instance.Config.economy.critChanceCap
                             : 0.6f;
-                        if (economy.CritChance >= cap - 0.0001f)
+                        if (economy.CritChance >= chanceCap - 0.0001f)
                             return crit + "   next +crit mul";
                         return crit;
                     }
