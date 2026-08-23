@@ -138,7 +138,8 @@ namespace MyClicker.Economy
         }
 
         public const float TapStrikeMul = 2.25f;
-        public const float AutoHitMul = 0.5f;
+        public const float AutoHitMul = 0.4f;
+        public const float ReaperSweepMul = 1.75f;
 
         public float AutoDps => TapDamage * OverclockMul * AutoHitMul / Mathf.Max(0.2f, AutoInterval);
 
@@ -285,9 +286,13 @@ namespace MyClicker.Economy
             {
                 float value = Eco.sweepDamageMul > 0f ? Eco.sweepDamageMul : 3f;
                 value *= Mathf.Pow(1.12f, GloryRank(GloryIds.WideSweep));
+                if (ReaperSweep)
+                    value *= ReaperSweepMul;
                 return value;
             }
         }
+
+        public bool ReaperSweep => HasGlory(GloryIds.ReaperSweep);
 
         public float FuryBonus
         {
@@ -345,6 +350,8 @@ namespace MyClicker.Economy
             get
             {
                 int n = RelicCount();
+                if (n >= 24) return 0.20f;
+                if (n >= 16) return 0.15f;
                 if (n >= 12) return 0.10f;
                 if (n >= 8) return 0.05f;
                 if (n >= 4) return 0.02f;
@@ -401,7 +408,7 @@ namespace MyClicker.Economy
 
         public string CollectionUnlockLine(int relicCount)
         {
-            if (relicCount != 4 && relicCount != 8 && relicCount != 12)
+            if (relicCount != 4 && relicCount != 8 && relicCount != 12 && relicCount != 16 && relicCount != 24)
                 return null;
             return "Collection  " + relicCount + " relics  +" + Mathf.RoundToInt(CollectionBonus * 100f) + "%";
         }
@@ -832,6 +839,21 @@ namespace MyClicker.Economy
             return true;
         }
 
+        public int LastRespecGlory { get; private set; }
+
+        public bool TryRespecGlory()
+        {
+            int spent = GloryTree.Spent(Profile);
+            if (spent <= 0)
+                return false;
+            LastRespecGlory = GloryTree.Respec(Profile);
+            Profile.glory += LastRespecGlory;
+            GloryTree.Unlock(Profile, GloryIds.Legacy);
+            Profile.tapDamage = TapDamage;
+            _services.Save.MarkDirty();
+            return true;
+        }
+
         public void EnsureLegacy()
         {
             if (Profile.ascendCount < 1)
@@ -960,13 +982,17 @@ namespace MyClicker.Economy
             Profile.ascendCount++;
             int keepMight = HasGlory(GloryIds.KeepMight) ? Profile.mightLevel : 0;
             int keepFortune = HasGlory(GloryIds.KeepFortune) ? Profile.fortuneLevel : 0;
+            int keepSwift = HasGlory(GloryIds.KeepSwift) ? Profile.swiftLevel : 0;
+            int keepCycle = 0;
+            if (HasGlory(GloryIds.KeepRoad) && (Profile.cycle > 0 || Profile.bestCycle >= 1))
+                keepCycle = Mathf.Max(1, Profile.cycle);
             Profile.wave = 1;
             Profile.zone = 0;
-            Profile.cycle = 0;
+            Profile.cycle = keepCycle;
             Profile.gold = 0;
             Profile.mightLevel = keepMight;
             Profile.fortuneLevel = keepFortune;
-            Profile.swiftLevel = 0;
+            Profile.swiftLevel = keepSwift;
             Profile.critLevel = 0;
             Profile.cleaveLevel = 0;
             Profile.furyLevel = 0;

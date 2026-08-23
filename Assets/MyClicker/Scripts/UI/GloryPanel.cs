@@ -13,6 +13,7 @@ namespace MyClicker.UI
         bool _open;
         Text _summary;
         Button _ascend;
+        Button _respec;
         MutRow[] _muts;
         NodeRow[] _nodes;
         public System.Action RequestDeeds;
@@ -33,10 +34,12 @@ namespace MyClicker.UI
             _root = panel.gameObject;
             StoneUi.Place(panel, 0.05f, 0.16f, 0.95f, 0.78f);
 
-            var title = StoneUi.Label(panel.transform, "Title", "Glory", 40, TextAnchor.MiddleCenter);
-            StoneUi.Place(title, 0.08f, 0.88f, 0.52f, 0.98f);
+            var title = StoneUi.Label(panel.transform, "Title", "Glory", 40, TextAnchor.MiddleLeft);
+            StoneUi.Place(title, 0.08f, 0.88f, 0.36f, 0.98f);
             var deeds = StoneUi.Button(panel.transform, "DeedsBtn", "Deeds", skin, () => RequestDeeds?.Invoke());
-            StoneUi.Place(deeds, 0.54f, 0.88f, 0.78f, 0.98f);
+            StoneUi.Place(deeds, 0.38f, 0.88f, 0.56f, 0.98f);
+            _respec = StoneUi.Button(panel.transform, "Respec", "Respec", skin, Respec);
+            StoneUi.Place(_respec, 0.58f, 0.88f, 0.78f, 0.98f);
             var close = StoneUi.Button(panel.transform, "Close", "X", skin, Hide);
             StoneUi.Place(close, 0.82f, 0.88f, 0.96f, 0.98f);
 
@@ -69,12 +72,11 @@ namespace MyClicker.UI
             scroll.scrollSensitivity = 40f;
 
             const float headerH = 36f;
+            const float noteH = 48f;
             const float mutH = 96f;
             const float nodeH = 100f;
             int muts = MutOrder.Length;
             int nodes = GloryTree.All.Length;
-            float treeH = (GloryTree.MaxRow + 1) * nodeH + 12f;
-            content.sizeDelta = new Vector2(0f, headerH * 2f + muts * mutH + treeH + 16f);
 
             float y = -6f;
             AddHeader(content, "Mutations", y, headerH);
@@ -88,13 +90,26 @@ namespace MyClicker.UI
 
             AddHeader(content, "Talent tree", y, headerH);
             y -= headerH;
+            AddNote(content, "Respec refunds Glory spent on talents. Mutations stay. Swap Reaper Sweep for horde Sweep any time.", y, noteH);
+            y -= noteH;
             _nodes = new NodeRow[nodes];
-            for (int i = 0; i < nodes; i++)
+            int written = 0;
+            for (int p = 0; p < GloryPaths.All.Length; p++)
             {
-                var def = GloryTree.All[i];
-                float rowY = y - def.treeRow * nodeH;
-                _nodes[i] = BuildTreeNode(content, skin, def, rowY, nodeH);
+                string path = GloryPaths.All[p];
+                AddHeader(content, path, y, headerH);
+                y -= headerH;
+                for (int i = 0; i < GloryTree.All.Length; i++)
+                {
+                    var def = GloryTree.All[i];
+                    if (def == null || def.path != path)
+                        continue;
+                    _nodes[written++] = BuildTreeNode(content, skin, def, y, nodeH);
+                    y -= nodeH;
+                }
             }
+
+            content.sizeDelta = new Vector2(0f, -y + 16f);
 
             Hide();
         }
@@ -163,11 +178,20 @@ namespace MyClicker.UI
                     if (!economy.CanAscend())
                         label.text = "Beat a boss to ascend";
                     else if (economy.PendingGlory > 0)
-                        label.text = "Ascend — +" + economy.PendingGlory + " Glory, keep relics";
+                        label.text = "Ascend — +" + economy.PendingGlory + " Glory";
                     else
-                        label.text = "Ascend — keep relics, reset run";
+                        label.text = "Ascend — reset run";
                 }
                 _ascend.interactable = economy.CanAscend();
+            }
+
+            if (_respec != null)
+            {
+                int spent = GloryTree.Spent(profile);
+                var label = _respec.GetComponentInChildren<Text>();
+                if (label != null)
+                    label.text = spent > 0 ? "Respec  +" + spent : "Respec";
+                _respec.interactable = spent > 0;
             }
 
             if (_muts != null)
@@ -194,6 +218,19 @@ namespace MyClicker.UI
             rt.sizeDelta = new Vector2(0f, height);
         }
 
+        static void AddNote(RectTransform parent, string text, float y, float height)
+        {
+            var label = StoneUi.Label(parent, "TreeNote", text, 16, TextAnchor.UpperLeft);
+            label.horizontalOverflow = HorizontalWrapMode.Wrap;
+            label.verticalOverflow = VerticalWrapMode.Overflow;
+            var rt = label.rectTransform;
+            rt.anchorMin = new Vector2(0.04f, 1f);
+            rt.anchorMax = new Vector2(0.96f, 1f);
+            rt.pivot = new Vector2(0.5f, 1f);
+            rt.anchoredPosition = new Vector2(0f, y);
+            rt.sizeDelta = new Vector2(0f, height);
+        }
+
         MutRow BuildMutRow(RectTransform parent, GameConfig.UiSkin skin, string id, float y, float rowH)
         {
             var row = PlaceRow(parent, "Mut_" + id, skin, y, rowH);
@@ -211,28 +248,10 @@ namespace MyClicker.UI
 
         NodeRow BuildTreeNode(RectTransform parent, GameConfig.UiSkin skin, GloryNode node, float y, float rowH)
         {
-            float x0 = 0.03f;
-            float x1 = 0.97f;
-            if (node.treeCol == 0)
-            {
-                x0 = 0.03f;
-                x1 = 0.49f;
-            }
-            else if (node.treeCol == 1)
-            {
-                x0 = 0.51f;
-                x1 = 0.97f;
-            }
-            else
-            {
-                x0 = 0.16f;
-                x1 = 0.84f;
-            }
-
             var row = StoneUi.Panel(parent, "Node_" + node.id, skin);
             var rt = row.rectTransform;
-            rt.anchorMin = new Vector2(x0, 1f);
-            rt.anchorMax = new Vector2(x1, 1f);
+            rt.anchorMin = new Vector2(0.02f, 1f);
+            rt.anchorMax = new Vector2(0.98f, 1f);
             rt.pivot = new Vector2(0.5f, 1f);
             rt.anchoredPosition = new Vector2(0f, y);
             rt.sizeDelta = new Vector2(0f, rowH - 8f);
@@ -269,6 +288,18 @@ namespace MyClicker.UI
         void BuyNode(string id)
         {
             GameServices.Instance?.Economy.TryBuyGloryNode(id);
+            Refresh();
+        }
+
+        void Respec()
+        {
+            var services = GameServices.Instance;
+            if (services == null || !services.Economy.TryRespecGlory())
+                return;
+            int refund = services.Economy.LastRespecGlory;
+            var battle = Object.FindFirstObjectByType<TapCombatController>();
+            if (refund > 0)
+                battle?.Announce("Respec — +" + refund + " Glory", 2.6f, false);
             Refresh();
         }
 

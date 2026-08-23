@@ -92,13 +92,17 @@ namespace MyClicker.UI
                     int col = Mathf.RoundToInt(economy.CollectionBonus * 100f);
                     int shard = Mathf.RoundToInt(economy.ShardBonus * 100f);
                     int relics = economy.Relics;
-                    string next = relics >= 12
+                    string next = relics >= 24
                         ? "Collection max"
-                        : relics >= 8
-                            ? "Next  12 relics  +10%"
-                            : relics >= 4
-                                ? "Next  8 relics  +5%"
-                                : "Next  4 relics  +2%";
+                        : relics >= 16
+                            ? "Next  24 relics  +20%"
+                            : relics >= 12
+                                ? "Next  16 relics  +15%"
+                                : relics >= 8
+                                    ? "Next  12 relics  +10%"
+                                    : relics >= 4
+                                        ? "Next  8 relics  +5%"
+                                        : "Next  4 relics  +2%";
                     _summary.text = "Relics  " + relics + "  Collection +" + col +
                                     "%    Shards  " + economy.Shards + "/" + economy.ShardCap +
                                     "  +" + shard + "% tap and gold\n" + next +

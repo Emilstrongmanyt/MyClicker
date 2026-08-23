@@ -138,7 +138,7 @@ namespace MyClicker.Data
 
         const int UniqueSpriteCycle = 4;
 
-        public UnitVisual PickEnemy(ZoneDef zone, int wave, int cycle = 0)
+        public UnitVisual PickEnemy(ZoneDef zone, int wave, int cycle = 0, int zoneIndex = 0)
         {
             if (cycle >= UniqueSpriteCycle)
             {
@@ -147,11 +147,12 @@ namespace MyClicker.Data
                     return extra[Mathf.Abs(wave - 1 + cycle * 7) % extra.Length];
             }
 
+            int visualCycle = VisualCycle(cycle, zoneIndex);
             if (zone != null && zone.enemyIds != null && zone.enemyIds.Length > 0)
             {
                 string id = zone.enemyIds[Mathf.Abs(wave - 1) % zone.enemyIds.Length];
-                var visual = cycle > 0
-                    ? FindEnemy(VariantId(id, cycle)) ?? FindEnemy(id)
+                var visual = visualCycle > 0
+                    ? FindEnemy(VariantId(id, visualCycle)) ?? FindEnemy(id)
                     : FindEnemy(id);
                 if (visual != null)
                     return visual;
@@ -223,6 +224,17 @@ namespace MyClicker.Data
             if (visual == null || string.IsNullOrEmpty(visual.id))
                 return false;
             return visual.id.StartsWith(a) || visual.id.StartsWith(b);
+        }
+
+        static int VisualCycle(int cycle, int zoneIndex)
+        {
+            if (cycle > 0)
+                return cycle;
+            if (zoneIndex >= 7)
+                return 2;
+            if (zoneIndex >= 4)
+                return 1;
+            return 0;
         }
 
         static string VariantId(string id, int cycle)

@@ -97,7 +97,7 @@ namespace MyClicker.UI
                 "   regen " + eco.FocusRegen.ToString("0.0") + "/s" +
                 "\nSlam  x" + eco.SlamMul.ToString("0.0") +
                 "   Fury  x" + (1f + eco.FuryBonus).ToString("0.00") + "  " + eco.FurySeconds.ToString("0.0") + "s" +
-                "   Sweep  x" + eco.SweepMul.ToString("0.0") +
+                "   Sweep  " + (eco.ReaperSweep ? "Reaper x" : "x") + eco.SweepMul.ToString("0.0") +
                 "\nRenown  +" + Mathf.RoundToInt(services.Deeds != null ? services.Deeds.Renown * 100f : 0f) + "%" +
                 "\nCollection  +" + Mathf.RoundToInt(eco.CollectionBonus * 100f) +
                 "%   Shards  " + eco.Shards + "/" + eco.ShardCap + "  +" + Mathf.RoundToInt(eco.ShardBonus * 100f) + "%" +

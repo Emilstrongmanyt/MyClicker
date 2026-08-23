@@ -160,17 +160,20 @@ namespace MyClicker.Economy
             MyClicker.Audio.AudioDirector.Ensure().PlaySfx("equip");
         }
 
-        public string TryRollDrop(bool boss)
+        public string TryRollDrop(bool boss, bool force = false)
         {
             if (_hero == null)
                 return null;
-            float chance = boss ? Eco.gearBossDropChance : Eco.gearDropChance;
-            chance += _services.Save.Profile.harvestLevel * Eco.harvestGearPerLevel;
-            chance *= 1f + EconomyService.Mutation(_services.Save.Profile.mutationLuck, Eco.mutationPerDecade);
-            if (_services.Economy != null && _services.Economy.HasGlory(GloryIds.RelicSense))
-                chance *= 1.25f;
-            if (UnityEngine.Random.value > chance)
-                return null;
+            if (!force)
+            {
+                float chance = boss ? Eco.gearBossDropChance : Eco.gearDropChance;
+                chance += _services.Save.Profile.harvestLevel * Eco.harvestGearPerLevel;
+                chance *= 1f + EconomyService.Mutation(_services.Save.Profile.mutationLuck, Eco.mutationPerDecade);
+                if (_services.Economy != null && _services.Economy.HasGlory(GloryIds.RelicSense))
+                    chance *= 1.25f;
+                if (UnityEngine.Random.value > chance)
+                    return null;
+            }
 
             var slots = new List<string>(HeroCharacterAdapter.GearSlots);
             for (int i = slots.Count - 1; i > 0; i--)

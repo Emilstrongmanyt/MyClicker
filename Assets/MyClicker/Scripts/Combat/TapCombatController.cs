@@ -174,7 +174,7 @@ namespace MyClicker.Combat
         {
             var services = GameServices.Instance;
             var zone = services.Catalog.ZoneAt(services.Save.Profile.zone);
-            var visual = services.Catalog.PickEnemy(zone, services.Save.Profile.wave, services.Save.Profile.cycle);
+            var visual = services.Catalog.PickEnemy(zone, services.Save.Profile.wave, services.Save.Profile.cycle, services.Save.Profile.zone);
             _spawner.SpawnRegular(visual, EnemyHp(false));
         }
 
@@ -316,6 +316,17 @@ namespace MyClicker.Combat
             if (_spawner == null)
                 return true;
             float mul = economy.SweepMul;
+            if (economy.ReaperSweep)
+            {
+                var boss = _spawner.CurrentBoss;
+                var enemy = boss != null && boss.Alive && boss.Vulnerable
+                    ? boss
+                    : _spawner.Nearest(HeroSlot());
+                if (enemy != null && enemy.Alive && enemy.Vulnerable)
+                    StrikeMul(enemy, mul, tap: true);
+                return true;
+            }
+
             var alive = _spawner.Alive;
             for (int i = 0; i < alive.Count; i++)
             {
@@ -433,12 +444,37 @@ namespace MyClicker.Combat
             if (last <= 0)
                 return;
             long now = System.DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            double gold = services.Economy.EstimateOfflineGold(now - last);
+            long away = now - last;
+            double gold = services.Economy.EstimateOfflineGold(away);
             if (gold <= 0d)
                 return;
             services.Save.AddGold(gold);
-            ShowToast("While you were away\n+" + NumberFmt.Compact(gold) + " gold", 8f);
+            string toast = "While you were away\n+" + NumberFmt.Compact(gold) + " gold";
+            if (away >= 15 * 60)
+            {
+                string potion = OfflinePotion();
+                services.Economy.GrantPotion(potion);
+                var def = services.Catalog != null ? services.Catalog.FindPotion(potion) : null;
+                toast += "\n+" + (def != null ? def.displayName : "Potion");
+            }
+
+            if (away >= 30 * 60 && services.Gear != null)
+            {
+                string relic = services.Gear.TryRollDrop(true, force: true);
+                if (!string.IsNullOrEmpty(relic))
+                    toast += "\n" + relic;
+            }
+
+            ShowToast(toast, 8f);
             FxDirector.Ensure().WaveClear(HeroSlot() + Vector3.up * 1.2f);
+        }
+
+        static string OfflinePotion()
+        {
+            float roll = Random.value;
+            if (roll < 0.4f) return ContentIds.PotMight;
+            if (roll < 0.75f) return ContentIds.PotSwift;
+            return ContentIds.PotGold;
         }
 
         public string ToastMessage => _toastLife > 0f ? _toast : null;

@@ -230,9 +230,12 @@ namespace MyClicker.UI
                 _name.text = profile.displayName;
             if (_zone != null)
             {
-                _zone.text = profile.cycle > 0
-                    ? zone.displayName + "  " + profile.cycle
-                    : zone.displayName;
+                string name = zone.displayName;
+                if (profile.cycle > 0)
+                    name += "  Endless " + profile.cycle;
+                else if (profile.endlessUnlocked)
+                    name += "  Cycle 0";
+                _zone.text = name;
             }
             if (_wave != null)
                 _wave.text = WaveText(profile, services);
@@ -278,7 +281,12 @@ namespace MyClicker.UI
             if (_fury != null)
                 _fury.interactable = economy.Focus >= combat.furyCost;
             if (_sweep != null)
+            {
                 _sweep.interactable = economy.Focus >= combat.sweepCost;
+                var label = _sweep.GetComponentInChildren<Text>();
+                if (label != null)
+                    label.text = economy.ReaperSweep ? "Reaper" : "Sweep";
+            }
 
             _shop?.Refresh();
             _gear?.Refresh();
@@ -300,9 +308,16 @@ namespace MyClicker.UI
             HoldPress.Bind(_fury.gameObject, () => _battle?.TryFocusFury(), () => ShowFocusTip(
                 "Fury",
                 "Spend " + Mathf.RoundToInt(combat.furyCost) + " Focus to boost tap and auto damage for a few seconds."), hide);
-            HoldPress.Bind(_sweep.gameObject, () => _battle?.TrySweep(), () => ShowFocusTip(
-                "Sweep",
-                "Spend " + Mathf.RoundToInt(combat.sweepCost) + " Focus to hit every invader on the field. Does not harm bosses."), hide);
+            HoldPress.Bind(_sweep.gameObject, () => _battle?.TrySweep(), () =>
+            {
+                bool reaper = GameServices.Instance != null && GameServices.Instance.Economy != null
+                    && GameServices.Instance.Economy.ReaperSweep;
+                ShowFocusTip(
+                    reaper ? "Reaper Sweep" : "Sweep",
+                    reaper
+                        ? "Spend " + Mathf.RoundToInt(combat.sweepCost) + " Focus to hit the nearest foe, including bosses, for heavy damage."
+                        : "Spend " + Mathf.RoundToInt(combat.sweepCost) + " Focus to hit every invader on the field. Does not harm bosses. Spec Reaper Sweep in Glory to change this.");
+            }, hide);
         }
 
         void ShowFocusTip(string title, string body)
@@ -315,9 +330,16 @@ namespace MyClicker.UI
             int per = 10;
             if (services.Config != null)
                 per = Mathf.Max(1, services.Config.combat.wavesPerBoss);
-            if (profile.wave > 0 && profile.wave % per == 0)
-                return "BOSS";
-            return "Wave " + profile.wave;
+            string wave = profile.wave > 0 && profile.wave % per == 0
+                ? "BOSS"
+                : "Wave " + profile.wave;
+            if (profile.cycle > 0 || profile.endlessUnlocked)
+            {
+                int depth = services.Economy != null ? services.Economy.DepthWave : profile.wave;
+                wave += "  ·  " + depth;
+            }
+
+            return wave;
         }
 
         static void OutlineBar(StoneUi.HealthBarView bar)
