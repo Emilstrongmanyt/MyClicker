@@ -24,6 +24,7 @@ namespace MyClicker.UI
         };
 
         public bool Open => _open;
+        public System.Action RequestStats;
 
         public void Build(Transform parent, GameConfig.UiSkin skin)
         {
@@ -32,7 +33,9 @@ namespace MyClicker.UI
             StoneUi.Place(panel, 0.04f, 0.16f, 0.96f, 0.78f);
 
             var title = StoneUi.Label(panel.transform, "Title", "Armory", 40, TextAnchor.MiddleCenter);
-            StoneUi.Place(title, 0.08f, 0.90f, 0.78f, 0.98f);
+            StoneUi.Place(title, 0.08f, 0.90f, 0.52f, 0.98f);
+            var stats = StoneUi.Button(panel.transform, "StatsBtn", "Stats", skin, () => RequestStats?.Invoke());
+            StoneUi.Place(stats, 0.54f, 0.90f, 0.78f, 0.98f);
             var close = StoneUi.Button(panel.transform, "Close", "X", skin, Hide);
             StoneUi.Place(close, 0.82f, 0.90f, 0.96f, 0.98f);
 

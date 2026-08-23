@@ -16,6 +16,11 @@ namespace MyClicker.Economy
         public const string NightMarket = "night_market";
         public const string BloodOath = "blood_oath";
         public const string GiantsDue = "giants_due";
+        public const string CrushingSlam = "crushing_slam";
+        public const string EternalFury = "eternal_fury";
+        public const string WideSweep = "wide_sweep";
+        public const string IronPulse = "iron_pulse";
+        public const string TitanHeart = "titan_heart";
     }
 
     [System.Serializable]
@@ -28,110 +33,63 @@ namespace MyClicker.Economy
         public string requiresId;
         public int requiresAscend;
         public int requiresBestZone;
+        public int treeRow;
+        public int treeCol;
     }
 
     public static class GloryTree
     {
         public static readonly GloryNode[] All =
         {
-            new GloryNode
-            {
-                id = GloryIds.Legacy,
-                title = "Legacy",
-                blurb = "First ascend opens the Glory tree. Relics and Deeds already stay.",
-                cost = 0,
-                requiresAscend = 1
-            },
-            new GloryNode
-            {
-                id = GloryIds.KeepMight,
-                title = "Keep Might",
-                blurb = "Might ranks survive the next ascend.",
-                cost = 8,
-                requiresId = GloryIds.Legacy
-            },
-            new GloryNode
-            {
-                id = GloryIds.UnspentTithe,
-                title = "Unspent Tithe",
-                blurb = "Unspent Glory also raises gold this run (small, capped).",
-                cost = 5,
-                requiresId = GloryIds.Legacy
-            },
-            new GloryNode
-            {
-                id = GloryIds.FocusWell,
-                title = "Focus Well",
-                blurb = "+25% Focus max and +20% regen.",
-                cost = 6,
-                requiresId = GloryIds.Legacy
-            },
-            new GloryNode
-            {
-                id = GloryIds.Steel,
-                title = "Synergy: Steel",
-                blurb = "Each temper rank on relics adds a little tap.",
-                cost = 10,
-                requiresId = GloryIds.Legacy
-            },
-            new GloryNode
-            {
-                id = GloryIds.KeepFortune,
-                title = "Keep Fortune",
-                blurb = "Fortune ranks survive the next ascend.",
-                cost = 12,
-                requiresId = GloryIds.KeepMight
-            },
-            new GloryNode
-            {
-                id = GloryIds.Hoard,
-                title = "Synergy: Hoard",
-                blurb = "Each owned relic adds a little gold.",
-                cost = 10,
-                requiresId = GloryIds.Legacy
-            },
-            new GloryNode
-            {
-                id = GloryIds.DeedAngel,
-                title = "Deed Angel",
-                blurb = "Renown from Deeds is 50% stronger.",
-                cost = 15,
-                requiresId = GloryIds.Legacy
-            },
-            new GloryNode
-            {
-                id = GloryIds.DeepRoad,
-                title = "Deep Road",
-                blurb = "After Harvest Night the road loops. Cycles pay a little extra.",
-                cost = 20,
-                requiresId = GloryIds.Legacy,
-                requiresBestZone = 9
-            },
-            new GloryNode
-            {
-                id = GloryIds.NightMarket,
-                title = "Night Market",
-                blurb = "Away gold is a bit better. Still weaker than playing.",
-                cost = 8,
-                requiresId = GloryIds.Legacy
-            },
-            new GloryNode
-            {
-                id = GloryIds.BloodOath,
-                title = "Blood Oath",
-                blurb = "Permanent +25% tap and auto.",
-                cost = 25,
-                requiresId = GloryIds.KeepMight
-            },
-            new GloryNode
-            {
-                id = GloryIds.GiantsDue,
-                title = "Giant's Due",
-                blurb = "Permanent +50% tap and auto.",
-                cost = 50,
-                requiresId = GloryIds.BloodOath
-            },
+            Node(GloryIds.Legacy, "Legacy", "Opens the Glory talent tree.", 0, null, 0, -1, 1, 0),
+            Node(GloryIds.KeepMight, "Keep Might", "Might ranks survive ascend.", 40, GloryIds.Legacy, 1, 0, 0, 0),
+            Node(GloryIds.FocusWell, "Focus Well", "+25% Focus max and +50% regen.", 50, GloryIds.Legacy, 1, 1, 0, 0),
+            Node(GloryIds.KeepFortune, "Keep Fortune", "Fortune ranks survive ascend.", 120, GloryIds.KeepMight, 2, 0, 0, 0),
+            Node(GloryIds.UnspentTithe, "Unspent Tithe", "Unspent Glory raises run gold (capped).", 35, GloryIds.Legacy, 2, 1, 0, 0),
+            Node(GloryIds.Steel, "Steel", "Temper ranks add tap.", 90, GloryIds.KeepMight, 3, 0, 0, 0),
+            Node(GloryIds.Hoard, "Hoard", "Each relic adds gold.", 90, GloryIds.Legacy, 3, 1, 0, 0),
+            Node(GloryIds.NightMarket, "Night Market", "Away gold is a bit better.", 45, GloryIds.UnspentTithe, 4, 0, 0, 0),
+            Node(GloryIds.DeedAngel, "Deed Angel", "Renown from Deeds is 50% stronger.", 180, GloryIds.Legacy, 4, 1, 0, 0),
+            Node(GloryIds.DeepRoad, "Deep Road", "Endless cycles pay extra.", 220, GloryIds.Legacy, 5, 0, 0, 9),
+            Node(GloryIds.CrushingSlam, "Crushing Slam", "Slam hits much harder.", 300, GloryIds.FocusWell, 5, 1, 0, 0),
+            Node(GloryIds.EternalFury, "Eternal Fury", "Fury lasts longer and hits harder.", 400, GloryIds.FocusWell, 6, 0, 0, 0),
+            Node(GloryIds.WideSweep, "Wide Sweep", "Sweep hits much harder.", 350, GloryIds.FocusWell, 6, 1, 0, 0),
+            Node(GloryIds.BloodOath, "Blood Oath", "+25% tap and auto.", 200, GloryIds.KeepMight, 7, 0, 0, 0),
+            Node(GloryIds.GiantsDue, "Giant's Due", "+50% tap and auto.", 600, GloryIds.BloodOath, 7, 1, 0, 0),
+            Node(GloryIds.IronPulse, "Iron Pulse", "Permanent x2 tap and auto.", 2500, GloryIds.KeepMight, 8, -1, 3, 0),
+            Node(GloryIds.TitanHeart, "Titan Heart", "Another permanent x2 tap and auto.", 8000, GloryIds.IronPulse, 9, -1, 5, 0),
         };
+
+        static GloryNode Node(string id, string title, string blurb, int cost, string requiresId, int row, int col, int requiresAscend, int requiresBestZone)
+        {
+            return new GloryNode
+            {
+                id = id,
+                title = title,
+                blurb = blurb,
+                cost = cost,
+                requiresId = requiresId,
+                treeRow = row,
+                treeCol = col,
+                requiresAscend = requiresAscend,
+                requiresBestZone = requiresBestZone
+            };
+        }
+
+        public static int MaxRow
+        {
+            get
+            {
+                int max = 0;
+                for (int i = 0; i < All.Length; i++)
+                {
+                    if (All[i].treeRow > max)
+                        max = All[i].treeRow;
+                }
+
+                return max;
+            }
+        }
 
         public static GloryNode Find(string id)
         {
@@ -192,13 +150,13 @@ namespace MyClicker.Economy
             if (Has(profile, node.id))
                 return "Owned";
             if (node.requiresAscend > 0 && profile.ascendCount < node.requiresAscend)
-                return "Ascend first";
+                return "Ascend " + node.requiresAscend;
             if (!string.IsNullOrEmpty(node.requiresId) && !Has(profile, node.requiresId))
                 return "Needs " + Title(node.requiresId);
             if (node.requiresBestZone > 0 && profile.bestZone < node.requiresBestZone)
                 return "Reach Harvest Night";
             if (profile.glory < node.cost)
-                return "Need " + node.cost + " Glory";
+                return "Need " + node.cost;
             return "";
         }
 

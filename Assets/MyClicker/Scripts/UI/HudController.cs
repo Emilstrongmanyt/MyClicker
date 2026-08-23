@@ -27,6 +27,7 @@ namespace MyClicker.UI
         GloryPanel _glory;
         DeedPanel _deeds;
         PotionTray _potions;
+        StatsPanel _stats;
         StoneUi.HealthBarView _focus;
         Button _slam;
         Button _fury;
@@ -54,20 +55,20 @@ namespace MyClicker.UI
             StoneUi.Place(_wave, 0.03f, 0.880f, 0.42f, 0.918f);
 
             _goldIcon = StoneUi.Icon(parent, "GoldIcon", icons != null ? icons.gold : skin.coinIcon);
-            StoneUi.Place(_goldIcon, 0.62f, 0.952f, 0.68f, 0.990f);
+            StoneUi.Place(_goldIcon, 0.80f, 0.952f, 0.855f, 0.990f);
             _gold = StoneUi.OutlineLabel(parent, "Gold", "", 26, TextAnchor.MiddleRight);
-            StoneUi.Place(_gold, 0.68f, 0.952f, 0.97f, 0.990f);
+            StoneUi.Place(_gold, 0.855f, 0.952f, 0.97f, 0.990f);
             _dustIcon = StoneUi.Icon(parent, "DustIcon", icons != null ? icons.dust : null);
-            StoneUi.Place(_dustIcon, 0.62f, 0.910f, 0.68f, 0.950f);
+            StoneUi.Place(_dustIcon, 0.80f, 0.910f, 0.855f, 0.950f);
             _dust = StoneUi.OutlineLabel(parent, "Dust", "", 22, TextAnchor.MiddleRight);
-            StoneUi.Place(_dust, 0.68f, 0.910f, 0.97f, 0.950f);
+            StoneUi.Place(_dust, 0.855f, 0.910f, 0.97f, 0.950f);
 
             _taps = StoneUi.OutlineLabel(parent, "Taps", "", 20, TextAnchor.MiddleRight);
-            StoneUi.Place(_taps, 0.62f, 0.868f, 0.97f, 0.908f);
+            StoneUi.Place(_taps, 0.72f, 0.868f, 0.97f, 0.908f);
             _dps = StoneUi.OutlineLabel(parent, "Dps", "", 20, TextAnchor.MiddleRight);
-            StoneUi.Place(_dps, 0.62f, 0.826f, 0.97f, 0.866f);
+            StoneUi.Place(_dps, 0.72f, 0.826f, 0.97f, 0.866f);
             _gps = StoneUi.OutlineLabel(parent, "Gps", "", 20, TextAnchor.MiddleRight);
-            StoneUi.Place(_gps, 0.62f, 0.784f, 0.97f, 0.824f);
+            StoneUi.Place(_gps, 0.72f, 0.784f, 0.97f, 0.824f);
 
             _bossBar = StoneUi.HealthBar(parent, "BossBar", skin);
             StoneUi.Place(_bossBar.root.GetComponent<RectTransform>(), 0.58f, 0.688f, 0.97f, 0.772f);
@@ -91,6 +92,7 @@ namespace MyClicker.UI
                 _shop.Hide();
                 _glory.Hide();
                 _deeds.Hide();
+                _stats.Hide();
                 _gear.Toggle();
             });
             StoneUi.Place(armoryBtn, 0.42f, 0.018f, 0.68f, 0.108f);
@@ -102,6 +104,7 @@ namespace MyClicker.UI
                 _gear.Hide();
                 _glory.Hide();
                 _deeds.Hide();
+                _stats.Hide();
                 _shop.Toggle();
             });
             StoneUi.Place(shopBtn, 0.70f, 0.018f, 0.96f, 0.108f);
@@ -137,11 +140,14 @@ namespace MyClicker.UI
             _glory.Build(parent, skin);
             _deeds = gameObject.AddComponent<DeedPanel>();
             _deeds.Build(parent, skin);
+            _stats = gameObject.AddComponent<StatsPanel>();
+            _stats.Build(parent, skin);
             _shop.RequestGlory = () =>
             {
                 _gear.Hide();
                 _shop.Hide();
                 _deeds.Hide();
+                _stats.Hide();
                 _glory.Toggle();
             };
             _glory.RequestDeeds = () =>
@@ -149,7 +155,16 @@ namespace MyClicker.UI
                 _gear.Hide();
                 _shop.Hide();
                 _glory.Hide();
+                _stats.Hide();
                 _deeds.Toggle();
+            };
+            _gear.RequestStats = () =>
+            {
+                _shop.Hide();
+                _gear.Hide();
+                _glory.Hide();
+                _deeds.Hide();
+                _stats.Toggle();
             };
             _potions = gameObject.AddComponent<PotionTray>();
             _potions.Build(parent, skin);
@@ -269,6 +284,7 @@ namespace MyClicker.UI
             _gear?.Refresh();
             _glory?.Refresh();
             _deeds?.Refresh();
+            _stats?.Refresh();
             _potions?.Refresh();
         }
 

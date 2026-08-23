@@ -109,10 +109,12 @@ namespace MyClicker.Combat
                 return;
             }
 
-            int cap = combat.maxAlive + Mathf.Clamp((GameServices.Instance.Save.Profile.wave - 1) / 15, 0, 4);
+            var economy = GameServices.Instance.Economy;
+            int cap = economy != null ? economy.SpawnCap : combat.maxAlive;
             if (_spawner.AliveCount >= cap)
                 return;
-            if (_killsThisWave + _spawner.AliveCount >= combat.killsPerWave)
+            int need = economy != null ? economy.WaveKillNeed : combat.killsPerWave;
+            if (_killsThisWave + _spawner.AliveCount >= need)
             {
                 if (_spawner.AliveCount == 0)
                     _awaitingClear = true;
@@ -289,7 +291,7 @@ namespace MyClicker.Combat
             FxDirector.Ensure().Slam(enemy != null ? enemy.transform.position : HeroSlot());
             if (enemy == null || !enemy.Alive)
                 return true;
-            StrikeMul(enemy, GameServices.Instance.Config.economy.slamDamageMul, tap: true);
+            StrikeMul(enemy, economy.SlamMul, tap: true);
             return true;
         }
 
@@ -304,7 +306,7 @@ namespace MyClicker.Combat
             FxDirector.Ensure().Sweep(HeroSlot() + Vector3.up * 0.4f);
             if (_spawner == null)
                 return true;
-            float mul = GameServices.Instance.Config.economy.sweepDamageMul;
+            float mul = economy.SweepMul;
             var alive = _spawner.Alive;
             for (int i = 0; i < alive.Count; i++)
             {
@@ -415,7 +417,10 @@ namespace MyClicker.Combat
                 FxDirector.Ensure().Potion(ContentIds.PotGold, enemy.transform.position + Vector3.up * 0.5f);
             }
             _killsThisWave++;
-            if (enemy.IsBoss || _killsThisWave >= Settings().killsPerWave)
+            int need = GameServices.Instance.Economy != null
+                ? GameServices.Instance.Economy.WaveKillNeed
+                : Settings().killsPerWave;
+            if (enemy.IsBoss || _killsThisWave >= need)
                 _awaitingClear = true;
             return true;
         }

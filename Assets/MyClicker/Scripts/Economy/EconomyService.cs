@@ -32,7 +32,7 @@ namespace MyClicker.Economy
                 if (Profile.mightBuffLeft > 0f)
                     value *= 1f + Eco.mightPotionBonus;
                 if (_focusFuryLeft > 0f)
-                    value *= 1f + Eco.focusFuryBonus;
+                    value *= 1f + FuryBonus;
                 value *= 1f + 0.08f * Profile.oathVow;
                 value *= 1f + Renown();
                 value *= 1f + Mutation(Profile.mutationMight, Eco.mutationPerDecade);
@@ -41,6 +41,10 @@ namespace MyClicker.Economy
                     value *= 1.25f;
                 if (HasGlory(GloryIds.GiantsDue))
                     value *= 1.5f;
+                if (HasGlory(GloryIds.IronPulse))
+                    value *= 2f;
+                if (HasGlory(GloryIds.TitanHeart))
+                    value *= 2f;
                 if (Profile.gloryTapLeft > 0f)
                     value *= Mathf.Max(1f, Profile.gloryTapMul);
                 if (_surgeLeft > 0f)
@@ -66,7 +70,7 @@ namespace MyClicker.Economy
                 if (HasGlory(GloryIds.Hoard))
                     value *= 1f + RelicCount() * 0.015f;
                 value *= MilestoneMul();
-                value *= CycleMul();
+                value *= CycleGoldMul();
                 var zone = _services.Catalog.ZoneAt(Profile.zone);
                 return value * Mathf.Max(0.25f, zone.goldMul);
             }
@@ -89,18 +93,37 @@ namespace MyClicker.Economy
 
         public float AutoDps => TapDamage * OverclockMul / Mathf.Max(0.2f, AutoInterval);
 
-        public float CycleMul()
+        public float CycleMul() => CycleScale(1.65f);
+
+        public float CycleGoldMul() => CycleScale(1.50f);
+
+        public float CycleGloryMul() => CycleScale(1.55f);
+
+        float CycleScale(float growth)
         {
             int cycle = Mathf.Max(0, Profile.cycle);
             if (cycle <= 0)
                 return 1f;
-            float growth = Eco.endlessCycleGrowth;
             if (growth < 1.05f)
-                growth = 1.35f;
+                growth = 1.65f;
             float value = Mathf.Pow(growth, cycle);
             if (HasGlory(GloryIds.DeepRoad))
                 value *= 1.08f;
             return value;
+        }
+
+        public int WaveKillNeed
+        {
+            get { return Combat.killsPerWave + Mathf.Max(0, Profile.cycle) * 4; }
+        }
+
+        public int SpawnCap
+        {
+            get
+            {
+                int extra = Mathf.Clamp((Profile.wave - 1) / 15, 0, 4);
+                return Mathf.Min(12, Combat.maxAlive + Mathf.Max(0, Profile.cycle) * 2 + extra);
+            }
         }
 
         public bool EndlessOpen
@@ -147,7 +170,49 @@ namespace MyClicker.Economy
         public const float GodstrikeSeconds = 12f;
         public const float GodstrikeMul = 3.5f;
 
-        public float FurySeconds => Eco.focusFurySeconds > 0f ? Eco.focusFurySeconds : 8f;
+        public float FurySeconds
+        {
+            get
+            {
+                float seconds = Eco.focusFurySeconds > 0f ? Eco.focusFurySeconds : 8f;
+                if (HasGlory(GloryIds.EternalFury))
+                    seconds *= 1.5f;
+                return seconds;
+            }
+        }
+
+        public float SlamMul
+        {
+            get
+            {
+                float value = Eco.slamDamageMul > 0f ? Eco.slamDamageMul : 5.5f;
+                if (HasGlory(GloryIds.CrushingSlam))
+                    value *= 1.6f;
+                return value;
+            }
+        }
+
+        public float SweepMul
+        {
+            get
+            {
+                float value = Eco.sweepDamageMul > 0f ? Eco.sweepDamageMul : 3f;
+                if (HasGlory(GloryIds.WideSweep))
+                    value *= 1.6f;
+                return value;
+            }
+        }
+
+        public float FuryBonus
+        {
+            get
+            {
+                float value = Eco.focusFuryBonus > 0f ? Eco.focusFuryBonus : 1.25f;
+                if (HasGlory(GloryIds.EternalFury))
+                    value *= 1.25f;
+                return value;
+            }
+        }
         public float SurgeSeconds => 10f;
         public float SurgeLeft => _surgeLeft;
         public float GloryTapLeft => Profile.gloryTapLeft;
@@ -168,9 +233,9 @@ namespace MyClicker.Economy
         {
             get
             {
-                float regen = Combat.focusRegen > 0f ? Combat.focusRegen : 10f;
+                float regen = Combat.focusRegen > 0f ? Combat.focusRegen : 2f;
                 if (HasGlory(GloryIds.FocusWell))
-                    regen *= 1.2f;
+                    regen *= 1.5f;
                 return regen;
             }
         }
@@ -594,7 +659,7 @@ namespace MyClicker.Economy
         {
             if (!TrySpendFocus(Combat.furyCost))
                 return false;
-            _focusFuryLeft = Mathf.Max(_focusFuryLeft, Eco.focusFurySeconds);
+            _focusFuryLeft = Mathf.Max(_focusFuryLeft, FurySeconds);
             return true;
         }
 
@@ -651,9 +716,9 @@ namespace MyClicker.Economy
 
         public int GloryForBoss(int zone)
         {
-            int glory = Eco.gloryPerBoss + Mathf.FloorToInt(Eco.gloryPerBossPerZone * Mathf.Max(0, zone));
-            glory += Mathf.Max(0, Profile.cycle) * (2 + Mathf.Max(0, zone));
-            return Mathf.Max(2, glory);
+            float glory = Eco.gloryPerBoss + Eco.gloryPerBossPerZone * Mathf.Max(0, zone);
+            glory *= CycleGloryMul();
+            return Mathf.Max(2, Mathf.RoundToInt(glory));
         }
 
         public bool TryBuyWarCry()

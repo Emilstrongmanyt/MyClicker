@@ -81,13 +81,13 @@ namespace MyClicker.UI
             var veil = Icon(frame.transform, "Veil", SolidSprite());
             veil.preserveAspect = false;
             veil.type = Image.Type.Filled;
-            veil.fillMethod = Image.FillMethod.Vertical;
-            veil.fillOrigin = (int)Image.OriginVertical.Top;
+            veil.fillMethod = Image.FillMethod.Horizontal;
+            veil.fillOrigin = (int)Image.OriginHorizontal.Left;
             veil.fillAmount = 0f;
-            veil.color = new Color(0.04f, 0.03f, 0.02f, 0.62f);
-            Place(veil, 0.10f, 0.22f, 0.90f, 0.94f);
-            var time = OutlineLabel(frame.transform, "Time", "", 22, TextAnchor.LowerCenter);
-            Place(time, 0.04f, 0.00f, 0.96f, 0.40f);
+            veil.color = new Color(1f, 0.82f, 0.28f, 0.92f);
+            Place(veil, 0.12f, 0.04f, 0.88f, 0.20f);
+            var time = OutlineLabel(frame.transform, "Time", "", 18, TextAnchor.LowerCenter);
+            Place(time, 0.04f, 0.00f, 0.96f, 0.28f);
             time.color = new Color(1f, 0.92f, 0.55f);
             var badge = OutlineLabel(frame.transform, "Badge", "", 18, TextAnchor.UpperRight);
             Place(badge, 0.42f, 0.68f, 0.96f, 0.98f);
@@ -125,7 +125,7 @@ namespace MyClicker.UI
                     bool ticking = left > 0f && duration > 0.05f;
                     veil.gameObject.SetActive(ticking);
                     if (ticking)
-                        veil.fillAmount = 1f - Mathf.Clamp01(left / duration);
+                        veil.fillAmount = Mathf.Clamp01(left / duration);
                 }
 
                 if (time != null)
@@ -376,19 +376,20 @@ namespace MyClicker.UI
             inset.transform.SetParent(frame.transform, false);
             Place(inset.GetComponent<RectTransform>(), 0.035f, 0.10f, 0.965f, 0.58f);
             var track = inset.GetComponent<Image>();
-            track.sprite = SolidSprite();
-            track.color = new Color(0.08f, 0.07f, 0.06f, 0.5f);
+            track.sprite = skin != null && skin.hpBackground != null ? skin.hpBackground : SolidSprite();
+            track.type = track.sprite != null && track.sprite.border.sqrMagnitude > 1f ? Image.Type.Sliced : Image.Type.Simple;
+            track.color = Color.white;
 
             var fillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
             fillGo.transform.SetParent(inset.transform, false);
             Stretch(fillGo.GetComponent<RectTransform>(), 0, 0);
             var fill = fillGo.GetComponent<Image>();
-            fill.sprite = SolidSprite();
+            fill.sprite = skin != null && skin.hpFill != null ? skin.hpFill : SolidSprite();
             fill.type = Image.Type.Filled;
             fill.fillMethod = Image.FillMethod.Horizontal;
             fill.fillOrigin = (int)Image.OriginHorizontal.Left;
             fill.fillAmount = 1f;
-            fill.color = new Color(0.28f, 0.82f, 0.32f, 1f);
+            fill.color = Color.white;
             fill.raycastTarget = false;
 
             var title = Label(frame.transform, "Title", "", 24, TextAnchor.MiddleLeft);
@@ -491,13 +492,12 @@ namespace MyClicker.UI
                 if (fill != null)
                 {
                     fill.fillAmount = pct;
-                    fill.sprite = SolidSprite();
                     if (pct > 0.75f)
-                        fill.color = new Color(0.28f, 0.82f, 0.32f, 1f);
+                        fill.color = Color.white;
                     else if (pct >= 0.25f)
-                        fill.color = new Color(1f, 0.62f, 0.14f, 1f);
+                        fill.color = new Color(1f, 0.82f, 0.45f, 1f);
                     else
-                        fill.color = new Color(0.90f, 0.16f, 0.12f, 1f);
+                        fill.color = new Color(1f, 0.42f, 0.38f, 1f);
                 }
 
                 if (title != null)

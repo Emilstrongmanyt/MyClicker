@@ -71,7 +71,7 @@ namespace MyClicker.Data
             public float ringRadiusBoss = 2.55f;
             public float holdSlack = 0.14f;
             public float focusMax = 100f;
-            public float focusRegen = 10f;
+            public float focusRegen = 2f;
             public float slamCost = 35f;
             public float furyCost = 50f;
             public float sweepCost = 70f;
@@ -133,7 +133,7 @@ namespace MyClicker.Data
             public float mutationPerDecade = 0.85f;
             public float mutationSwiftPerDecade = 0.55f;
             public float unspentGloryOffline = 0.008f;
-            public float endlessCycleGrowth = 1.35f;
+            public float endlessCycleGrowth = 1.65f;
             public float focusFurySeconds = 8f;
             public float focusFuryBonus = 1.25f;
             public float slamDamageMul = 5.5f;
