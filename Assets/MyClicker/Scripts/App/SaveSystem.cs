@@ -112,6 +112,8 @@ namespace MyClicker.App
                             loaded.unlockedDeeds = new string[0];
                         if (loaded.gloryNodes == null)
                             loaded.gloryNodes = new string[0];
+                        if (loaded.gloryRanks == null)
+                            loaded.gloryRanks = new GloryRank[0];
                         if (loaded.bossShards == null)
                             loaded.bossShards = new string[0];
                         if (loaded.unlockedGear == null)

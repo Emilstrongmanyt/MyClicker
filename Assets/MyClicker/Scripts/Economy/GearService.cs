@@ -36,25 +36,29 @@ namespace MyClicker.Economy
         {
             get
             {
-                float value = Look(Slot.Weapon) * 1.15f + Profile.temperWeapon * 3f;
-                value += Look(Slot.Armor) * 0.35f + Profile.temperArmor * 1.2f;
+                float value = 0f;
+                if (RelicOn(Slot.Weapon))
+                    value += 14f;
+                if (RelicOn(Slot.Armor))
+                    value += 5f;
+                value += Profile.temperWeapon * 3f + Profile.temperArmor * 1.2f;
                 return value;
             }
         }
 
         public float GoldBonus
         {
-            get { return Look(Slot.Armor) * 0.018f + Profile.temperArmor * 0.02f; }
+            get { return (RelicOn(Slot.Armor) ? 0.08f : 0f) + Profile.temperArmor * 0.02f; }
         }
 
         public float CritBonus
         {
-            get { return Look(Slot.Helmet) * 0.008f + Profile.temperHelmet * 0.006f; }
+            get { return (RelicOn(Slot.Helmet) ? 0.04f : 0f) + Profile.temperHelmet * 0.006f; }
         }
 
         public float SwiftBonus
         {
-            get { return Look(Slot.Cape) * 0.015f + Profile.temperCape * 0.018f; }
+            get { return (RelicOn(Slot.Cape) ? 0.06f : 0f) + Profile.temperCape * 0.018f; }
         }
 
         public string Label(string slot)
@@ -64,19 +68,17 @@ namespace MyClicker.Economy
 
         public string BonusText(string slot)
         {
-            int look = Look(slot);
-            int temper = Profile.TemperLevel(slot);
+            bool relic = RelicOn(slot);
             switch (slot)
             {
                 case Slot.Weapon:
-                    return "+" + Mathf.RoundToInt(look * 1.15f + temper * 3f) + " tap";
+                    return relic ? "+14 tap" : "Starter look";
                 case Slot.Armor:
-                    return "+" + Mathf.RoundToInt(look * 0.35f + temper * 1.2f) + " tap   +" +
-                           Mathf.RoundToInt((look * 0.018f + temper * 0.02f) * 100f) + "% gold";
+                    return relic ? "+5 tap   +8% gold" : "Starter look";
                 case Slot.Helmet:
-                    return "+" + Mathf.RoundToInt((look * 0.008f + temper * 0.006f) * 100f) + "% crit";
+                    return relic ? "+4% crit" : "Starter look";
                 case Slot.Cape:
-                    return "+" + Mathf.RoundToInt((look * 0.015f + temper * 0.018f) * 100f) + "% swift";
+                    return relic ? "+6% swift" : "Starter look";
                 default:
                     return "";
             }
@@ -133,6 +135,8 @@ namespace MyClicker.Economy
             float chance = boss ? Eco.gearBossDropChance : Eco.gearDropChance;
             chance += _services.Save.Profile.harvestLevel * Eco.harvestGearPerLevel;
             chance *= 1f + EconomyService.Mutation(_services.Save.Profile.mutationLuck, Eco.mutationPerDecade);
+            if (_services.Economy != null && _services.Economy.HasGlory(GloryIds.RelicSense))
+                chance *= 1.25f;
             if (UnityEngine.Random.value > chance)
                 return null;
 
@@ -218,6 +222,13 @@ namespace MyClicker.Economy
                 return false;
             _services.Economy.GrantPotion(potionId);
             return true;
+        }
+
+        bool RelicOn(string slot)
+        {
+            if (_hero == null || OwnedCount(slot) <= 0)
+                return false;
+            return !_hero.WearingStarter(slot);
         }
 
         int Look(string slot)

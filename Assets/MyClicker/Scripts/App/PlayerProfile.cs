@@ -59,6 +59,7 @@ namespace MyClicker.App
         public bool usedTemper;
         public string[] unlockedDeeds = new string[0];
         public string[] gloryNodes = new string[0];
+        public GloryRank[] gloryRanks = new GloryRank[0];
         public string[] bossShards = new string[0];
         public int cycle;
         public int bestCycle;
@@ -199,6 +200,13 @@ namespace MyClicker.App
                 case Data.ContentIds.PotGold: potGold = value; break;
             }
         }
+    }
+
+    [Serializable]
+    public class GloryRank
+    {
+        public string id;
+        public int rank;
     }
 
     [Serializable]

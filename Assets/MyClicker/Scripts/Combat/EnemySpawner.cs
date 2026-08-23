@@ -55,7 +55,10 @@ namespace MyClicker.Combat
             var combat = Settings();
             float top = Camera.main != null ? Camera.main.orthographicSize + 1.15f : combat.spawnY.y;
             var pos = new Vector3(Random.Range(-2.6f, 2.6f), top, 0f);
-            return SpawnAt(visual, hp, pos, combat.enemySpeed, combat.holdSlack);
+            float speed = combat.enemySpeed;
+            if (GameServices.Instance != null && GameServices.Instance.Economy != null)
+                speed *= GameServices.Instance.Economy.WalkSpeedMul;
+            return SpawnAt(visual, hp, pos, speed, combat.holdSlack);
         }
 
         public EnemyController SpawnBoss(UnitVisual visual, float hp)
@@ -63,7 +66,10 @@ namespace MyClicker.Combat
             var combat = Settings();
             float top = Camera.main != null ? Camera.main.orthographicSize + 1.45f : combat.spawnY.y + 0.4f;
             var pos = new Vector3(0f, top, 0f);
-            return SpawnAt(visual, hp, pos, combat.enemySpeed * 0.72f, combat.holdSlack);
+            float speed = combat.enemySpeed * 0.72f;
+            if (GameServices.Instance != null && GameServices.Instance.Economy != null)
+                speed *= GameServices.Instance.Economy.WalkSpeedMul;
+            return SpawnAt(visual, hp, pos, speed, combat.holdSlack);
         }
 
         public EnemyController Nearest(Vector3 world)

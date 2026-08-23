@@ -75,7 +75,6 @@ namespace MyClicker.Editor
                 config.world.backgroundSprites = AllBackgroundSlices();
                 AssignCainosTiles(config.world);
                 AssignFx(config);
-                AssignHudBars(config);
                 EditorUtility.SetDirty(config);
             }
             EditorUtility.SetDirty(catalog);
@@ -325,17 +324,6 @@ namespace MyClicker.Editor
                 night2 = Clip("BGM Night"),
                 night3 = Clip("BGM Night (2)")
             };
-        }
-
-        static void AssignHudBars(GameConfig config)
-        {
-            const string slider = "Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Slider";
-            var fill = SpriteAt(slider, "Slider_Border01_Fill_Green");
-            var bg = SpriteAt(slider, "Slider_Border01_InnerBg");
-            if (fill != null)
-                config.ui.hpFill = fill;
-            if (bg != null)
-                config.ui.hpBackground = bg;
         }
 
         static void AssignFx(GameConfig config)

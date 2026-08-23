@@ -17,8 +17,8 @@ MonoBehaviour:
     buttonNormal: {fileID: 21300000, guid: 9f50362e3fa90440b8caef63181d40de, type: 3}
     buttonPressed: {fileID: 21300000, guid: 4f27cdb744c7b4f4aba46139d40a63f1, type: 3}
     buttonDisabled: {fileID: 21300000, guid: 281f8729befff496bb788002ca7333af, type: 3}
-    hpFill: {fileID: 21300000, guid: 65df5e01093ef4a14b6c8076a8ae51d8, type: 3}
-    hpBackground: {fileID: 21300000, guid: 77d272bcb25c4462181762eacbe7aea5, type: 3}
+    hpFill: {fileID: 21300000, guid: ba6dc9e2bb114aa46a392528f10c13d0, type: 3}
+    hpBackground: {fileID: 21300000, guid: 1b15a352d8ad64af49cacb2bde37cd85, type: 3}
     coinIcon: {fileID: 21300000, guid: 20a0cacbf56824975af22ab0cc0350a9, type: 3}
     bannerReady: {fileID: 21300000, guid: 4898cd8e925ee40bb9d057d5bf260906, type: 3}
     bannerVictory: {fileID: 21300000, guid: 28a3f9188654c40b48be1087fc7d19eb, type: 3}

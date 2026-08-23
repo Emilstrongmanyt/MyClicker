@@ -108,6 +108,8 @@ namespace MyClicker.UI
                 "\nCycle HP  x" + eco.CycleMul().ToString("0.00") +
                 "   gold  x" + eco.CycleGoldMul().ToString("0.00") +
                 "\nWave need  " + eco.WaveKillNeed + "   spawn cap  " + eco.SpawnCap +
+                "\nWave spawn  x" + eco.SpawnIntervalMul.ToString("0.00") +
+                "   walk  x" + eco.WalkSpeedMul.ToString("0.00") +
                 "\nTalent nodes  " + nodes + " / " + GloryTree.All.Length +
                 "\nBuffs" + buffs;
         }

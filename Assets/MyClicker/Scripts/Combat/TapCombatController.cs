@@ -125,7 +125,10 @@ namespace MyClicker.Combat
             if (_spawnTimer > 0f)
                 return;
             float late = combat.lateSpawnBoost * Mathf.Max(0, GameServices.Instance.Save.Profile.wave - 12);
-            _spawnTimer = Mathf.Max(0.32f, combat.spawnInterval * (1f - Mathf.Min(0.45f, late)));
+            float interval = combat.spawnInterval * (1f - Mathf.Min(0.45f, late));
+            if (economy != null)
+                interval *= economy.SpawnIntervalMul;
+            _spawnTimer = Mathf.Max(0.16f, interval);
             SpawnRegular();
         }
 

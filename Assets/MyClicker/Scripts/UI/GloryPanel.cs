@@ -148,7 +148,7 @@ namespace MyClicker.UI
                     : "";
                 _summary.text = "Glory  " + profile.glory + "    Ascensions  " + profile.ascendCount +
                                 "    Renown  +" + renown + "%" +
-                                "    Nodes  " + owned + "/" + GloryTree.All.Length + endless +
+                                "    Talents  " + owned + "/" + GloryTree.All.Length + endless +
                                 "\n" + pendingLine +
                                 " Relics " + economy.Relics + "  +" + col +
                                 "%    Shards " + economy.Shards + "/" + economy.ShardCap +
@@ -311,10 +311,13 @@ namespace MyClicker.UI
             if (services == null || row.node == null || row.name == null)
                 return;
             var profile = services.Save.Profile;
-            bool owned = GloryTree.Has(profile, row.node.id);
+            int rank = GloryTree.Rank(profile, row.node.id);
+            int cap = row.node.maxRank > 0 ? row.node.maxRank : 1;
+            bool owned = rank > 0;
+            bool maxed = rank >= cap;
             bool can = GloryTree.CanBuy(profile, row.node);
             string lockReason = GloryTree.LockReason(profile, row.node);
-            row.name.text = (owned ? "✓  " : "") + row.node.title;
+            row.name.text = (owned ? "✓  " : "") + row.node.title + (cap > 1 ? "  R" + rank + "/" + cap : "");
             row.detail.text = row.node.blurb;
             if (row.panel != null)
                 row.panel.color = owned
@@ -322,14 +325,14 @@ namespace MyClicker.UI
                     : Color.white;
             if (row.price != null)
             {
-                if (owned)
-                    row.price.Set("Owned", null);
+                if (maxed)
+                    row.price.Set(cap > 1 ? "MAX" : "Owned", null);
                 else if (!can)
                     row.price.Set(string.IsNullOrEmpty(lockReason) ? "Locked" : lockReason, null);
-                else if (row.node.cost <= 0)
+                else if (GloryTree.NextCost(profile, row.node) <= 0)
                     row.price.Set("Free", null);
                 else
-                    row.price.Set(NumberFmt.Compact(row.node.cost), GloryIcon());
+                    row.price.Set(NumberFmt.Compact(GloryTree.NextCost(profile, row.node)), GloryIcon());
             }
 
             if (row.buy != null)

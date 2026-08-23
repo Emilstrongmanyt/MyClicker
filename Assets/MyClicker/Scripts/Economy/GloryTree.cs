@@ -21,6 +21,16 @@ namespace MyClicker.Economy
         public const string WideSweep = "wide_sweep";
         public const string IronPulse = "iron_pulse";
         public const string TitanHeart = "titan_heart";
+        public const string WarTempo = "war_tempo";
+        public const string ForcedMarch = "forced_march";
+        public const string GoldVein = "gold_vein";
+        public const string LuckyStrike = "lucky_strike";
+        public const string SecondWind = "second_wind";
+        public const string RelicSense = "relic_sense";
+        public const string BossTithe = "boss_tithe";
+        public const string SwiftEcho = "swift_echo";
+        public const string HordeBanner = "horde_banner";
+        public const string Mythos = "mythos";
     }
 
     [System.Serializable]
@@ -35,32 +45,44 @@ namespace MyClicker.Economy
         public int requiresBestZone;
         public int treeRow;
         public int treeCol;
+        public int maxRank = 1;
+        public float costGrowth = 1.55f;
     }
 
     public static class GloryTree
     {
         public static readonly GloryNode[] All =
         {
-            Node(GloryIds.Legacy, "Legacy", "Opens the Glory talent tree.", 0, null, 0, -1, 1, 0),
-            Node(GloryIds.KeepMight, "Keep Might", "Might ranks survive ascend.", 40, GloryIds.Legacy, 1, 0, 0, 0),
-            Node(GloryIds.FocusWell, "Focus Well", "+25% Focus max and +50% regen.", 50, GloryIds.Legacy, 1, 1, 0, 0),
-            Node(GloryIds.KeepFortune, "Keep Fortune", "Fortune ranks survive ascend.", 120, GloryIds.KeepMight, 2, 0, 0, 0),
-            Node(GloryIds.UnspentTithe, "Unspent Tithe", "Unspent Glory raises run gold (capped).", 35, GloryIds.Legacy, 2, 1, 0, 0),
-            Node(GloryIds.Steel, "Steel", "Temper ranks add tap.", 90, GloryIds.KeepMight, 3, 0, 0, 0),
-            Node(GloryIds.Hoard, "Hoard", "Each relic adds gold.", 90, GloryIds.Legacy, 3, 1, 0, 0),
-            Node(GloryIds.NightMarket, "Night Market", "Away gold is a bit better.", 45, GloryIds.UnspentTithe, 4, 0, 0, 0),
-            Node(GloryIds.DeedAngel, "Deed Angel", "Renown from Deeds is 50% stronger.", 180, GloryIds.Legacy, 4, 1, 0, 0),
-            Node(GloryIds.DeepRoad, "Deep Road", "Endless cycles pay extra.", 220, GloryIds.Legacy, 5, 0, 0, 9),
-            Node(GloryIds.CrushingSlam, "Crushing Slam", "Slam hits much harder.", 300, GloryIds.FocusWell, 5, 1, 0, 0),
-            Node(GloryIds.EternalFury, "Eternal Fury", "Fury lasts longer and hits harder.", 400, GloryIds.FocusWell, 6, 0, 0, 0),
-            Node(GloryIds.WideSweep, "Wide Sweep", "Sweep hits much harder.", 350, GloryIds.FocusWell, 6, 1, 0, 0),
-            Node(GloryIds.BloodOath, "Blood Oath", "+25% tap and auto.", 200, GloryIds.KeepMight, 7, 0, 0, 0),
-            Node(GloryIds.GiantsDue, "Giant's Due", "+50% tap and auto.", 600, GloryIds.BloodOath, 7, 1, 0, 0),
-            Node(GloryIds.IronPulse, "Iron Pulse", "Permanent x2 tap and auto.", 2500, GloryIds.KeepMight, 8, -1, 3, 0),
-            Node(GloryIds.TitanHeart, "Titan Heart", "Another permanent x2 tap and auto.", 8000, GloryIds.IronPulse, 9, -1, 5, 0),
+            Once(GloryIds.Legacy, "Legacy", "Opens the Glory talent tree.", 0, null, 0, -1, 1, 0),
+            Once(GloryIds.KeepMight, "Keep Might", "Might ranks survive ascend.", 40, GloryIds.Legacy, 1, 0, 0, 0),
+            Ranked(GloryIds.FocusWell, "Focus Well", "+8% Focus max and +12% regen per rank.", 50, GloryIds.Legacy, 1, 1, 8, 1.5f),
+            Once(GloryIds.KeepFortune, "Keep Fortune", "Fortune ranks survive ascend.", 120, GloryIds.KeepMight, 2, 0, 0, 0),
+            Ranked(GloryIds.UnspentTithe, "Unspent Tithe", "Unspent Glory raises run gold. Stronger each rank.", 35, GloryIds.Legacy, 2, 1, 8, 1.5f),
+            Once(GloryIds.Steel, "Steel", "Temper ranks add tap.", 90, GloryIds.KeepMight, 3, 0, 0, 0),
+            Once(GloryIds.Hoard, "Hoard", "Each relic adds gold.", 90, GloryIds.Legacy, 3, 1, 0, 0),
+            Ranked(GloryIds.NightMarket, "Night Market", "Away gold improves each rank.", 45, GloryIds.UnspentTithe, 4, 0, 6, 1.5f),
+            Ranked(GloryIds.DeedAngel, "Deed Angel", "Renown from Deeds grows each rank.", 90, GloryIds.Legacy, 4, 1, 8, 1.5f),
+            Once(GloryIds.DeepRoad, "Deep Road", "Endless cycles pay extra.", 220, GloryIds.Legacy, 5, 0, 0, 9),
+            Ranked(GloryIds.WarTempo, "War Tempo", "Enemies spawn faster each rank.", 70, GloryIds.Legacy, 5, 1, 10, 1.5f),
+            Ranked(GloryIds.ForcedMarch, "Forced March", "Enemies walk in faster each rank.", 110, GloryIds.WarTempo, 6, 0, 8, 1.55f),
+            Ranked(GloryIds.CrushingSlam, "Crushing Slam", "Slam hits harder each rank.", 80, GloryIds.FocusWell, 6, 1, 8, 1.5f),
+            Ranked(GloryIds.EternalFury, "Eternal Fury", "Fury lasts longer and hits harder each rank.", 90, GloryIds.FocusWell, 7, 0, 8, 1.5f),
+            Ranked(GloryIds.WideSweep, "Wide Sweep", "Sweep hits harder each rank.", 85, GloryIds.FocusWell, 7, 1, 8, 1.5f),
+            Ranked(GloryIds.BloodOath, "Blood Oath", "+8% tap and auto each rank.", 80, GloryIds.KeepMight, 8, 0, 12, 1.45f),
+            Ranked(GloryIds.GoldVein, "Gold Vein", "+5% gold each rank.", 100, GloryIds.Hoard, 8, 1, 10, 1.5f),
+            Once(GloryIds.LuckyStrike, "Lucky Strike", "+6% crit chance and heavier crits.", 800, GloryIds.BloodOath, 9, 0, 2, 0),
+            Once(GloryIds.SecondWind, "Second Wind", "Slam, Fury, and Sweep cost 20% less Focus.", 700, GloryIds.FocusWell, 9, 1, 2, 0),
+            Once(GloryIds.RelicSense, "Relic Sense", "More dust, potions, and relic drops.", 600, GloryIds.Hoard, 10, 0, 0, 0),
+            Ranked(GloryIds.BossTithe, "Boss Tithe", "Bosses bank more Glory each rank.", 150, GloryIds.DeepRoad, 10, 1, 8, 1.55f),
+            Once(GloryIds.GiantsDue, "Giant's Due", "+50% tap and auto.", 600, GloryIds.BloodOath, 11, 0, 0, 0),
+            Once(GloryIds.SwiftEcho, "Swift Echo", "Overclock auto damage is stronger.", 900, GloryIds.KeepMight, 11, 1, 3, 0),
+            Once(GloryIds.HordeBanner, "Horde Banner", "More invaders can be on the field.", 500, GloryIds.WarTempo, 12, 0, 0, 0),
+            Once(GloryIds.Mythos, "Mythos", "+25% tap and auto.", 4000, GloryIds.IronPulse, 12, 1, 4, 0),
+            Once(GloryIds.IronPulse, "Iron Pulse", "Permanent x2 tap and auto.", 2500, GloryIds.KeepMight, 13, -1, 3, 0),
+            Once(GloryIds.TitanHeart, "Titan Heart", "Another permanent x2 tap and auto.", 8000, GloryIds.IronPulse, 14, -1, 5, 0),
         };
 
-        static GloryNode Node(string id, string title, string blurb, int cost, string requiresId, int row, int col, int requiresAscend, int requiresBestZone)
+        static GloryNode Once(string id, string title, string blurb, int cost, string requiresId, int row, int col, int requiresAscend, int requiresBestZone)
         {
             return new GloryNode
             {
@@ -72,7 +94,25 @@ namespace MyClicker.Economy
                 treeRow = row,
                 treeCol = col,
                 requiresAscend = requiresAscend,
-                requiresBestZone = requiresBestZone
+                requiresBestZone = requiresBestZone,
+                maxRank = 1,
+                costGrowth = 1.55f
+            };
+        }
+
+        static GloryNode Ranked(string id, string title, string blurb, int cost, string requiresId, int row, int col, int maxRank, float growth)
+        {
+            return new GloryNode
+            {
+                id = id,
+                title = title,
+                blurb = blurb,
+                cost = cost,
+                requiresId = requiresId,
+                treeRow = row,
+                treeCol = col,
+                maxRank = maxRank,
+                costGrowth = growth
             };
         }
 
@@ -104,7 +144,35 @@ namespace MyClicker.Economy
             return null;
         }
 
-        public static bool Has(PlayerProfile profile, string id)
+        public static int Rank(PlayerProfile profile, string id)
+        {
+            if (profile == null || string.IsNullOrEmpty(id))
+                return 0;
+            if (profile.gloryRanks != null)
+            {
+                for (int i = 0; i < profile.gloryRanks.Length; i++)
+                {
+                    var entry = profile.gloryRanks[i];
+                    if (entry != null && entry.id == id)
+                        return MathfMax(0, entry.rank);
+                }
+            }
+
+            return HasNode(profile, id) ? 1 : 0;
+        }
+
+        public static int NextCost(PlayerProfile profile, GloryNode node)
+        {
+            if (node == null)
+                return 0;
+            int rank = Rank(profile, node.id);
+            float growth = node.costGrowth >= 1.05f ? node.costGrowth : 1.55f;
+            return UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt(node.cost * (float)System.Math.Pow(growth, rank)));
+        }
+
+        public static bool Has(PlayerProfile profile, string id) => Rank(profile, id) > 0;
+
+        static bool HasNode(PlayerProfile profile, string id)
         {
             if (profile == null || string.IsNullOrEmpty(id) || profile.gloryNodes == null)
                 return false;
@@ -119,7 +187,7 @@ namespace MyClicker.Economy
 
         public static bool Unlock(PlayerProfile profile, string id)
         {
-            if (profile == null || string.IsNullOrEmpty(id) || Has(profile, id))
+            if (profile == null || string.IsNullOrEmpty(id) || HasNode(profile, id))
                 return false;
             int n = profile.gloryNodes != null ? profile.gloryNodes.Length : 0;
             var next = new string[n + 1];
@@ -130,33 +198,70 @@ namespace MyClicker.Economy
             return true;
         }
 
+        public static bool AddRank(PlayerProfile profile, string id)
+        {
+            if (profile == null || string.IsNullOrEmpty(id))
+                return false;
+            int n = profile.gloryRanks != null ? profile.gloryRanks.Length : 0;
+            for (int i = 0; i < n; i++)
+            {
+                if (profile.gloryRanks[i] != null && profile.gloryRanks[i].id == id)
+                {
+                    profile.gloryRanks[i].rank++;
+                    return true;
+                }
+            }
+
+            var next = new GloryRank[n + 1];
+            if (n > 0)
+                System.Array.Copy(profile.gloryRanks, next, n);
+            next[n] = new GloryRank { id = id, rank = 1 };
+            profile.gloryRanks = next;
+            return true;
+        }
+
         public static bool CanBuy(PlayerProfile profile, GloryNode node)
         {
-            if (profile == null || node == null || Has(profile, node.id))
+            if (profile == null || node == null)
                 return false;
-            if (node.requiresAscend > 0 && profile.ascendCount < node.requiresAscend)
+            int rank = Rank(profile, node.id);
+            int cap = node.maxRank > 0 ? node.maxRank : 1;
+            if (rank >= cap)
                 return false;
-            if (node.requiresBestZone > 0 && profile.bestZone < node.requiresBestZone)
-                return false;
-            if (!string.IsNullOrEmpty(node.requiresId) && !Has(profile, node.requiresId))
-                return false;
-            return profile.glory >= node.cost;
+            if (rank == 0)
+            {
+                if (node.requiresAscend > 0 && profile.ascendCount < node.requiresAscend)
+                    return false;
+                if (node.requiresBestZone > 0 && profile.bestZone < node.requiresBestZone)
+                    return false;
+                if (!string.IsNullOrEmpty(node.requiresId) && !Has(profile, node.requiresId))
+                    return false;
+            }
+
+            return profile.glory >= NextCost(profile, node);
         }
 
         public static string LockReason(PlayerProfile profile, GloryNode node)
         {
             if (node == null)
                 return "";
-            if (Has(profile, node.id))
-                return "Owned";
-            if (node.requiresAscend > 0 && profile.ascendCount < node.requiresAscend)
-                return "Ascend " + node.requiresAscend;
-            if (!string.IsNullOrEmpty(node.requiresId) && !Has(profile, node.requiresId))
-                return "Needs " + Title(node.requiresId);
-            if (node.requiresBestZone > 0 && profile.bestZone < node.requiresBestZone)
-                return "Reach Harvest Night";
-            if (profile.glory < node.cost)
-                return "Need " + node.cost;
+            int rank = Rank(profile, node.id);
+            int cap = node.maxRank > 0 ? node.maxRank : 1;
+            if (rank >= cap)
+                return cap > 1 ? "MAX" : "Owned";
+            if (rank == 0)
+            {
+                if (node.requiresAscend > 0 && profile.ascendCount < node.requiresAscend)
+                    return "Ascend " + node.requiresAscend;
+                if (!string.IsNullOrEmpty(node.requiresId) && !Has(profile, node.requiresId))
+                    return "Needs " + Title(node.requiresId);
+                if (node.requiresBestZone > 0 && profile.bestZone < node.requiresBestZone)
+                    return "Reach Harvest Night";
+            }
+
+            int cost = NextCost(profile, node);
+            if (profile.glory < cost)
+                return "Need " + cost;
             return "";
         }
 
@@ -169,6 +274,11 @@ namespace MyClicker.Economy
             }
 
             return id;
+        }
+
+        static int MathfMax(int a, int b)
+        {
+            return a > b ? a : b;
         }
     }
 }

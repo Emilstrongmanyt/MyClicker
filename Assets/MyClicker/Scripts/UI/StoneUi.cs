@@ -376,20 +376,19 @@ namespace MyClicker.UI
             inset.transform.SetParent(frame.transform, false);
             Place(inset.GetComponent<RectTransform>(), 0.035f, 0.10f, 0.965f, 0.58f);
             var track = inset.GetComponent<Image>();
-            track.sprite = skin != null && skin.hpBackground != null ? skin.hpBackground : SolidSprite();
-            track.type = track.sprite != null && track.sprite.border.sqrMagnitude > 1f ? Image.Type.Sliced : Image.Type.Simple;
-            track.color = Color.white;
+            track.sprite = SolidSprite();
+            track.color = new Color(0.08f, 0.07f, 0.06f, 0.96f);
 
             var fillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
             fillGo.transform.SetParent(inset.transform, false);
             Stretch(fillGo.GetComponent<RectTransform>(), 0, 0);
             var fill = fillGo.GetComponent<Image>();
-            fill.sprite = skin != null && skin.hpFill != null ? skin.hpFill : SolidSprite();
+            fill.sprite = SolidSprite();
             fill.type = Image.Type.Filled;
             fill.fillMethod = Image.FillMethod.Horizontal;
             fill.fillOrigin = (int)Image.OriginHorizontal.Left;
             fill.fillAmount = 1f;
-            fill.color = Color.white;
+            fill.color = new Color(0.28f, 0.82f, 0.32f, 1f);
             fill.raycastTarget = false;
 
             var title = Label(frame.transform, "Title", "", 24, TextAnchor.MiddleLeft);
@@ -492,12 +491,13 @@ namespace MyClicker.UI
                 if (fill != null)
                 {
                     fill.fillAmount = pct;
+                    fill.sprite = SolidSprite();
                     if (pct > 0.75f)
-                        fill.color = Color.white;
+                        fill.color = new Color(0.28f, 0.82f, 0.32f, 1f);
                     else if (pct >= 0.25f)
-                        fill.color = new Color(1f, 0.82f, 0.45f, 1f);
+                        fill.color = new Color(1f, 0.62f, 0.14f, 1f);
                     else
-                        fill.color = new Color(1f, 0.42f, 0.38f, 1f);
+                        fill.color = new Color(0.90f, 0.16f, 0.12f, 1f);
                 }
 
                 if (title != null)

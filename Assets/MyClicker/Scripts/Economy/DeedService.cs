@@ -71,8 +71,9 @@ namespace MyClicker.Economy
             get
             {
                 float value = Count * RenownPerDeed;
-                if (GloryTree.Has(Profile, GloryIds.DeedAngel))
-                    value *= 1.5f;
+                int angel = GloryTree.Rank(Profile, GloryIds.DeedAngel);
+                if (angel > 0)
+                    value *= 1f + 0.15f * angel;
                 return value;
             }
         }

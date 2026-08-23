@@ -96,6 +96,7 @@ namespace MyClicker.App
             Economy.EnsureLegacy();
             Economy.EnsureBossShards();
             Economy.EnsureEndless();
+            Economy.EnsureGloryRanks();
             Deeds.Evaluate();
         }
     }

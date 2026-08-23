@@ -63,19 +63,12 @@ namespace MyClicker.UI
             StoneUi.Place(button, x0, 0.08f, x0 + 0.28f, 0.92f);
             StoneUi.HideDefaultLabel(button);
             var icon = StoneUi.Icon(button.transform, "Icon", IconFor(id));
-            StoneUi.Place(icon, 0.12f, 0.28f, 0.88f, 0.94f);
+            StoneUi.Place(icon, 0.12f, 0.14f, 0.88f, 0.90f);
             var count = StoneUi.Label(button.transform, "Count", "0", 18, TextAnchor.UpperRight);
             StoneUi.Place(count, 0.42f, 0.68f, 0.96f, 0.98f);
-            var bar = StoneUi.Icon(button.transform, "TimeBar", StoneUi.SolidSprite());
-            bar.preserveAspect = false;
-            bar.type = Image.Type.Filled;
-            bar.fillMethod = Image.FillMethod.Horizontal;
-            bar.fillOrigin = (int)Image.OriginHorizontal.Left;
-            bar.color = ColorFor(id);
-            StoneUi.Place(bar, 0.12f, 0.06f, 0.88f, 0.20f);
             string captured = id;
             HoldPress.Bind(button.gameObject, () => Use(captured), () => ShowTip(captured), () => _tip?.Hide());
-            return new PotionSlot { id = id, button = button, icon = icon, count = count, bar = bar };
+            return new PotionSlot { id = id, button = button, icon = icon, count = count };
         }
 
         void Use(string id)
@@ -108,21 +101,12 @@ namespace MyClicker.UI
                 return;
             int n = services.Save.Profile.PotionCount(slot.id);
             float left = services.Economy.PotionBuffLeft(slot.id);
-            float duration = DurationFor(slot.id);
             slot.count.text = n.ToString();
             if (slot.icon != null)
             {
                 if (slot.icon.sprite == null)
                     slot.icon.sprite = IconFor(slot.id);
                 slot.icon.color = n > 0 || left > 0f ? Color.white : new Color(1f, 1f, 1f, 0.38f);
-            }
-
-            if (slot.bar != null)
-            {
-                bool ticking = left > 0f && duration > 0.05f;
-                slot.bar.gameObject.SetActive(ticking);
-                if (ticking)
-                    slot.bar.fillAmount = Mathf.Clamp01(left / duration);
             }
         }
 
@@ -186,7 +170,6 @@ namespace MyClicker.UI
             public Button button;
             public Image icon;
             public Text count;
-            public Image bar;
         }
     }
 }

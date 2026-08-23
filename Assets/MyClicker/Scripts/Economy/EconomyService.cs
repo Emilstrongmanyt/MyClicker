@@ -37,10 +37,13 @@ namespace MyClicker.Economy
                 value *= 1f + Renown();
                 value *= 1f + Mutation(Profile.mutationMight, Eco.mutationPerDecade);
                 value *= MilestoneMul();
-                if (HasGlory(GloryIds.BloodOath))
-                    value *= 1.25f;
+                int oath = GloryRank(GloryIds.BloodOath);
+                if (oath > 0)
+                    value *= 1f + 0.08f * oath;
                 if (HasGlory(GloryIds.GiantsDue))
                     value *= 1.5f;
+                if (HasGlory(GloryIds.Mythos))
+                    value *= 1.25f;
                 if (HasGlory(GloryIds.IronPulse))
                     value *= 2f;
                 if (HasGlory(GloryIds.TitanHeart))
@@ -65,10 +68,14 @@ namespace MyClicker.Economy
                 value *= 1f + 0.08f * Profile.oathTithe;
                 value *= 1f + Renown();
                 value *= 1f + Mutation(Profile.mutationFortune, Eco.mutationPerDecade);
-                if (HasGlory(GloryIds.UnspentTithe))
-                    value *= 1f + Mathf.Min(0.4f, 0.004f * Mathf.Max(0, Profile.glory));
+                int tithe = GloryRank(GloryIds.UnspentTithe);
+                if (tithe > 0)
+                    value *= 1f + Mathf.Min(0.4f * tithe, 0.004f * tithe * Mathf.Max(0, Profile.glory));
                 if (HasGlory(GloryIds.Hoard))
                     value *= 1f + RelicCount() * 0.015f;
+                int vein = GloryRank(GloryIds.GoldVein);
+                if (vein > 0)
+                    value *= 1f + 0.05f * vein;
                 value *= MilestoneMul();
                 value *= CycleGoldMul();
                 var zone = _services.Catalog.ZoneAt(Profile.zone);
@@ -80,11 +87,37 @@ namespace MyClicker.Economy
 
         public float CritChance => CritChanceAt(Profile.critLevel);
 
-        public float CritMultiplier => Eco.critMultiplier + Profile.furyLevel * 0.25f;
+        public float CritMultiplier
+        {
+            get
+            {
+                float value = Eco.critMultiplier + Profile.furyLevel * 0.25f;
+                if (HasGlory(GloryIds.LuckyStrike))
+                    value += 0.4f;
+                return value;
+            }
+        }
 
         public float CleaveFraction => CleaveAt(Profile.cleaveLevel);
 
-        public float OverclockMul => 1f + 0.12f * Mathf.Max(0, Profile.oathOverclock);
+        public float OverclockMul
+        {
+            get
+            {
+                float value = 1f + 0.12f * Mathf.Max(0, Profile.oathOverclock);
+                if (HasGlory(GloryIds.SwiftEcho))
+                    value += 0.25f;
+                return value;
+            }
+        }
+
+        int GloryRank(string id) => GloryTree.Rank(Profile, id);
+
+        public float SpawnIntervalMul => Mathf.Pow(0.88f, GloryRank(GloryIds.WarTempo));
+
+        public float WalkSpeedMul => Mathf.Pow(1.12f, GloryRank(GloryIds.ForcedMarch));
+
+        public float FocusCostMul => HasGlory(GloryIds.SecondWind) ? 0.8f : 1f;
 
         float Renown()
         {
@@ -122,7 +155,10 @@ namespace MyClicker.Economy
             get
             {
                 int extra = Mathf.Clamp((Profile.wave - 1) / 15, 0, 4);
-                return Mathf.Min(12, Combat.maxAlive + Mathf.Max(0, Profile.cycle) * 2 + extra);
+                int cap = Combat.maxAlive + Mathf.Max(0, Profile.cycle) * 2 + extra;
+                if (HasGlory(GloryIds.HordeBanner))
+                    cap += 2;
+                return Mathf.Min(14, cap);
             }
         }
 
@@ -175,8 +211,7 @@ namespace MyClicker.Economy
             get
             {
                 float seconds = Eco.focusFurySeconds > 0f ? Eco.focusFurySeconds : 8f;
-                if (HasGlory(GloryIds.EternalFury))
-                    seconds *= 1.5f;
+                seconds *= Mathf.Pow(1.1f, GloryRank(GloryIds.EternalFury));
                 return seconds;
             }
         }
@@ -186,8 +221,7 @@ namespace MyClicker.Economy
             get
             {
                 float value = Eco.slamDamageMul > 0f ? Eco.slamDamageMul : 5.5f;
-                if (HasGlory(GloryIds.CrushingSlam))
-                    value *= 1.6f;
+                value *= Mathf.Pow(1.12f, GloryRank(GloryIds.CrushingSlam));
                 return value;
             }
         }
@@ -197,8 +231,7 @@ namespace MyClicker.Economy
             get
             {
                 float value = Eco.sweepDamageMul > 0f ? Eco.sweepDamageMul : 3f;
-                if (HasGlory(GloryIds.WideSweep))
-                    value *= 1.6f;
+                value *= Mathf.Pow(1.12f, GloryRank(GloryIds.WideSweep));
                 return value;
             }
         }
@@ -208,8 +241,7 @@ namespace MyClicker.Economy
             get
             {
                 float value = Eco.focusFuryBonus > 0f ? Eco.focusFuryBonus : 1.25f;
-                if (HasGlory(GloryIds.EternalFury))
-                    value *= 1.25f;
+                value *= 1f + 0.08f * GloryRank(GloryIds.EternalFury);
                 return value;
             }
         }
@@ -223,8 +255,7 @@ namespace MyClicker.Economy
             get
             {
                 float max = Combat.focusMax > 0f ? Combat.focusMax : 100f;
-                if (HasGlory(GloryIds.FocusWell))
-                    max *= 1.25f;
+                max *= 1f + 0.08f * GloryRank(GloryIds.FocusWell);
                 return max;
             }
         }
@@ -234,8 +265,7 @@ namespace MyClicker.Economy
             get
             {
                 float regen = Combat.focusRegen > 0f ? Combat.focusRegen : 2f;
-                if (HasGlory(GloryIds.FocusWell))
-                    regen *= 1.5f;
+                regen *= 1f + 0.12f * GloryRank(GloryIds.FocusWell);
                 return regen;
             }
         }
@@ -499,6 +529,8 @@ namespace MyClicker.Economy
             float value = Mathf.Max(0, level) * Eco.critPerLevel;
             if (_services.Gear != null)
                 value += _services.Gear.CritBonus;
+            if (HasGlory(GloryIds.LuckyStrike))
+                value += 0.06f;
             return Mathf.Min(Eco.critChanceCap, value);
         }
 
@@ -558,6 +590,8 @@ namespace MyClicker.Economy
                 return Eco.dustPerBoss + Profile.harvestLevel / 4;
             float chance = Eco.dustDropChance + Profile.harvestLevel * Eco.harvestDustPerLevel;
             chance *= 1f + Mutation(Profile.mutationLuck, Eco.mutationPerDecade);
+            if (HasGlory(GloryIds.RelicSense))
+                chance *= 1.25f;
             return UnityEngine.Random.value < chance ? 1 : 0;
         }
 
@@ -566,6 +600,8 @@ namespace MyClicker.Economy
             float chance = boss ? Eco.potionBossDropChance : Eco.potionDropChance;
             chance += Profile.harvestLevel * Eco.harvestPotionPerLevel;
             chance *= 1f + Mutation(Profile.mutationLuck, Eco.mutationPerDecade);
+            if (HasGlory(GloryIds.RelicSense))
+                chance *= 1.25f;
             if (UnityEngine.Random.value > chance)
                 return null;
             float roll = UnityEngine.Random.value;
@@ -648,6 +684,7 @@ namespace MyClicker.Economy
         {
             if (cost <= 0f)
                 return true;
+            cost *= FocusCostMul;
             if (Profile.focus < cost)
                 return false;
             Profile.focus -= cost;
@@ -682,10 +719,13 @@ namespace MyClicker.Economy
             var node = GloryTree.Find(id);
             if (!GloryTree.CanBuy(Profile, node))
                 return false;
-            if (!GloryTree.Unlock(Profile, node.id))
-                return false;
-            if (node.cost > 0)
-                Profile.glory -= node.cost;
+            int cost = GloryTree.NextCost(Profile, node);
+            if (cost > 0)
+                Profile.glory -= cost;
+            int before = GloryTree.Rank(Profile, node.id);
+            if (before <= 0)
+                GloryTree.Unlock(Profile, node.id);
+            GloryTree.AddRank(Profile, node.id);
             if (node.id == GloryIds.DeepRoad)
                 Profile.endlessUnlocked = true;
             Profile.tapDamage = TapDamage;
@@ -710,6 +750,40 @@ namespace MyClicker.Economy
             _services.Save.MarkDirty();
         }
 
+        public void EnsureGloryRanks()
+        {
+            if (Profile.gloryNodes == null)
+                return;
+            bool any = false;
+            for (int i = 0; i < Profile.gloryNodes.Length; i++)
+            {
+                string id = Profile.gloryNodes[i];
+                if (string.IsNullOrEmpty(id))
+                    continue;
+                if (Profile.gloryRanks != null)
+                {
+                    bool found = false;
+                    for (int j = 0; j < Profile.gloryRanks.Length; j++)
+                    {
+                        if (Profile.gloryRanks[j] != null && Profile.gloryRanks[j].id == id)
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found)
+                        continue;
+                }
+
+                GloryTree.AddRank(Profile, id);
+                any = true;
+            }
+
+            if (any)
+                _services.Save.MarkDirty();
+        }
+
         public int LastAscendGlory { get; private set; }
         public int PendingGlory => Mathf.Max(0, Profile.pendingGlory);
         public int RunBosses => Mathf.Max(0, Profile.runBosses);
@@ -718,6 +792,9 @@ namespace MyClicker.Economy
         {
             float glory = Eco.gloryPerBoss + Eco.gloryPerBossPerZone * Mathf.Max(0, zone);
             glory *= CycleGloryMul();
+            int tithe = GloryRank(GloryIds.BossTithe);
+            if (tithe > 0)
+                glory *= 1f + 0.15f * tithe;
             return Mathf.Max(2, Mathf.RoundToInt(glory));
         }
 
@@ -864,8 +941,9 @@ namespace MyClicker.Economy
             hp *= CycleMul();
             float kills = AutoDps * usable / Mathf.Max(8f, hp);
             float factor = eco.offlineGoldFactor + Profile.glory * eco.unspentGloryOffline;
-            if (HasGlory(GloryIds.NightMarket))
-                factor += 0.08f;
+            int market = GloryRank(GloryIds.NightMarket);
+            if (market > 0)
+                factor += 0.08f * market;
             return Math.Max(0d, Math.Floor(kills * GoldForKill(Mathf.Max(1, Profile.wave), false) * factor));
         }
 
