@@ -298,7 +298,7 @@ namespace MyClicker.Data
             switch (clip)
             {
                 case UnitClip.Walk: return FirstLive(walk, idle);
-                case UnitClip.Attack: return FirstLive(attack, idle);
+                case UnitClip.Attack: return FirstLive(attack, walk, idle);
                 case UnitClip.Hurt: return FirstLive(hurt, idle);
                 case UnitClip.Death: return FirstLive(death, hurt, idle);
                 default: return FirstLive(idle, walk);

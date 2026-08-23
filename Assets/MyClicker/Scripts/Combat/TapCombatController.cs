@@ -149,8 +149,10 @@ namespace MyClicker.Combat
         {
             var services = GameServices.Instance;
             float damage = services.Economy.TapDamage;
-            if (!tap)
-                damage *= services.Economy.OverclockMul;
+            if (tap)
+                damage *= EconomyService.TapStrikeMul;
+            else
+                damage *= services.Economy.OverclockMul * EconomyService.AutoHitMul;
             bool crit = Random.value < services.Economy.CritChance;
             if (crit)
                 damage *= services.Economy.CritMultiplier;

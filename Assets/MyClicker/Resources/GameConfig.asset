@@ -981,7 +981,7 @@ MonoBehaviour:
     dustDropChance: 0.08
     potionDropChance: 0.08
     potionBossDropChance: 1
-    mightPerLevel: 4
+    mightPerLevel: 6
     fortunePerLevel: 0.12
     autoIntervalStart: 2.35
     autoIntervalDecay: 0.93

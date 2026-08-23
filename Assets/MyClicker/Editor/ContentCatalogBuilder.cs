@@ -160,12 +160,12 @@ namespace MyClicker.Editor
 
         static UnitVisual[] BuildRetroEnemies()
         {
-            return BuildRetro("Assets/ElvAssets/RetroAdventure", boss: false, scale: 9f);
+            return BuildRetro("Assets/ElvAssets/RetroAdventure", boss: false, scale: 12f);
         }
 
         static UnitVisual[] BuildRetroBosses()
         {
-            return BuildRetro("Assets/ElvAssets/RetroAdventure", boss: true, scale: 11f);
+            return BuildRetro("Assets/ElvAssets/RetroAdventure", boss: true, scale: 14f);
         }
 
         static UnitVisual[] BuildRetro(string folder, bool boss, float scale)
@@ -205,9 +205,9 @@ namespace MyClicker.Editor
 
         static readonly string[] SanctumBossFolders = { "golem_1", "lord_1", "demon_big_1" };
 
-        static UnitVisual[] BuildSanctumEnemies() => BuildSanctum(boss: false, scale: 2.8f);
+        static UnitVisual[] BuildSanctumEnemies() => BuildSanctum(boss: false, scale: 4.2f);
 
-        static UnitVisual[] BuildSanctumBosses() => BuildSanctum(boss: true, scale: 3.4f);
+        static UnitVisual[] BuildSanctumBosses() => BuildSanctum(boss: true, scale: 5f);
 
         static UnitVisual[] BuildSanctum(bool boss, float scale)
         {
@@ -277,7 +277,7 @@ namespace MyClicker.Editor
                     attack.Add(sprite);
                 else if (file.StartsWith("hurt") || file.StartsWith("damage"))
                     hurt.Add(sprite);
-                else if (file.StartsWith("die") || file.StartsWith("dead"))
+                else if (file.StartsWith("die") || file.StartsWith("dead") || file.StartsWith("death"))
                     death.Add(sprite);
             }
 
@@ -338,14 +338,49 @@ namespace MyClicker.Editor
         {
             if (rows.Count == 0)
                 return;
+            if (rows.Count == 1)
+            {
+                AssignSingleRow(visual, rows[0]);
+                return;
+            }
+
             visual.idle = rows[0];
-            visual.walk = rows.Count > 1 ? rows[1] : rows[0];
-            visual.death = rows[rows.Count - 1];
-            visual.hurt = rows.Count >= 3 ? rows[rows.Count - 2] : visual.idle;
-            if (rows.Count >= 4)
-                visual.attack = rows[rows.Count >= 6 ? rows.Count - 3 : 2];
-            else
-                visual.attack = visual.idle;
+            visual.walk = rows[1];
+            visual.attack = rows.Count > 2 ? rows[2] : visual.idle;
+            visual.hurt = rows.Count > 3 ? rows[3] : visual.idle;
+            visual.death = rows.Count > 4 ? rows[rows.Count - 1] : visual.hurt;
+        }
+
+        static void AssignSingleRow(UnitVisual visual, Sprite[] frames)
+        {
+            int n = frames != null ? frames.Length : 0;
+            if (n <= 3)
+            {
+                visual.idle = frames;
+                visual.walk = frames;
+                visual.attack = frames;
+                visual.hurt = frames;
+                visual.death = frames;
+                return;
+            }
+
+            int chunk = Mathf.Max(1, n / 4);
+            visual.idle = Slice(frames, 0, chunk);
+            visual.walk = Slice(frames, chunk, chunk);
+            visual.attack = Slice(frames, chunk * 2, chunk);
+            visual.death = Slice(frames, n - chunk, chunk);
+            visual.hurt = visual.idle;
+        }
+
+        static Sprite[] Slice(Sprite[] frames, int start, int count)
+        {
+            if (frames == null || frames.Length == 0)
+                return Array.Empty<Sprite>();
+            start = Mathf.Clamp(start, 0, frames.Length - 1);
+            count = Mathf.Clamp(count, 1, frames.Length - start);
+            var slice = new Sprite[count];
+            Array.Copy(frames, start, slice, 0, count);
+            return slice;
         }
 
         static List<Sprite[]> SplitRows(Sprite[] sprites)

@@ -74,6 +74,25 @@ namespace MyClicker.Combat
             Play(UnitClip.Walk, 10f, true);
             if (_renderer.sprite == null && fallback != null)
                 _renderer.sprite = fallback;
+            FitLaterCycleScale(visual);
+        }
+
+        void FitLaterCycleScale(UnitVisual visual)
+        {
+            if (visual == null || _renderer == null || _renderer.sprite == null)
+                return;
+            string id = visual.id ?? "";
+            bool tint = id.StartsWith("enemy_") && id.Length > 0 && char.IsLetter(id[id.Length - 1]);
+            bool extra = id.StartsWith("r8_") || id.StartsWith("sx_");
+            if (!tint && !extra)
+                return;
+            float body = _renderer.sprite.bounds.size.y;
+            if (body < 0.02f)
+                return;
+            float target = visual.isBoss ? 2.7f : 2.4f;
+            float fitted = target / body;
+            var sign = transform.localScale.x < 0f ? -1f : 1f;
+            transform.localScale = new Vector3(sign * fitted, fitted, 1f);
         }
 
         public bool Hit(float damage)

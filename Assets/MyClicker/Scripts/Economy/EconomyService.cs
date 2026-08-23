@@ -137,7 +137,10 @@ namespace MyClicker.Economy
             return _services.Deeds != null ? _services.Deeds.Renown : 0f;
         }
 
-        public float AutoDps => TapDamage * OverclockMul / Mathf.Max(0.2f, AutoInterval);
+        public const float TapStrikeMul = 2.25f;
+        public const float AutoHitMul = 0.5f;
+
+        public float AutoDps => TapDamage * OverclockMul * AutoHitMul / Mathf.Max(0.2f, AutoInterval);
 
         public int ZoneCount
         {

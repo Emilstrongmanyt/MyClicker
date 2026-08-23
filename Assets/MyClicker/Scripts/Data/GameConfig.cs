@@ -102,7 +102,7 @@ namespace MyClicker.Data
             public float dustDropChance = 0.08f;
             public float potionDropChance = 0.08f;
             public float potionBossDropChance = 1f;
-            public float mightPerLevel = 4f;
+            public float mightPerLevel = 6f;
             public float fortunePerLevel = 0.12f;
             public float autoIntervalStart = 2.35f;
             public float autoIntervalDecay = 0.93f;
