@@ -136,12 +136,23 @@ namespace MyClicker.Data
             return null;
         }
 
-        public UnitVisual PickEnemy(ZoneDef zone, int wave)
+        const int UniqueSpriteCycle = 4;
+
+        public UnitVisual PickEnemy(ZoneDef zone, int wave, int cycle = 0)
         {
+            if (cycle >= UniqueSpriteCycle)
+            {
+                var extra = CycleEnemies();
+                if (extra.Length > 0)
+                    return extra[Mathf.Abs(wave - 1 + cycle * 7) % extra.Length];
+            }
+
             if (zone != null && zone.enemyIds != null && zone.enemyIds.Length > 0)
             {
                 string id = zone.enemyIds[Mathf.Abs(wave - 1) % zone.enemyIds.Length];
-                var visual = FindEnemy(id);
+                var visual = cycle > 0
+                    ? FindEnemy(VariantId(id, cycle)) ?? FindEnemy(id)
+                    : FindEnemy(id);
                 if (visual != null)
                     return visual;
             }
@@ -149,6 +160,77 @@ namespace MyClicker.Data
             if (enemies != null && enemies.Length > 0)
                 return enemies[Mathf.Abs(wave - 1) % enemies.Length];
             return null;
+        }
+
+        public UnitVisual PickBoss(ZoneDef zone, int zoneIndex, int cycle)
+        {
+            if (cycle >= UniqueSpriteCycle)
+            {
+                var extra = CycleBosses();
+                if (extra.Length > 0)
+                    return extra[Mathf.Abs(zoneIndex + cycle * 3) % extra.Length];
+            }
+
+            if (zone != null)
+            {
+                var visual = FindBoss(zone.bossId) ?? FindUnit(zone.bossId);
+                if (visual != null)
+                    return visual;
+            }
+
+            if (bosses != null && bosses.Length > 0)
+                return bosses[Mathf.Clamp(zoneIndex, 0, bosses.Length - 1)];
+            return null;
+        }
+
+        UnitVisual[] CycleEnemies()
+        {
+            return FilterByPrefix(enemies, "r8_", "sx_");
+        }
+
+        UnitVisual[] CycleBosses()
+        {
+            return FilterByPrefix(bosses, "r8_", "sx_");
+        }
+
+        static UnitVisual[] FilterByPrefix(UnitVisual[] list, string a, string b)
+        {
+            if (list == null || list.Length == 0)
+                return System.Array.Empty<UnitVisual>();
+            int n = 0;
+            for (int i = 0; i < list.Length; i++)
+            {
+                if (HasPrefix(list[i], a, b))
+                    n++;
+            }
+
+            if (n == 0)
+                return System.Array.Empty<UnitVisual>();
+            var extra = new UnitVisual[n];
+            int w = 0;
+            for (int i = 0; i < list.Length; i++)
+            {
+                if (!HasPrefix(list[i], a, b))
+                    continue;
+                extra[w++] = list[i];
+            }
+
+            return extra;
+        }
+
+        static bool HasPrefix(UnitVisual visual, string a, string b)
+        {
+            if (visual == null || string.IsNullOrEmpty(visual.id))
+                return false;
+            return visual.id.StartsWith(a) || visual.id.StartsWith(b);
+        }
+
+        static string VariantId(string id, int cycle)
+        {
+            if (cycle <= 0 || string.IsNullOrEmpty(id) || !id.StartsWith("enemy_"))
+                return id;
+            int tint = ((cycle - 1) % 3) + 1;
+            return id + (char)('a' + tint);
         }
 
         static UnitVisual Find(UnitVisual[] list, string id)

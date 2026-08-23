@@ -177,7 +177,7 @@ namespace MyClicker.UI
             bool canCycle = gear.CanCycle(row.slot);
             row.name.text = row.slot + "  " + gear.Label(row.slot);
             row.detail.text = owned <= 0
-                ? "Starter look. Relics drop in battle."
+                ? gear.BonusText(row.slot)
                 : gear.BonusText(row.slot) + "  T" + rank + "  " + owned + " looks";
             if (row.price != null)
                 row.price.Set(NumberFmt.Compact(gear.TemperCost(row.slot)), DustIcon());

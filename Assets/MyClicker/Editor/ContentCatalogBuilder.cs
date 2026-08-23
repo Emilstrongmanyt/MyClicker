@@ -62,8 +62,8 @@ namespace MyClicker.Editor
         public static void Rebuild()
         {
             var catalog = LoadOrCreate();
-            catalog.enemies = BuildEnemies();
-            catalog.bosses = BuildBosses();
+            catalog.enemies = BuildEnemies().Concat(BuildRetroEnemies()).Concat(BuildSanctumEnemies()).ToArray();
+            catalog.bosses = BuildBosses().Concat(BuildRetroBosses()).Concat(BuildSanctumBosses()).ToArray();
             catalog.icons = BuildIcons();
             catalog.audio = BuildAudio();
             catalog.upgrades = BuildUpgrades(catalog.icons);
@@ -108,16 +108,18 @@ namespace MyClicker.Editor
             foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { "Assets/ElvAssets/Enemies" }))
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
-                var match = Regex.Match(Path.GetFileNameWithoutExtension(path), @"Enemy_(\d+)_A$", RegexOptions.IgnoreCase);
+                var match = Regex.Match(Path.GetFileNameWithoutExtension(path), @"Enemy_(\d+)_([A-D])$", RegexOptions.IgnoreCase);
                 if (!match.Success)
                     continue;
                 int index = int.Parse(match.Groups[1].Value);
-                var visual = FromSheet(
-                    "enemy_" + index.ToString("000"),
-                    index >= 1 && index <= EnemyNames.Length ? EnemyNames[index - 1] : "Invader " + index,
-                    path,
-                    boss: false,
-                    scale: 2.25f);
+                char letter = char.ToUpperInvariant(match.Groups[2].Value[0]);
+                string id = "enemy_" + index.ToString("000");
+                if (letter != 'A')
+                    id += char.ToLowerInvariant(letter);
+                string name = index >= 1 && index <= EnemyNames.Length ? EnemyNames[index - 1] : "Invader " + index;
+                if (letter != 'A')
+                    name += " " + letter;
+                var visual = FromSheet(id, name, path, boss: false, scale: 2.25f);
                 if (visual != null)
                     list.Add(visual);
             }
@@ -154,6 +156,161 @@ namespace MyClicker.Editor
             }
 
             return list.OrderBy(v => v.id).ToArray();
+        }
+
+        static UnitVisual[] BuildRetroEnemies()
+        {
+            return BuildRetro("Assets/ElvAssets/RetroAdventure", boss: false, scale: 9f);
+        }
+
+        static UnitVisual[] BuildRetroBosses()
+        {
+            return BuildRetro("Assets/ElvAssets/RetroAdventure", boss: true, scale: 11f);
+        }
+
+        static UnitVisual[] BuildRetro(string folder, bool boss, float scale)
+        {
+            var list = new List<UnitVisual>();
+            if (!AssetDatabase.IsValidFolder(folder))
+                return list.ToArray();
+            foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { folder }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                string file = Path.GetFileNameWithoutExtension(path);
+                bool isBoss = file.IndexOf("boss", StringComparison.OrdinalIgnoreCase) >= 0;
+                if (isBoss != boss)
+                    continue;
+                string id = file.ToLowerInvariant();
+                var visual = FromSheet(id, RetroName(file), path, isBoss, scale);
+                if (visual != null)
+                    list.Add(visual);
+            }
+
+            return list.OrderBy(v => v.id).ToArray();
+        }
+
+        static string RetroName(string file)
+        {
+            string raw = file.Replace("r8_", "").Replace('_', ' ');
+            var parts = raw.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (parts[i].Length == 0)
+                    continue;
+                parts[i] = char.ToUpperInvariant(parts[i][0]) + parts[i].Substring(1);
+            }
+
+            return string.Join(" ", parts);
+        }
+
+        static readonly string[] SanctumBossFolders = { "golem_1", "lord_1", "demon_big_1" };
+
+        static UnitVisual[] BuildSanctumEnemies() => BuildSanctum(boss: false, scale: 2.8f);
+
+        static UnitVisual[] BuildSanctumBosses() => BuildSanctum(boss: true, scale: 3.4f);
+
+        static UnitVisual[] BuildSanctum(bool boss, float scale)
+        {
+            var list = new List<UnitVisual>();
+            const string root = "Assets/ElvAssets/Sanctum";
+            if (!AssetDatabase.IsValidFolder(root))
+                return list.ToArray();
+            foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { root }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                string dir = Path.GetDirectoryName(path)?.Replace('\\', '/') ?? "";
+                if (!dir.StartsWith(root + "/", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                string folderName = Path.GetFileName(dir);
+                bool isBoss = false;
+                for (int i = 0; i < SanctumBossFolders.Length; i++)
+                {
+                    if (folderName.Equals(SanctumBossFolders[i], StringComparison.OrdinalIgnoreCase))
+                    {
+                        isBoss = true;
+                        break;
+                    }
+                }
+
+                if (isBoss != boss)
+                    continue;
+                if (list.Exists(v => v.id == "sx_" + folderName))
+                    continue;
+                var visual = FromFolder("sx_" + folderName, FolderTitle(folderName), dir, isBoss, scale);
+                if (visual != null)
+                    list.Add(visual);
+            }
+
+            return list.OrderBy(v => v.id).ToArray();
+        }
+
+        static string FolderTitle(string folder)
+        {
+            string raw = Regex.Replace(folder ?? "", @"_\d+$", "").Replace('_', ' ');
+            var parts = raw.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < parts.Length; i++)
+                parts[i] = char.ToUpperInvariant(parts[i][0]) + parts[i].Substring(1);
+            return string.Join(" ", parts);
+        }
+
+        static UnitVisual FromFolder(string id, string displayName, string folder, bool boss, float scale)
+        {
+            var idle = new List<Sprite>();
+            var walk = new List<Sprite>();
+            var attack = new List<Sprite>();
+            var hurt = new List<Sprite>();
+            var death = new List<Sprite>();
+            foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { folder }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                string file = Path.GetFileNameWithoutExtension(path).ToLowerInvariant();
+                if (file.StartsWith("attack2") || file.StartsWith("attack3") || file.StartsWith("sword") || file.StartsWith("effect"))
+                    continue;
+                var sprite = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().FirstOrDefault();
+                if (sprite == null)
+                    continue;
+                if (file.StartsWith("stand") || file.StartsWith("idle"))
+                    idle.Add(sprite);
+                else if (file.StartsWith("walk"))
+                    walk.Add(sprite);
+                else if (file.StartsWith("attack"))
+                    attack.Add(sprite);
+                else if (file.StartsWith("hurt") || file.StartsWith("damage"))
+                    hurt.Add(sprite);
+                else if (file.StartsWith("die") || file.StartsWith("dead"))
+                    death.Add(sprite);
+            }
+
+            if (idle.Count == 0 && walk.Count == 0)
+                return null;
+            Comparison<Sprite> byName = (a, b) => string.CompareOrdinal(a.name, b.name);
+            idle.Sort(byName);
+            walk.Sort(byName);
+            attack.Sort(byName);
+            hurt.Sort(byName);
+            death.Sort(byName);
+            if (idle.Count == 0)
+                idle.AddRange(walk);
+            if (walk.Count == 0)
+                walk.AddRange(idle);
+            if (attack.Count == 0)
+                attack.AddRange(idle);
+            if (hurt.Count == 0)
+                hurt.AddRange(idle);
+            if (death.Count == 0)
+                death.AddRange(idle);
+            return new UnitVisual
+            {
+                id = id,
+                displayName = displayName,
+                isBoss = boss,
+                scale = scale,
+                idle = idle.ToArray(),
+                walk = walk.ToArray(),
+                attack = attack.ToArray(),
+                hurt = hurt.ToArray(),
+                death = death.ToArray()
+            };
         }
 
         static UnitVisual FromSheet(string id, string displayName, string path, bool boss, float scale)

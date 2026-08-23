@@ -172,7 +172,7 @@ namespace MyClicker.Combat
         {
             var services = GameServices.Instance;
             var zone = services.Catalog.ZoneAt(services.Save.Profile.zone);
-            var visual = services.Catalog.PickEnemy(zone, services.Save.Profile.wave);
+            var visual = services.Catalog.PickEnemy(zone, services.Save.Profile.wave, services.Save.Profile.cycle);
             _spawner.SpawnRegular(visual, EnemyHp(false));
         }
 
@@ -180,9 +180,7 @@ namespace MyClicker.Combat
         {
             var services = GameServices.Instance;
             var zone = services.Catalog.ZoneAt(services.Save.Profile.zone);
-            var visual = services.Catalog.FindBoss(zone.bossId) ?? services.Catalog.FindUnit(zone.bossId);
-            if (visual == null && services.Catalog.bosses != null && services.Catalog.bosses.Length > 0)
-                visual = services.Catalog.bosses[Mathf.Clamp(services.Save.Profile.zone, 0, services.Catalog.bosses.Length - 1)];
+            var visual = services.Catalog.PickBoss(zone, services.Save.Profile.zone, services.Save.Profile.cycle);
             _spawner.SpawnBoss(visual, EnemyHp(true));
             PlayZoneMusic(zone);
         }

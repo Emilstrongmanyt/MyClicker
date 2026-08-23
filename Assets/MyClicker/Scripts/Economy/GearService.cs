@@ -74,16 +74,41 @@ namespace MyClicker.Economy
         public string BonusText(string slot)
         {
             bool relic = RelicOn(slot);
+            int t = Profile.TemperLevel(slot);
             switch (slot)
             {
                 case Slot.Weapon:
-                    return relic ? "+14 tap. Any relic." : "Starter look";
+                {
+                    float tap = (relic ? 14f : 0f) + t * 3f;
+                    if (!relic && t <= 0)
+                        return "Starter look. Relics drop in battle.";
+                    return "+" + tap.ToString("0") + " tap" + (relic ? ". Any relic." : ". Starter.");
+                }
                 case Slot.Armor:
-                    return relic ? "+5 tap  +8% gold. Any relic." : "Starter look";
+                {
+                    float tap = (relic ? 5f : 0f) + t * 1.2f;
+                    float gold = (relic ? 8f : 0f) + t * 2f;
+                    if (!relic && t <= 0)
+                        return "Starter look. Relics drop in battle.";
+                    return "+" + tap.ToString("0.#") + " tap  +" + gold.ToString("0") + "% gold" +
+                           (relic ? ". Any relic." : ". Starter.");
+                }
                 case Slot.Helmet:
-                    return relic ? "+0.4 crit mul  +15% Focus regen. Any relic." : "Starter look";
+                {
+                    float mul = (relic ? 0.4f : 0f) + t * 0.06f;
+                    float regen = (relic ? 15f : 0f) + t * 3f;
+                    if (!relic && t <= 0)
+                        return "Starter look. Relics drop in battle.";
+                    return "+" + mul.ToString("0.00") + " crit mul  +" + regen.ToString("0") + "% Focus regen" +
+                           (relic ? ". Any relic." : ". Starter.");
+                }
                 case Slot.Cape:
-                    return relic ? "+15% auto damage. Any relic." : "Starter look";
+                {
+                    float auto = (relic ? 15f : 0f) + t * 3f;
+                    if (!relic && t <= 0)
+                        return "Starter look. Relics drop in battle.";
+                    return "+" + auto.ToString("0") + "% auto damage" + (relic ? ". Any relic." : ". Starter.");
+                }
                 default:
                     return "";
             }
@@ -101,6 +126,8 @@ namespace MyClicker.Economy
                 return false;
             Profile.SetTemperLevel(slot, Profile.TemperLevel(slot) + 1);
             Profile.usedTemper = true;
+            if (_services.Economy != null)
+                Profile.tapDamage = _services.Economy.TapDamage;
             _services.Save.MarkDirty();
             MyClicker.Audio.AudioDirector.Ensure().PlaySfx("armory");
             return true;
