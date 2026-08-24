@@ -82,15 +82,15 @@ namespace MyClicker.Combat
             if (visual == null || _renderer == null || _renderer.sprite == null)
                 return;
             string id = visual.id ?? "";
-            bool tint = id.StartsWith("enemy_") && id.Length > 0 && char.IsLetter(id[id.Length - 1]);
-            bool extra = id.StartsWith("r8_") || id.StartsWith("sx_");
-            if (!tint && !extra)
+            if (!id.StartsWith("r8_") && !id.StartsWith("sx_"))
                 return;
-            float body = _renderer.sprite.bounds.size.y;
-            if (body < 0.02f)
+            var sprite = _renderer.sprite;
+            float ppu = sprite.pixelsPerUnit > 0.01f ? sprite.pixelsPerUnit : 32f;
+            float cell = sprite.rect.height / ppu;
+            if (cell < 0.02f)
                 return;
-            float target = visual.isBoss ? 2.7f : 2.4f;
-            float fitted = target / body;
+            float target = visual.isBoss ? 2.7f : 2.25f;
+            float fitted = target / cell;
             var sign = transform.localScale.x < 0f ? -1f : 1f;
             transform.localScale = new Vector3(sign * fitted, fitted, 1f);
         }
