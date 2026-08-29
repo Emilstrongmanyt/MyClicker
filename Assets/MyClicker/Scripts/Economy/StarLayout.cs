@@ -52,7 +52,7 @@ namespace MyClicker.Economy
             var links = new List<string>(400);
 
             var origin = Place(StarIds.FirstLight, "First Light", "The center of the Star Chart. Clear waves to earn Stars.",
-                "laurel", null, StarKind.Keystone, 0, 0f, 0f, 0);
+                "laurel", null, StarKind.Keystone, 0, 0f, 0f);
             nodes.Add(origin);
 
             var regions = Regions();
