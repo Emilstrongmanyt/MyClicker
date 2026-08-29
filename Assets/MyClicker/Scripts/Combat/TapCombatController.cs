@@ -446,6 +446,9 @@ namespace MyClicker.Combat
                 Announce("Glory Surge", 2.4f, false);
                 FxDirector.Ensure().Potion(ContentIds.PotGold, enemy.transform.position + Vector3.up * 0.5f);
             }
+
+            if (economy.ConsumeStarHint())
+                Announce("★ Star  —  Glory → Stars", 3.4f, false);
             _killsThisWave++;
             int need = GameServices.Instance.Economy != null
                 ? GameServices.Instance.Economy.WaveKillNeed

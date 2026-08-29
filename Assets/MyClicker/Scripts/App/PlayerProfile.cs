@@ -50,6 +50,7 @@ namespace MyClicker.App
         public bool usedBareBoss;
         public bool seenTapHint;
         public bool seenArmoryHint;
+        public bool seenStarHint;
         public int bestZone;
         public int forgeBought;
         public bool usedSlam;

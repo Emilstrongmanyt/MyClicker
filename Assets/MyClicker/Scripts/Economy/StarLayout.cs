@@ -36,6 +36,14 @@ namespace MyClicker.Economy
             public string forkBTitle;
             public string forkBBlurb;
             public string forkBIcon;
+            public string extraId;
+            public string extraTitle;
+            public string extraBlurb;
+            public string extraIcon;
+            public string extra2Id;
+            public string extra2Title;
+            public string extra2Blurb;
+            public string extra2Icon;
         }
 
         public static StarNode[] Build()
@@ -138,14 +146,31 @@ namespace MyClicker.Economy
             {
                 float a = region.ang + i * 45f;
                 var p = outerAt + Polar(a, Wheel);
-                string id = region.id + "_ow" + i;
-                nodes.Add(Place(id, "Star", "+2.5% " + Label(region.tag) + ".", region.minorIcon, region.tag,
-                    StarKind.Minor, 1, p.x, p.y));
+                string id;
+                if (i == 2 && !string.IsNullOrEmpty(region.extraId))
+                {
+                    id = region.extraId;
+                    nodes.Add(Place(id, region.extraTitle, region.extraBlurb, region.extraIcon, null,
+                        StarKind.Notable, 1, p.x, p.y, id));
+                }
+                else if (i == 6 && !string.IsNullOrEmpty(region.extra2Id))
+                {
+                    id = region.extra2Id;
+                    nodes.Add(Place(id, region.extra2Title, region.extra2Blurb, region.extra2Icon, null,
+                        StarKind.Notable, 1, p.x, p.y, id));
+                }
+                else
+                {
+                    id = region.id + "_ow" + i;
+                    nodes.Add(Place(id, "Star", "+2.5% " + Label(region.tag) + ".", region.minorIcon, region.tag,
+                        StarKind.Minor, 1, p.x, p.y));
+                }
+
                 Join(links, region.outerId, id);
                 if (i > 0)
-                    Join(links, region.id + "_ow" + (i - 1), id);
+                    Join(links, OuterWheelId(region, i - 1), id);
                 if (i == 7)
-                    Join(links, id, region.id + "_ow0");
+                    Join(links, id, OuterWheelId(region, 0));
             }
 
             var keyAt = Polar(region.ang, Spoke * (SpokeCount + 3 + OuterTravel) + 40f);
@@ -164,6 +189,15 @@ namespace MyClicker.Economy
             return region.id + "_iw" + i;
         }
 
+        static string OuterWheelId(Region region, int i)
+        {
+            if (i == 2 && !string.IsNullOrEmpty(region.extraId))
+                return region.extraId;
+            if (i == 6 && !string.IsNullOrEmpty(region.extra2Id))
+                return region.extra2Id;
+            return region.id + "_ow" + i;
+        }
+
         static Region[] Regions()
         {
             return new[]
@@ -175,7 +209,9 @@ namespace MyClicker.Economy
                     outerId = StarIds.CritSpark, outerTitle = "Crit Spark", outerBlurb = "+0.15 crit mul on taps.", outerIcon = "target",
                     keyId = StarIds.Godhand, keyTitle = "Godhand", keyBlurb = "+15% tap, −10% auto.", keyIcon = "energy",
                     forkA = StarIds.Pulse, forkATitle = "Pulse", forkABlurb = "Taps splash 15% to a nearby foe.", forkAIcon = "bomb",
-                    forkB = StarIds.Nail, forkBTitle = "Nail", forkBBlurb = "+10% tap.", forkBIcon = "sword_b"
+                    forkB = StarIds.Nail, forkBTitle = "Nail", forkBBlurb = "+10% tap.", forkBIcon = "sword_b",
+                    extraId = StarIds.TapEdge, extraTitle = "Edge", extraBlurb = "+6% tap.", extraIcon = "sword_b",
+                    extra2Id = StarIds.IronFinger, extra2Title = "Iron Finger", extra2Blurb = "+6% tap.", extra2Icon = "sword_a"
                 },
                 new Region
                 {
@@ -184,7 +220,8 @@ namespace MyClicker.Economy
                     outerId = StarIds.Overspin, outerTitle = "Overspin", outerBlurb = "+8% Overclock.", outerIcon = "timer",
                     keyId = StarIds.Sleepless, keyTitle = "Sleepless", keyBlurb = "+10% auto. Away potion from 10m.", keyIcon = "sandglass",
                     forkA = StarIds.Metronome, forkATitle = "Metronome", forkABlurb = "Auto floor 0.26s.", forkAIcon = "horner",
-                    forkB = StarIds.Anvil, forkBTitle = "Anvil", forkBBlurb = "+12% auto. Keeps the 0.28s floor.", forkBIcon = "anvil"
+                    forkB = StarIds.Anvil, forkBTitle = "Anvil", forkBBlurb = "+12% auto. Keeps the 0.28s floor.", forkBIcon = "anvil",
+                    extraId = StarIds.AutoEdge, extraTitle = "Idle Edge", extraBlurb = "+6% auto.", extraIcon = "timer"
                 },
                 new Region
                 {
@@ -193,7 +230,8 @@ namespace MyClicker.Economy
                     outerId = StarIds.DepthSense, outerTitle = "Depth Sense", outerBlurb = "+4% gold on Endless.", outerIcon = "mission",
                     keyId = StarIds.SecondLoop, keyTitle = "Second Loop", keyBlurb = "Every other loop grants an extra Star.", keyIcon = "crown",
                     forkA = StarIds.Thick, forkATitle = "Thick", forkABlurb = "+1 spawn cap, −4% tap.", forkAIcon = "skull",
-                    forkB = StarIds.Thin, forkBTitle = "Thin", forkBBlurb = "−1 spawn cap, +8% tap.", forkBIcon = "trophy"
+                    forkB = StarIds.Thin, forkBTitle = "Thin", forkBBlurb = "−1 spawn cap, +8% tap.", forkBIcon = "trophy",
+                    extraId = StarIds.CycleGold, extraTitle = "Cycle Gold", extraBlurb = "+5% gold on Endless.", extraIcon = "gold"
                 },
                 new Region
                 {
@@ -202,7 +240,9 @@ namespace MyClicker.Economy
                     outerId = StarIds.CheapSlam, outerTitle = "Cheap Slam", outerBlurb = "Slam costs 4 less Focus.", outerIcon = "potion_purple",
                     keyId = StarIds.Flow, keyTitle = "Flow", keyBlurb = "Ascend with 30 Focus.", keyIcon = "candle",
                     forkA = StarIds.Wide, forkATitle = "Wide", forkABlurb = "+10% Sweep.", forkAIcon = "skull",
-                    forkB = StarIds.Point, forkBTitle = "Point", forkBBlurb = "Reaper Sweep ×2.0, or +12% Slam.", forkBIcon = "energy"
+                    forkB = StarIds.Point, forkBTitle = "Point", forkBBlurb = "Reaper Sweep ×2.0, or +12% Slam.", forkBIcon = "energy",
+                    extraId = StarIds.LongFury, extraTitle = "Long Fury", extraBlurb = "+12% Fury duration.", extraIcon = "candle",
+                    extra2Id = StarIds.FocusEdge, extra2Title = "Focus Edge", extra2Blurb = "+6% Focus regen.", extra2Icon = "potion_red"
                 },
                 new Region
                 {

@@ -982,11 +982,27 @@ namespace MyClicker.Economy
             _services.Save.MarkDirty();
         }
 
+        public bool ConsumeStarHint()
+        {
+            if (!LastStarHint)
+                return false;
+            LastStarHint = false;
+            return true;
+        }
+
+        public bool LastStarHint { get; private set; }
+
         public int GrantBossStar()
         {
             Profile.starEarned++;
             if (Profile.starEarned > 0)
                 StarTree.Unlock(Profile, StarIds.FirstLight);
+            if (!Profile.seenStarHint)
+            {
+                Profile.seenStarHint = true;
+                LastStarHint = true;
+            }
+
             Profile.tapDamage = TapDamage;
             _services.Save.MarkDirty();
             return 1;

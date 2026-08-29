@@ -21,6 +21,7 @@ namespace MyClicker.UI
         EdgeView[] _edges;
         StarChartView _chart;
         string _selected;
+        int _paintKey = int.MinValue;
 
         public bool Open => _open;
 
@@ -133,27 +134,32 @@ namespace MyClicker.UI
                 return;
             var profile = services.Save.Profile;
             int unspent = StarTree.Unspent(profile);
+            int spent = StarTree.Spent(profile);
             if (_summary != null)
-                _summary.text = unspent + "★ to spend   ·   " + profile.starEarned + " earned   ·   pinch or +/− to zoom";
+                _summary.text = unspent + "★ to spend   ·   tap a lit star to allocate   ·   pinch or +/−";
             if (_respec != null)
             {
-                int spent = StarTree.Spent(profile);
                 var label = _respec.GetComponentInChildren<Text>();
                 if (label != null)
                     label.text = spent > 0 ? "Respec  +" + spent + "★" : "Respec";
                 _respec.interactable = spent > 0;
             }
 
-            if (_nodes != null)
+            int key = unspent + spent * 1000 + (_selected != null ? _selected.GetHashCode() : 0);
+            if (key != _paintKey)
             {
-                for (int i = 0; i < _nodes.Length; i++)
-                    PaintNode(_nodes[i], profile);
-            }
+                _paintKey = key;
+                if (_nodes != null)
+                {
+                    for (int i = 0; i < _nodes.Length; i++)
+                        PaintNode(_nodes[i], profile);
+                }
 
-            if (_edges != null)
-            {
-                for (int i = 0; i < _edges.Length; i++)
-                    PaintEdge(_edges[i], profile);
+                if (_edges != null)
+                {
+                    for (int i = 0; i < _edges.Length; i++)
+                        PaintEdge(_edges[i], profile);
+                }
             }
 
             PaintDetail(profile);
@@ -320,7 +326,14 @@ namespace MyClicker.UI
             if (row.icon != null)
                 row.icon.color = owned || can ? Color.white : new Color(1f, 1f, 1f, 0.4f);
             if (row.ring != null)
-                row.ring.color = selected ? new Color(1f, 0.9f, 0.35f, 0.55f) : new Color(1f, 0.9f, 0.35f, 0f);
+            {
+                if (selected)
+                    row.ring.color = new Color(1f, 0.9f, 0.35f, 0.55f);
+                else if (can && !owned)
+                    row.ring.color = new Color(0.55f, 1f, 0.62f, 0.42f);
+                else
+                    row.ring.color = new Color(1f, 0.9f, 0.35f, 0f);
+            }
         }
 
         void PaintEdge(EdgeView edge, PlayerProfile profile)
@@ -340,6 +353,12 @@ namespace MyClicker.UI
         void Select(string id)
         {
             _selected = id;
+            var services = GameServices.Instance;
+            var node = StarTree.Find(id);
+            if (services != null && node != null && node.kind != StarKind.Keystone &&
+                StarTree.CanBuy(services.Save.Profile, node))
+                services.Economy.TryBuyStar(id);
+            _paintKey = int.MinValue;
             Refresh();
         }
 
@@ -370,8 +389,18 @@ namespace MyClicker.UI
             {
                 var label = _buy.GetComponentInChildren<Text>();
                 if (label != null)
-                    label.text = owned ? "Owned" : (can ? (node.cost <= 0 ? "Unlock" : "Buy  " + node.cost + "★") : "Locked");
-                _buy.interactable = can;
+                {
+                    if (owned)
+                        label.text = "Owned";
+                    else if (can && node.kind == StarKind.Keystone)
+                        label.text = "Buy  " + node.cost + "★";
+                    else if (can)
+                        label.text = "Allocated";
+                    else
+                        label.text = "Locked";
+                }
+
+                _buy.interactable = can && node.kind == StarKind.Keystone;
             }
         }
 
@@ -380,6 +409,7 @@ namespace MyClicker.UI
             if (string.IsNullOrEmpty(_selected))
                 return;
             GameServices.Instance?.Economy.TryBuyStar(_selected);
+            _paintKey = int.MinValue;
             Refresh();
         }
 
@@ -388,6 +418,7 @@ namespace MyClicker.UI
             var services = GameServices.Instance;
             if (services == null || !services.Economy.TryRespecStars())
                 return;
+            _paintKey = int.MinValue;
             Refresh();
         }
 
