@@ -25,6 +25,8 @@ namespace MyClicker.UI
         ShopPanel _shop;
         GearPanel _gear;
         GloryPanel _glory;
+        StarPanel _stars;
+        Button _starChip;
         DeedPanel _deeds;
         PotionTray _potions;
         StatsPanel _stats;
@@ -87,12 +89,30 @@ namespace MyClicker.UI
             _sweep = StoneUi.Button(parent, "Sweep", "Sweep", skin, null);
             StoneUi.Place(_sweep, 0.82f, 0.155f, 0.97f, 0.212f);
 
+            _starChip = StoneUi.Button(parent, "StarChip", "★", skin, () =>
+            {
+                if (_stars != null && _stars.Open)
+                {
+                    _stars.Hide();
+                    return;
+                }
+
+                HideMeta();
+                _stars.Show();
+            });
+            StoneUi.Place(_starChip, 0.44f, 0.952f, 0.58f, 0.990f);
+            var starLabel = _starChip.GetComponentInChildren<Text>();
+            if (starLabel != null)
+            {
+                starLabel.fontSize = 22;
+                starLabel.resizeTextForBestFit = true;
+                starLabel.resizeTextMinSize = 16;
+                starLabel.resizeTextMaxSize = 24;
+            }
+
             var armoryBtn = StoneUi.Button(parent, "ArmoryButton", "Armory", skin, () =>
             {
-                _shop.Hide();
-                _glory.Hide();
-                _deeds.Hide();
-                _stats.Hide();
+                HideMeta();
                 _gear.Toggle();
             });
             StoneUi.Place(armoryBtn, 0.42f, 0.018f, 0.68f, 0.108f);
@@ -101,10 +121,7 @@ namespace MyClicker.UI
 
             var shopBtn = StoneUi.Button(parent, "ShopButton", "Forge", skin, () =>
             {
-                _gear.Hide();
-                _glory.Hide();
-                _deeds.Hide();
-                _stats.Hide();
+                HideMeta();
                 _shop.Toggle();
             });
             StoneUi.Place(shopBtn, 0.70f, 0.018f, 0.96f, 0.108f);
@@ -138,32 +155,30 @@ namespace MyClicker.UI
             _gear.Build(parent, skin);
             _glory = gameObject.AddComponent<GloryPanel>();
             _glory.Build(parent, skin);
+            _stars = gameObject.AddComponent<StarPanel>();
+            _stars.Build(parent, skin);
             _deeds = gameObject.AddComponent<DeedPanel>();
             _deeds.Build(parent, skin);
             _stats = gameObject.AddComponent<StatsPanel>();
             _stats.Build(parent, skin);
             _shop.RequestGlory = () =>
             {
-                _gear.Hide();
-                _shop.Hide();
-                _deeds.Hide();
-                _stats.Hide();
+                HideMeta();
                 _glory.Toggle();
             };
             _glory.RequestDeeds = () =>
             {
-                _gear.Hide();
-                _shop.Hide();
-                _glory.Hide();
-                _stats.Hide();
+                HideMeta();
                 _deeds.Toggle();
+            };
+            _glory.RequestStars = () =>
+            {
+                HideMeta();
+                _stars.Toggle();
             };
             _gear.RequestStats = () =>
             {
-                _shop.Hide();
-                _gear.Hide();
-                _glory.Hide();
-                _deeds.Hide();
+                HideMeta();
                 _stats.Toggle();
             };
             _potions = gameObject.AddComponent<PotionTray>();
@@ -277,23 +292,43 @@ namespace MyClicker.UI
                 _focus.Set("Focus", economy.Focus, economy.FocusMax);
 
             if (_slam != null)
-                _slam.interactable = economy.Focus >= combat.slamCost;
+                _slam.interactable = economy.Focus >= economy.SlamCost * economy.FocusCostMul;
             if (_fury != null)
-                _fury.interactable = economy.Focus >= combat.furyCost;
+                _fury.interactable = economy.Focus >= combat.furyCost * economy.FocusCostMul;
             if (_sweep != null)
             {
-                _sweep.interactable = economy.Focus >= combat.sweepCost;
+                _sweep.interactable = economy.Focus >= combat.sweepCost * economy.FocusCostMul;
                 var label = _sweep.GetComponentInChildren<Text>();
                 if (label != null)
                     label.text = economy.ReaperSweep ? "Reaper" : "Sweep";
             }
 
+            if (_starChip != null)
+            {
+                int unspent = economy.StarUnspent;
+                var label = _starChip.GetComponentInChildren<Text>();
+                if (label != null)
+                    label.text = "★ " + unspent;
+                _starChip.gameObject.SetActive(profile.starEarned > 0 || profile.loopClears > 0 || profile.endlessUnlocked);
+            }
+
             _shop?.Refresh();
             _gear?.Refresh();
             _glory?.Refresh();
+            _stars?.Refresh();
             _deeds?.Refresh();
             _stats?.Refresh();
             _potions?.Refresh();
+        }
+
+        void HideMeta()
+        {
+            _shop.Hide();
+            _gear.Hide();
+            _glory.Hide();
+            _stars?.Hide();
+            _deeds.Hide();
+            _stats.Hide();
         }
 
         void BindFocusTips()
@@ -302,9 +337,15 @@ namespace MyClicker.UI
                 ? GameServices.Instance.Config.combat
                 : new GameConfig.CombatSettings();
             Action hide = () => _tip?.Hide();
-            HoldPress.Bind(_slam.gameObject, () => _battle?.TrySlam(), () => ShowFocusTip(
-                "Slam",
-                "Spend " + Mathf.RoundToInt(combat.slamCost) + " Focus to smash the nearest foe for heavy tap damage."), hide);
+            HoldPress.Bind(_slam.gameObject, () => _battle?.TrySlam(), () =>
+            {
+                float cost = GameServices.Instance != null && GameServices.Instance.Economy != null
+                    ? GameServices.Instance.Economy.SlamCost
+                    : combat.slamCost;
+                ShowFocusTip(
+                    "Slam",
+                    "Spend " + Mathf.RoundToInt(cost) + " Focus to smash the nearest foe for heavy tap damage.");
+            }, hide);
             HoldPress.Bind(_fury.gameObject, () => _battle?.TryFocusFury(), () => ShowFocusTip(
                 "Fury",
                 "Spend " + Mathf.RoundToInt(combat.furyCost) + " Focus to boost tap and auto damage for a few seconds."), hide);

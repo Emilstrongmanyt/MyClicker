@@ -117,7 +117,10 @@ namespace MyClicker.Economy
         public int TemperCost(string slot)
         {
             int rank = Profile.TemperLevel(slot);
-            return Mathf.Max(1, Mathf.RoundToInt(Eco.temperBaseCost * Mathf.Pow(Eco.temperCostGrowth, rank)));
+            float cost = Eco.temperBaseCost * Mathf.Pow(Eco.temperCostGrowth, rank);
+            if (_services.Economy != null && _services.Economy.HasStar(StarIds.Smith))
+                cost *= 0.85f;
+            return Mathf.Max(1, Mathf.RoundToInt(cost));
         }
 
         public bool TryTemper(string slot)
@@ -171,6 +174,10 @@ namespace MyClicker.Economy
                 chance *= 1f + EconomyService.Mutation(_services.Save.Profile.mutationLuck, Eco.mutationPerDecade);
                 if (_services.Economy != null && _services.Economy.HasGlory(GloryIds.RelicSense))
                     chance *= 1.25f;
+                if (_services.Economy != null && _services.Economy.HasStar(StarIds.RelicMagnet))
+                    chance *= 1.10f;
+                if (_services.Economy != null)
+                    chance *= 1f + 0.025f * StarTree.MinorRank(Profile, StarTags.Relic);
                 if (UnityEngine.Random.value > chance)
                     return null;
             }

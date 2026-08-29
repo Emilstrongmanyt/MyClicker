@@ -52,6 +52,7 @@ namespace MyClicker.Economy
                     value *= Mathf.Max(1f, Profile.gloryTapMul);
                 if (_surgeLeft > 0f)
                     value *= SurgeMul;
+                value *= StarTapMul;
                 return value;
             }
         }
@@ -81,6 +82,7 @@ namespace MyClicker.Economy
                     value *= 1f + 0.05f * vein;
                 value *= MilestoneMul();
                 value *= CycleGoldMul();
+                value *= StarGoldMul;
                 var zone = _services.Catalog.ZoneAt(Profile.zone);
                 return value * Mathf.Max(0.25f, zone.goldMul);
             }
@@ -100,6 +102,7 @@ namespace MyClicker.Economy
                 if (HasGlory(GloryIds.LuckyStrike))
                     value += 0.55f;
                 value += CritOverflowMul();
+                value += 0.04f * StarTree.MinorRank(Profile, StarTags.Crit);
                 return value;
             }
         }
@@ -116,6 +119,8 @@ namespace MyClicker.Economy
                 if (_services.Gear != null)
                     value += _services.Gear.OverclockBonus;
                 value += SwiftOverflowOverclock();
+                if (HasStar(StarIds.Overspin))
+                    value += 0.08f;
                 return value;
             }
         }
@@ -141,7 +146,7 @@ namespace MyClicker.Economy
         public const float AutoHitMul = 0.4f;
         public const float ReaperSweepMul = 1.75f;
 
-        public float AutoDps => TapDamage * OverclockMul * AutoHitMul / Mathf.Max(0.2f, AutoInterval);
+        public float AutoDps => TapDamage * (StarAutoMul / Mathf.Max(0.01f, StarTapMul)) * OverclockMul * AutoHitMul / Mathf.Max(0.2f, AutoInterval);
 
         public int ZoneCount
         {
@@ -217,7 +222,11 @@ namespace MyClicker.Economy
                 int cap = Combat.maxAlive + Mathf.Max(0, Profile.cycle) * 3 + extra;
                 if (HasGlory(GloryIds.HordeBanner))
                     cap += 2;
-                return Mathf.Min(18, cap);
+                if (HasStar(StarIds.Thick))
+                    cap += 1;
+                if (HasStar(StarIds.Thin))
+                    cap -= 1;
+                return Mathf.Clamp(cap, 4, 18);
             }
         }
 
@@ -266,6 +275,8 @@ namespace MyClicker.Economy
             {
                 float seconds = Eco.focusFurySeconds > 0f ? Eco.focusFurySeconds : 8f;
                 seconds *= Mathf.Pow(1.1f, GloryRank(GloryIds.EternalFury));
+                if (HasStar(StarIds.LongFury))
+                    seconds *= 1.12f;
                 return seconds;
             }
         }
@@ -276,6 +287,8 @@ namespace MyClicker.Economy
             {
                 float value = Eco.slamDamageMul > 0f ? Eco.slamDamageMul : 5.5f;
                 value *= Mathf.Pow(1.12f, GloryRank(GloryIds.CrushingSlam));
+                if (HasStar(StarIds.Point) && !ReaperSweep)
+                    value *= 1.12f;
                 return value;
             }
         }
@@ -286,8 +299,10 @@ namespace MyClicker.Economy
             {
                 float value = Eco.sweepDamageMul > 0f ? Eco.sweepDamageMul : 3f;
                 value *= Mathf.Pow(1.12f, GloryRank(GloryIds.WideSweep));
+                if (HasStar(StarIds.Wide))
+                    value *= 1.10f;
                 if (ReaperSweep)
-                    value *= ReaperSweepMul;
+                    value *= HasStar(StarIds.Point) ? 2f : ReaperSweepMul;
                 return value;
             }
         }
@@ -326,11 +341,83 @@ namespace MyClicker.Economy
                 regen *= 1f + 0.12f * GloryRank(GloryIds.FocusWell);
                 if (_services.Gear != null)
                     regen *= 1f + _services.Gear.FocusRegenBonus;
+                regen *= 1f + 0.025f * StarTree.MinorRank(Profile, StarTags.Regen);
+                if (HasStar(StarIds.Wellspring))
+                    regen *= 1.08f;
+                if (HasStar(StarIds.FocusEdge))
+                    regen *= 1.06f;
                 return regen;
             }
         }
 
         public bool HasGlory(string id) => GloryTree.Has(Profile, id);
+
+        public bool HasStar(string id) => StarTree.Has(Profile, id);
+
+        public int StarUnspent => StarTree.Unspent(Profile);
+
+        public float StarTapMul
+        {
+            get
+            {
+                float value = 1f + 0.025f * StarTree.MinorRank(Profile, StarTags.Tap);
+                if (HasStar(StarIds.IronFinger)) value *= 1.06f;
+                if (HasStar(StarIds.Nail)) value *= 1.10f;
+                if (HasStar(StarIds.TapEdge)) value *= 1.06f;
+                if (HasStar(StarIds.Godhand)) value *= 1.15f;
+                if (HasStar(StarIds.Thick)) value *= 0.96f;
+                if (HasStar(StarIds.Thin)) value *= 1.08f;
+                return value;
+            }
+        }
+
+        public float StarAutoMul
+        {
+            get
+            {
+                float value = 1f + 0.025f * StarTree.MinorRank(Profile, StarTags.Auto);
+                if (HasStar(StarIds.Tick)) value *= 1.06f;
+                if (HasStar(StarIds.Anvil)) value *= 1.12f;
+                if (HasStar(StarIds.AutoEdge)) value *= 1.06f;
+                if (HasStar(StarIds.Sleepless)) value *= 1.10f;
+                if (HasStar(StarIds.Godhand)) value *= 0.90f;
+                return value;
+            }
+        }
+
+        public float StarGoldMul
+        {
+            get
+            {
+                float value = 1f + 0.025f * StarTree.MinorRank(Profile, StarTags.Gold);
+                if (HasStar(StarIds.Tithe)) value *= 1.05f;
+                if (HasStar(StarIds.GoldEdge)) value *= 1.05f;
+                if (Profile.cycle > 0)
+                {
+                    if (HasStar(StarIds.DepthSense)) value *= 1.04f;
+                    if (HasStar(StarIds.CycleGold)) value *= 1.05f;
+                }
+
+                return value;
+            }
+        }
+
+        public float StarTapBossMul => HasStar(StarIds.HeavyTap) ? 1.08f : 1f;
+
+        public float StarTapCritMul => HasStar(StarIds.CritSpark) ? 0.15f : 0f;
+
+        public float StarTapCleave => HasStar(StarIds.Pulse) ? 0.15f : 0f;
+
+        public float SlamCost
+        {
+            get
+            {
+                float cost = Combat.slamCost > 0f ? Combat.slamCost : 35f;
+                if (HasStar(StarIds.CheapSlam))
+                    cost = Mathf.Max(8f, cost - 4f);
+                return cost;
+            }
+        }
 
         public bool HasDeepRoad => HasGlory(GloryIds.DeepRoad);
 
@@ -350,8 +437,9 @@ namespace MyClicker.Economy
             get
             {
                 int n = RelicCount();
-                if (n >= 24) return 0.20f;
-                if (n >= 16) return 0.15f;
+                float extra = HasStar(StarIds.HoardStar) && n >= 16 ? 0.02f : 0f;
+                if (n >= 24) return 0.20f + extra;
+                if (n >= 16) return 0.15f + extra;
                 if (n >= 12) return 0.10f;
                 if (n >= 8) return 0.05f;
                 if (n >= 4) return 0.02f;
@@ -610,7 +698,10 @@ namespace MyClicker.Economy
 
         float AutoIntervalAt(int level, bool includeBuffs)
         {
-            return Mathf.Max(Eco.autoIntervalMin, AutoIntervalRaw(level, includeBuffs));
+            float min = Eco.autoIntervalMin > 0.05f ? Eco.autoIntervalMin : 0.28f;
+            if (HasStar(StarIds.Metronome))
+                min = Mathf.Min(min, 0.26f);
+            return Mathf.Max(min, AutoIntervalRaw(level, includeBuffs));
         }
 
         float SwiftOverflowOverclock()
@@ -659,7 +750,15 @@ namespace MyClicker.Economy
             int late = Mathf.Max(0, wave - Mathf.RoundToInt(eco.lateGoldStartWave));
             if (late > 0)
                 raw *= Math.Pow(Mathf.Max(1.001f, eco.lateGoldGrowth), late);
-            return Math.Max(1d, raw * GoldMultiplier);
+            double mul = GoldMultiplier;
+            if (boss)
+            {
+                mul *= 1d + 0.025d * StarTree.MinorRank(Profile, StarTags.BossGold);
+                if (HasStar(StarIds.BossPurse))
+                    mul *= 1.12d;
+            }
+
+            return Math.Max(1d, raw * mul);
         }
 
         public int DustForKill(bool boss)
@@ -680,6 +779,8 @@ namespace MyClicker.Economy
             chance *= 1f + Mutation(Profile.mutationLuck, Eco.mutationPerDecade);
             if (HasGlory(GloryIds.RelicSense))
                 chance *= 1.25f;
+            if (HasStar(StarIds.Merchant))
+                chance *= 1.20f;
             if (UnityEngine.Random.value > chance)
                 return null;
             float roll = UnityEngine.Random.value;
@@ -854,6 +955,87 @@ namespace MyClicker.Economy
             return true;
         }
 
+        public void EnsureStars()
+        {
+            if (Profile.starNodes == null)
+                Profile.starNodes = new string[0];
+            bool dirty = false;
+            int loops = Mathf.Max(Profile.loopClears, Profile.bestCycle);
+            if (loops > Profile.loopClears)
+            {
+                Profile.loopClears = loops;
+                dirty = true;
+            }
+
+            int expected = Mathf.Max(Profile.loopClears, Profile.bestCycle) * 11;
+            if (Profile.starEarned < expected)
+            {
+                Profile.starEarned = expected;
+                dirty = true;
+            }
+
+            if (Profile.starEarned > 0 && StarTree.Unlock(Profile, StarIds.FirstLight))
+                dirty = true;
+            if (!dirty)
+                return;
+            Profile.tapDamage = TapDamage;
+            _services.Save.MarkDirty();
+        }
+
+        public int GrantBossStar()
+        {
+            Profile.starEarned++;
+            if (Profile.starEarned > 0)
+                StarTree.Unlock(Profile, StarIds.FirstLight);
+            Profile.tapDamage = TapDamage;
+            _services.Save.MarkDirty();
+            return 1;
+        }
+
+        public int GrantLoopStar()
+        {
+            Profile.loopClears++;
+            int gained = 1;
+            Profile.starEarned++;
+            if (HasStar(StarIds.SecondLoop) && Profile.loopClears % 2 == 0)
+            {
+                Profile.starEarned++;
+                gained++;
+            }
+
+            if (Profile.starEarned > 0)
+                StarTree.Unlock(Profile, StarIds.FirstLight);
+            Profile.tapDamage = TapDamage;
+            _services.Save.MarkDirty();
+            return gained;
+        }
+
+        public int LastRespecStars { get; private set; }
+
+        public bool TryBuyStar(string id)
+        {
+            var node = StarTree.Find(id);
+            if (!StarTree.CanBuy(Profile, node))
+                return false;
+            StarTree.Unlock(Profile, node.id);
+            Profile.tapDamage = TapDamage;
+            _services.Save.MarkDirty();
+            return true;
+        }
+
+        public bool TryRespecStars()
+        {
+            int spent = StarTree.Spent(Profile);
+            if (spent <= 0)
+                return false;
+            LastRespecStars = StarTree.Respec(Profile);
+            if (Profile.starEarned > 0)
+                StarTree.Unlock(Profile, StarIds.FirstLight);
+            Profile.tapDamage = TapDamage;
+            _services.Save.MarkDirty();
+            return true;
+        }
+
         public void EnsureLegacy()
         {
             if (Profile.ascendCount < 1)
@@ -984,7 +1166,8 @@ namespace MyClicker.Economy
             int keepFortune = HasGlory(GloryIds.KeepFortune) ? Profile.fortuneLevel : 0;
             int keepSwift = HasGlory(GloryIds.KeepSwift) ? Profile.swiftLevel : 0;
             int keepCycle = 0;
-            if (HasGlory(GloryIds.KeepRoad) && (Profile.cycle > 0 || Profile.bestCycle >= 1))
+            if ((HasGlory(GloryIds.KeepRoad) || HasStar(StarIds.RoadMark)) &&
+                (Profile.cycle > 0 || Profile.bestCycle >= 1))
                 keepCycle = Mathf.Max(1, Profile.cycle);
             Profile.wave = 1;
             Profile.zone = 0;
@@ -1009,7 +1192,7 @@ namespace MyClicker.Economy
             Profile.gloryTapLeft = 0f;
             Profile.gloryTapMul = 1f;
             Profile.gloryTapDuration = 0f;
-            Profile.focus = 0f;
+            Profile.focus = HasStar(StarIds.Flow) ? 30f : 0f;
             _focusFuryLeft = 0f;
             _surgeLeft = 0f;
             _surgeCool = 0f;
@@ -1041,6 +1224,7 @@ namespace MyClicker.Economy
             Profile.kills++;
             if (boss)
             {
+                GrantBossStar();
                 Profile.bossesSlain++;
                 Profile.runBosses++;
                 int glory = GloryForBoss(Profile.zone);
@@ -1068,6 +1252,9 @@ namespace MyClicker.Economy
             int market = GloryRank(GloryIds.NightMarket);
             if (market > 0)
                 factor += 0.08f * market;
+            if (HasStar(StarIds.NightShift))
+                factor += 0.12f;
+            factor += 0.02f * StarTree.MinorRank(Profile, StarTags.Offline);
             return Math.Max(0d, Math.Floor(kills * GoldForKill(DepthWave, false) * factor));
         }
 

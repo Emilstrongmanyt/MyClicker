@@ -16,6 +16,20 @@ namespace MyClicker.Data
         public PotionDef[] potions = Array.Empty<PotionDef>();
         public IconLibrary icons = new IconLibrary();
         public AudioLibrary audio = new AudioLibrary();
+        public StarIconDef[] starIcons = Array.Empty<StarIconDef>();
+
+        public Sprite FindStarIcon(string id)
+        {
+            if (starIcons == null || string.IsNullOrEmpty(id))
+                return null;
+            for (int i = 0; i < starIcons.Length; i++)
+            {
+                if (starIcons[i] != null && starIcons[i].id == id)
+                    return starIcons[i].sprite;
+            }
+
+            return null;
+        }
 
         public static ContentCatalog Load()
         {
@@ -41,6 +55,8 @@ namespace MyClicker.Data
                 enemies = Array.Empty<UnitVisual>();
             if (bosses == null)
                 bosses = Array.Empty<UnitVisual>();
+            if (starIcons == null)
+                starIcons = Array.Empty<StarIconDef>();
         }
 
         static UpgradeDef[] MergeUpgrades(UpgradeDef[] existing)
@@ -406,6 +422,16 @@ namespace MyClicker.Data
         public Sprite anvil;
         public Sprite chest;
         public Sprite lockIcon;
+        public Sprite starFrameMinor;
+        public Sprite starFrameNotable;
+        public Sprite starFrameKeystone;
+    }
+
+    [Serializable]
+    public class StarIconDef
+    {
+        public string id;
+        public Sprite sprite;
     }
 
     [Serializable]

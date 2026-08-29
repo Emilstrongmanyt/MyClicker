@@ -150,12 +150,25 @@ namespace MyClicker.Combat
             var services = GameServices.Instance;
             float damage = services.Economy.TapDamage;
             if (tap)
+            {
                 damage *= EconomyService.TapStrikeMul;
+                if (enemy.IsBoss)
+                    damage *= services.Economy.StarTapBossMul;
+            }
             else
+            {
                 damage *= services.Economy.OverclockMul * EconomyService.AutoHitMul;
+                damage *= services.Economy.StarAutoMul / Mathf.Max(0.01f, services.Economy.StarTapMul);
+            }
+
             bool crit = Random.value < services.Economy.CritChance;
             if (crit)
-                damage *= services.Economy.CritMultiplier;
+            {
+                float critMul = services.Economy.CritMultiplier;
+                if (tap)
+                    critMul += services.Economy.StarTapCritMul;
+                damage *= critMul;
+            }
 
             if (tap)
                 AudioDirector.Ensure().PlaySfx(enemy.IsBoss ? "hitArmor" : "hit");
@@ -163,6 +176,8 @@ namespace MyClicker.Combat
             Vector3 pos = enemy.transform.position;
             ApplyHit(enemy, damage, crit, tap);
             float cleave = services.Economy.CleaveFraction;
+            if (tap)
+                cleave = Mathf.Max(cleave, services.Economy.StarTapCleave);
             if (cleave <= 0f)
                 return;
             var splash = _spawner.NearestExcept(pos, enemy);
@@ -251,7 +266,10 @@ namespace MyClicker.Combat
                 string sting;
                 if (looped)
                 {
-                    sting = "Endless Road  " + services.Save.Profile.cycle;
+                    int stars = services.Economy.GrantLoopStar();
+                    sting = "Endless Road  " + services.Save.Profile.cycle + "  ·  +" + stars + " Star";
+                    if (stars != 1)
+                        sting += "s";
                     if (shard && cleared != null)
                         sting += "  ·  " + cleared.displayName + " shard";
                 }
@@ -290,7 +308,7 @@ namespace MyClicker.Combat
         public bool TrySlam()
         {
             var economy = GameServices.Instance != null ? GameServices.Instance.Economy : null;
-            if (economy == null || !economy.TrySpendFocus(Settings().slamCost))
+            if (economy == null || !economy.TrySpendFocus(economy.SlamCost))
                 return false;
             AudioDirector.Ensure().PlaySfx("slam");
             AudioDirector.Ensure().PlaySfx("twoHand");
@@ -450,7 +468,8 @@ namespace MyClicker.Combat
                 return;
             services.Save.AddGold(gold);
             string toast = "While you were away\n+" + NumberFmt.Compact(gold) + " gold";
-            if (away >= 15 * 60)
+            int potionAt = services.Economy.HasStar(StarIds.Sleepless) ? 10 * 60 : 15 * 60;
+            if (away >= potionAt)
             {
                 string potion = OfflinePotion();
                 services.Economy.GrantPotion(potion);

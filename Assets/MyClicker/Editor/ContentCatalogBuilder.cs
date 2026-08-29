@@ -47,7 +47,8 @@ namespace MyClicker.Editor
                 if (EditorApplication.isPlayingOrWillChangePlaymode)
                     return;
                 var catalog = AssetDatabase.LoadAssetAtPath<ContentCatalog>(CatalogPath);
-                if (catalog == null || catalog.enemies == null || catalog.enemies.Length == 0)
+                if (catalog == null || catalog.enemies == null || catalog.enemies.Length == 0 ||
+                    catalog.starIcons == null || catalog.starIcons.Length == 0)
                     Rebuild();
             };
         }
@@ -65,6 +66,7 @@ namespace MyClicker.Editor
             catalog.enemies = BuildEnemies().Concat(BuildRetroEnemies()).Concat(BuildSanctumEnemies()).ToArray();
             catalog.bosses = BuildBosses().Concat(BuildRetroBosses()).Concat(BuildSanctumBosses()).ToArray();
             catalog.icons = BuildIcons();
+            catalog.starIcons = BuildStarIcons(catalog.icons);
             catalog.audio = BuildAudio();
             catalog.upgrades = BuildUpgrades(catalog.icons);
             catalog.potions = BuildPotions();
@@ -478,7 +480,56 @@ namespace MyClicker.Editor
                 anvil = SpriteAt(item, "Icon_ItemIcon_Anvil") ?? SpriteAt(picto, "Icon_PictoIcon_Hammer"),
                 chest = SpriteAt(chest, "Chest_Luckybox_Gold") ?? SpriteAt(item, "Icon_ItemIcon_Treasure"),
                 lockIcon = SpriteAt(item, "Icon_ItemIcon_Lock") ?? SpriteAt(picto, "Icon_PictoIcon_Lock"),
+                starFrameMinor = SpriteAt("Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Frame", "BasicFrame_Circle_40_White"),
+                starFrameNotable = SpriteAt("Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Frame", "BasicFrame_Circle_52_White"),
+                starFrameKeystone = SpriteAt("Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Frame", "BasicFrame_Circle_164_White"),
             };
+        }
+
+        static MyClicker.Data.StarIconDef[] BuildStarIcons(IconLibrary icons)
+        {
+            const string item = "Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Icon_ItemIcons/ItemIcon_64";
+            const string picto = "Assets/Layer Lab/GUI-TheStone/ResourcesData/Sprites/Components/Icon_PictoIcons/PictoIcon_64";
+            return new[]
+            {
+                StarIcon("sword_a", SpriteAt(item, "Icon_ItemIcon_Sword_A") ?? icons.might),
+                StarIcon("sword_b", SpriteAt(item, "Icon_ItemIcon_Sword_B") ?? icons.might),
+                StarIcon("target", SpriteAt(item, "Icon_ItemIcon_Target") ?? icons.crit),
+                StarIcon("bomb", SpriteAt(item, "Icon_ItemIcon_Bomb")),
+                StarIcon("energy", SpriteAt(item, "Icon_ItemIcon_Energy")),
+                StarIcon("talaria", SpriteAt(item, "Icon_ItemIcon_Talaria") ?? icons.swift),
+                StarIcon("timer", SpriteAt(item, "Icon_ItemIcon_Timer")),
+                StarIcon("sandglass", SpriteAt(item, "Icon_ItemIcon_Sandglass")),
+                StarIcon("horner", SpriteAt(item, "Icon_ItemIcon_Horner")),
+                StarIcon("anvil", SpriteAt(item, "Icon_ItemIcon_Anvil") ?? icons.anvil),
+                StarIcon("laurel", SpriteAt(item, "Icon_ItemIcon_Laurel") ?? icons.glory),
+                StarIcon("mission", SpriteAt(item, "Icon_ItemIcon_Mission")),
+                StarIcon("crown", SpriteAt(item, "Icon_ItemIcon_Crown")),
+                StarIcon("skull", SpriteAt(item, "Icon_ItemIcon_Skull") ?? icons.skull),
+                StarIcon("trophy", SpriteAt(item, "Icon_ItemIcon_Trophy")),
+                StarIcon("potion_red", SpriteAt(item, "Icon_ItemIcon_Potion_Red") ?? icons.potion),
+                StarIcon("potion_purple", SpriteAt(item, "Icon_ItemIcon_Poiton_Purple") ?? icons.potion),
+                StarIcon("candle", SpriteAt(item, "Icon_ItemIcon_Candle")),
+                StarIcon("gold", SpriteAt(item, "Icon_ItemIcon_Gold") ?? icons.gold),
+                StarIcon("treasure", SpriteAt(item, "Icon_ItemIcon_Treasure") ?? icons.chest),
+                StarIcon("gem", SpriteAt(item, "Icon_ItemIcon_Gem")),
+                StarIcon("clover", SpriteAt(item, "Icon_ItemIcon_Clover") ?? icons.fortune),
+                StarIcon("hammer", SpriteAt(item, "Icon_ItemIcon_Hammer")),
+                StarIcon("key", SpriteAt(item, "Icon_ItemIcon_Key")),
+                StarIcon("purplegem", SpriteAt(item, "Icon_ItemIcon_Purplegem") ?? icons.dust),
+                StarIcon("shield_a", SpriteAt(item, "Icon_ItemIcon_Shield_A")),
+                StarIcon("picto_sword", SpriteAt(picto, "Icon_PictoIcon_Sword") ?? icons.might),
+                StarIcon("picto_time", SpriteAt(picto, "Icon_PictoIcon_Time") ?? icons.swift),
+                StarIcon("picto_star", SpriteAt(picto, "Icon_PictoIcon_Star") ?? icons.glory),
+                StarIcon("picto_flask", SpriteAt(picto, "Icon_PictoIcon_Flask_01") ?? icons.potion),
+                StarIcon("picto_gold", SpriteAt(picto, "Icon_PictoIcon_Gold") ?? icons.gold),
+                StarIcon("picto_hammer", SpriteAt(picto, "Icon_PictoIcon_Hammer") ?? icons.anvil),
+            };
+        }
+
+        static MyClicker.Data.StarIconDef StarIcon(string id, Sprite sprite)
+        {
+            return new MyClicker.Data.StarIconDef { id = id, sprite = sprite };
         }
 
         static string BattleCueFor(string zoneId)

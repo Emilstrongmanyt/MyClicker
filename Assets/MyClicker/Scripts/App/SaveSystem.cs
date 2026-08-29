@@ -118,6 +118,8 @@ namespace MyClicker.App
                             loaded.bossShards = new string[0];
                         if (loaded.unlockedGear == null)
                             loaded.unlockedGear = new string[0];
+                        if (loaded.starNodes == null)
+                            loaded.starNodes = new string[0];
                         return loaded;
                     }
                 }

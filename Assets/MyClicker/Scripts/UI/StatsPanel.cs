@@ -112,6 +112,7 @@ namespace MyClicker.UI
                 "\nWave spawn  x" + eco.SpawnIntervalMul.ToString("0.00") +
                 "   walk  x" + eco.WalkSpeedMul.ToString("0.00") +
                 "\nTalent nodes  " + nodes + " / " + GloryTree.All.Length +
+                "\nStars  " + eco.StarUnspent + " unspent  /  " + profile.starEarned + " earned  loops " + profile.loopClears +
                 "\nBuffs" + buffs;
         }
     }

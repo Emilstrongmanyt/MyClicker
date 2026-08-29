@@ -64,6 +64,9 @@ namespace MyClicker.App
         public int cycle;
         public int bestCycle;
         public bool endlessUnlocked;
+        public int starEarned;
+        public int loopClears;
+        public string[] starNodes = new string[0];
         public long lastSeenUnix;
         public string heroJson;
         public string[] unlockedGear = new string[0];

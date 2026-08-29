@@ -14,9 +14,11 @@ namespace MyClicker.UI
         Text _summary;
         Button _ascend;
         Button _respec;
+        Button _starsBtn;
         MutRow[] _muts;
         NodeRow[] _nodes;
         public System.Action RequestDeeds;
+        public System.Action RequestStars;
 
         static readonly string[] MutOrder =
         {
@@ -34,12 +36,14 @@ namespace MyClicker.UI
             _root = panel.gameObject;
             StoneUi.Place(panel, 0.05f, 0.16f, 0.95f, 0.78f);
 
-            var title = StoneUi.Label(panel.transform, "Title", "Glory", 40, TextAnchor.MiddleLeft);
-            StoneUi.Place(title, 0.08f, 0.88f, 0.36f, 0.98f);
+            var title = StoneUi.Label(panel.transform, "Title", "Glory", 36, TextAnchor.MiddleLeft);
+            StoneUi.Place(title, 0.04f, 0.88f, 0.22f, 0.98f);
+            _starsBtn = StoneUi.Button(panel.transform, "StarsBtn", "Stars", skin, () => RequestStars?.Invoke());
+            StoneUi.Place(_starsBtn, 0.24f, 0.88f, 0.42f, 0.98f);
             var deeds = StoneUi.Button(panel.transform, "DeedsBtn", "Deeds", skin, () => RequestDeeds?.Invoke());
-            StoneUi.Place(deeds, 0.38f, 0.88f, 0.56f, 0.98f);
+            StoneUi.Place(deeds, 0.44f, 0.88f, 0.60f, 0.98f);
             _respec = StoneUi.Button(panel.transform, "Respec", "Respec", skin, Respec);
-            StoneUi.Place(_respec, 0.58f, 0.88f, 0.78f, 0.98f);
+            StoneUi.Place(_respec, 0.62f, 0.88f, 0.78f, 0.98f);
             var close = StoneUi.Button(panel.transform, "Close", "X", skin, Hide);
             StoneUi.Place(close, 0.82f, 0.88f, 0.96f, 0.98f);
 
@@ -88,7 +92,7 @@ namespace MyClicker.UI
                 y -= mutH;
             }
 
-            AddHeader(content, "Talent tree", y, headerH);
+            AddHeader(content, "Glory", y, headerH);
             y -= headerH;
             AddNote(content, "Respec refunds Glory spent on talents. Mutations stay. Swap Reaper Sweep for horde Sweep any time.", y, noteH);
             y -= noteH;
@@ -183,6 +187,14 @@ namespace MyClicker.UI
                         label.text = "Ascend — reset run";
                 }
                 _ascend.interactable = economy.CanAscend();
+            }
+
+            if (_starsBtn != null)
+            {
+                int stars = StarTree.Unspent(profile);
+                var starLabel = _starsBtn.GetComponentInChildren<Text>();
+                if (starLabel != null)
+                    starLabel.text = stars > 0 ? "Stars " + stars : "Stars";
             }
 
             if (_respec != null)
