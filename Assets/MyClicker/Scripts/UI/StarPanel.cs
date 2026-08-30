@@ -8,7 +8,7 @@ namespace MyClicker.UI
 {
     public class StarPanel : MonoBehaviour
     {
-        const float Chart = 5200f;
+        const float Chart = 6400f;
 
         GameObject _root;
         bool _open;
@@ -80,13 +80,13 @@ namespace MyClicker.UI
             _chart.maxZoom = 1.25f;
             _chart.Recenter();
 
-            AddRegionLabels(_content);
             var catalog = GameServices.Instance != null ? GameServices.Instance.Catalog : null;
             var all = StarTree.All;
             _edges = BuildEdges(_content, all);
             _nodes = new NodeView[all.Length];
             for (int i = 0; i < all.Length; i++)
                 _nodes[i] = MakeNode(_content, skin, all[i], catalog);
+            AddRegionLabels(_content);
 
             _detail = StoneUi.Label(panel.transform, "Detail", "Tap a star.", 18, TextAnchor.UpperLeft);
             StoneUi.Place(_detail, 0.04f, 0.04f, 0.68f, 0.21f);
@@ -167,26 +167,27 @@ namespace MyClicker.UI
 
         static void AddRegionLabels(RectTransform parent)
         {
-            AddRegionLabel(parent, "TAP", 0f);
-            AddRegionLabel(parent, "AUTO", 60f);
-            AddRegionLabel(parent, "ENDLESS", 120f);
-            AddRegionLabel(parent, "FOCUS", 180f);
-            AddRegionLabel(parent, "GOLD", 240f);
-            AddRegionLabel(parent, "CRAFT", 300f);
+            AddRegionLabel(parent, "TAP", 30f);
+            AddRegionLabel(parent, "AUTO", 90f);
+            AddRegionLabel(parent, "ENDLESS", 150f);
+            AddRegionLabel(parent, "FOCUS", 210f);
+            AddRegionLabel(parent, "GOLD", 270f);
+            AddRegionLabel(parent, "CRAFT", 330f);
         }
 
         static void AddRegionLabel(RectTransform parent, string title, float ang)
         {
             float rad = ang * Mathf.Deg2Rad;
-            var label = StoneUi.Label(parent, "Reg_" + title, title, 28, TextAnchor.MiddleCenter);
+            var label = StoneUi.Label(parent, "Reg_" + title, title, 32, TextAnchor.MiddleCenter);
             var rt = label.rectTransform;
             rt.anchorMin = new Vector2(0.5f, 0.5f);
             rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.sizeDelta = new Vector2(220f, 48f);
-            rt.anchoredPosition = new Vector2(Mathf.Sin(rad), Mathf.Cos(rad)) * 430f;
-            label.color = new Color(1f, 0.92f, 0.7f, 0.55f);
+            rt.sizeDelta = new Vector2(280f, 56f);
+            rt.anchoredPosition = new Vector2(Mathf.Sin(rad), Mathf.Cos(rad)) * 780f;
+            label.color = new Color(1f, 0.9f, 0.62f, 0.92f);
             label.raycastTarget = false;
+            label.transform.SetAsLastSibling();
         }
 
         static EdgeView[] BuildEdges(RectTransform parent, StarNode[] all)

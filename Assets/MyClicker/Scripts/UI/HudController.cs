@@ -26,7 +26,6 @@ namespace MyClicker.UI
         GearPanel _gear;
         GloryPanel _glory;
         StarPanel _stars;
-        Button _starChip;
         DeedPanel _deeds;
         PotionTray _potions;
         StatsPanel _stats;
@@ -89,27 +88,6 @@ namespace MyClicker.UI
             _sweep = StoneUi.Button(parent, "Sweep", "Sweep", skin, null);
             StoneUi.Place(_sweep, 0.82f, 0.155f, 0.97f, 0.212f);
 
-            _starChip = StoneUi.Button(parent, "StarChip", "★", skin, () =>
-            {
-                if (_stars != null && _stars.Open)
-                {
-                    _stars.Hide();
-                    return;
-                }
-
-                HideMeta();
-                _stars.Show();
-            });
-            StoneUi.Place(_starChip, 0.44f, 0.952f, 0.58f, 0.990f);
-            var starLabel = _starChip.GetComponentInChildren<Text>();
-            if (starLabel != null)
-            {
-                starLabel.fontSize = 22;
-                starLabel.resizeTextForBestFit = true;
-                starLabel.resizeTextMinSize = 16;
-                starLabel.resizeTextMaxSize = 24;
-            }
-
             var armoryBtn = StoneUi.Button(parent, "ArmoryButton", "Armory", skin, () =>
             {
                 HideMeta();
@@ -165,6 +143,17 @@ namespace MyClicker.UI
             {
                 HideMeta();
                 _glory.Toggle();
+            };
+            _shop.RequestStars = () =>
+            {
+                if (_stars != null && _stars.Open)
+                {
+                    _stars.Hide();
+                    return;
+                }
+
+                HideMeta();
+                _stars.Show();
             };
             _glory.RequestDeeds = () =>
             {
@@ -301,15 +290,6 @@ namespace MyClicker.UI
                 var label = _sweep.GetComponentInChildren<Text>();
                 if (label != null)
                     label.text = economy.ReaperSweep ? "Reaper" : "Sweep";
-            }
-
-            if (_starChip != null)
-            {
-                int unspent = economy.StarUnspent;
-                var label = _starChip.GetComponentInChildren<Text>();
-                if (label != null)
-                    label.text = "★ " + unspent;
-                _starChip.gameObject.SetActive(profile.starEarned > 0 || profile.loopClears > 0 || profile.endlessUnlocked);
             }
 
             _shop?.Refresh();

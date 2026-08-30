@@ -270,6 +270,8 @@ namespace MyClicker.Combat
                     sting = "Endless Road  " + services.Save.Profile.cycle + "  ·  +" + stars + " Star";
                     if (stars != 1)
                         sting += "s";
+                    if (services.Economy.ConsumeStarHint())
+                        sting += "\nForge → Stars";
                     if (shard && cleared != null)
                         sting += "  ·  " + cleared.displayName + " shard";
                 }
@@ -448,7 +450,7 @@ namespace MyClicker.Combat
             }
 
             if (economy.ConsumeStarHint())
-                Announce("★ Star  —  Glory → Stars", 3.4f, false);
+                Announce("★ Star  —  Forge → Stars", 3.4f, false);
             _killsThisWave++;
             int need = GameServices.Instance.Economy != null
                 ? GameServices.Instance.Economy.WaveKillNeed

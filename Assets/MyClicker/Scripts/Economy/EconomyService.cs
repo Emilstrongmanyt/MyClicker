@@ -967,7 +967,8 @@ namespace MyClicker.Economy
                 dirty = true;
             }
 
-            int expected = Mathf.Max(Profile.loopClears, Profile.bestCycle) * 11;
+            int n = Mathf.Max(Profile.loopClears, Profile.bestCycle);
+            int expected = n * (n + 1) / 2;
             if (Profile.starEarned < expected)
             {
                 Profile.starEarned = expected;
@@ -992,9 +993,13 @@ namespace MyClicker.Economy
 
         public bool LastStarHint { get; private set; }
 
-        public int GrantBossStar()
+        public int GrantLoopStar()
         {
-            Profile.starEarned++;
+            Profile.loopClears++;
+            int gained = Mathf.Max(1, Profile.cycle);
+            if (HasStar(StarIds.SecondLoop) && Profile.loopClears % 2 == 0)
+                gained++;
+            Profile.starEarned += gained;
             if (Profile.starEarned > 0)
                 StarTree.Unlock(Profile, StarIds.FirstLight);
             if (!Profile.seenStarHint)
@@ -1003,24 +1008,6 @@ namespace MyClicker.Economy
                 LastStarHint = true;
             }
 
-            Profile.tapDamage = TapDamage;
-            _services.Save.MarkDirty();
-            return 1;
-        }
-
-        public int GrantLoopStar()
-        {
-            Profile.loopClears++;
-            int gained = 1;
-            Profile.starEarned++;
-            if (HasStar(StarIds.SecondLoop) && Profile.loopClears % 2 == 0)
-            {
-                Profile.starEarned++;
-                gained++;
-            }
-
-            if (Profile.starEarned > 0)
-                StarTree.Unlock(Profile, StarIds.FirstLight);
             Profile.tapDamage = TapDamage;
             _services.Save.MarkDirty();
             return gained;
@@ -1240,7 +1227,6 @@ namespace MyClicker.Economy
             Profile.kills++;
             if (boss)
             {
-                GrantBossStar();
                 Profile.bossesSlain++;
                 Profile.runBosses++;
                 int glory = GloryForBoss(Profile.zone);

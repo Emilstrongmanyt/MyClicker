@@ -32,6 +32,8 @@ namespace MyClicker.UI
 
         public bool Open => _open;
         public System.Action RequestGlory;
+        public System.Action RequestStars;
+        Button _starsBtn;
 
         public void Build(Transform parent, GameConfig.UiSkin skin)
         {
@@ -39,11 +41,13 @@ namespace MyClicker.UI
             _root = panel.gameObject;
             StoneUi.Place(panel, 0.05f, 0.16f, 0.95f, 0.78f);
 
-            var title = StoneUi.Label(panel.transform, "Title", "Forge", 40, TextAnchor.MiddleCenter);
-            StoneUi.Place(title, 0.08f, 0.88f, 0.58f, 0.98f);
+            var title = StoneUi.Label(panel.transform, "Title", "Forge", 36, TextAnchor.MiddleLeft);
+            StoneUi.Place(title, 0.04f, 0.88f, 0.30f, 0.98f);
 
+            _starsBtn = StoneUi.Button(panel.transform, "StarsBtn", "Stars", skin, () => RequestStars?.Invoke());
+            StoneUi.Place(_starsBtn, 0.32f, 0.88f, 0.54f, 0.98f);
             var glory = StoneUi.Button(panel.transform, "GloryBtn", "Glory", skin, () => RequestGlory?.Invoke());
-            StoneUi.Place(glory, 0.58f, 0.88f, 0.80f, 0.98f);
+            StoneUi.Place(glory, 0.56f, 0.88f, 0.78f, 0.98f);
             var close = StoneUi.Button(panel.transform, "Close", "X", skin, Hide);
             StoneUi.Place(close, 0.82f, 0.88f, 0.96f, 0.98f);
 
@@ -114,6 +118,17 @@ namespace MyClicker.UI
         {
             if (!_open)
                 return;
+            if (_starsBtn != null)
+            {
+                var services = GameServices.Instance;
+                int stars = services != null && services.Save != null
+                    ? StarTree.Unspent(services.Save.Profile)
+                    : 0;
+                var label = _starsBtn.GetComponentInChildren<Text>();
+                if (label != null)
+                    label.text = stars > 0 ? "Stars " + stars : "Stars";
+            }
+
             for (int i = 0; i < _rows.Length; i++)
                 RefreshRow(_rows[i]);
         }

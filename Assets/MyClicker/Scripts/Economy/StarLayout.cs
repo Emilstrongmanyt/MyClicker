@@ -5,8 +5,9 @@ namespace MyClicker.Economy
 {
     public static class StarLayout
     {
-        const float Spoke = 148f;
-        const float Wheel = 118f;
+        const float Spoke = 175f;
+        const float Wheel = 160f;
+        const float Clear = 55f;
         const int SpokeCount = 7;
         const int OuterTravel = 5;
 
@@ -126,9 +127,10 @@ namespace MyClicker.Economy
             }
 
             prev = region.innerId;
+            float outerStart = Spoke * (SpokeCount + 1) + Wheel + Clear;
             for (int i = 0; i < OuterTravel; i++)
             {
-                float dist = Spoke * (SpokeCount + 2 + i);
+                float dist = outerStart + Spoke * (i + 1);
                 var p = Polar(region.ang, dist);
                 string id = region.id + "_o" + i;
                 nodes.Add(Place(id, "Star", "+2.5% " + Label(region.tag) + ".", region.minorIcon, region.tag,
@@ -137,7 +139,7 @@ namespace MyClicker.Economy
                 prev = id;
             }
 
-            var outerAt = Polar(region.ang, Spoke * (SpokeCount + 2 + OuterTravel));
+            var outerAt = Polar(region.ang, outerStart + Spoke * (OuterTravel + 1));
             nodes.Add(Place(region.outerId, region.outerTitle, region.outerBlurb, region.outerIcon, null,
                 StarKind.Notable, 1, outerAt.x, outerAt.y, region.outerId));
             Join(links, prev, region.outerId);
@@ -173,7 +175,7 @@ namespace MyClicker.Economy
                     Join(links, id, OuterWheelId(region, 0));
             }
 
-            var keyAt = Polar(region.ang, Spoke * (SpokeCount + 3 + OuterTravel) + 40f);
+            var keyAt = Polar(region.ang, outerStart + Spoke * (OuterTravel + 1) + Wheel + Clear + 90f);
             nodes.Add(Place(region.keyId, region.keyTitle, region.keyBlurb, region.keyIcon, null,
                 StarKind.Keystone, 2, keyAt.x, keyAt.y, region.keyId));
             Join(links, region.outerId, region.keyId);
