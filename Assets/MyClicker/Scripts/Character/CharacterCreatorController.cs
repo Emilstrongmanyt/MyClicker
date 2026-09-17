@@ -75,8 +75,16 @@ namespace MyClicker.Character
             var next = StoneUi.Button(safe, "Next", ">", skin, () => Cycle(1));
             Place(next, 0.78f, 0.42f, 0.92f, 0.52f);
 
-            var confirm = StoneUi.Button(safe, "Confirm", "Enter Battle", skin, Confirm);
-            Place(confirm, 0.18f, 0.06f, 0.82f, 0.16f);
+            bool returning = GameServices.Instance != null && GameServices.Instance.Save.HasCharacter;
+            var confirm = StoneUi.Button(safe, "Confirm", returning ? "Save look" : "Enter Battle", skin, Confirm);
+            if (returning)
+            {
+                Place(confirm, 0.40f, 0.06f, 0.92f, 0.16f);
+                var back = StoneUi.Button(safe, "Back", "Back", skin, () => SceneManager.LoadScene("Battle"));
+                Place(back, 0.08f, 0.06f, 0.36f, 0.16f);
+            }
+            else
+                Place(confirm, 0.18f, 0.06f, 0.82f, 0.16f);
         }
 
         void Cycle(int delta)

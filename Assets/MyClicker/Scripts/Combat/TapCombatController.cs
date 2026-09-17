@@ -174,6 +174,8 @@ namespace MyClicker.Combat
                 AudioDirector.Ensure().PlaySfx(enemy.IsBoss ? "hitArmor" : "hit");
             AnimateHero(enemy);
             Vector3 pos = enemy.transform.position;
+            if (crit)
+                FxDirector.Ensure().Crit(pos);
             ApplyHit(enemy, damage, crit, tap);
             float cleave = services.Economy.CleaveFraction;
             if (tap)
@@ -199,7 +201,8 @@ namespace MyClicker.Combat
             var zone = services.Catalog.ZoneAt(services.Save.Profile.zone);
             var visual = services.Catalog.PickBoss(zone, services.Save.Profile.zone, services.Save.Profile.cycle);
             _spawner.SpawnBoss(visual, EnemyHp(true));
-            PlayZoneMusic(zone);
+            string bossName = visual != null && !string.IsNullOrEmpty(visual.displayName) ? visual.displayName : "Boss";
+            Announce(bossName, 2.2f, false);
         }
 
         void PrepareWave(int wave, bool fresh)
@@ -210,7 +213,7 @@ namespace MyClicker.Combat
             _spawnTimer = fresh ? 0.15f : 0.4f;
             _bossWave = wave > 0 && wave % Mathf.Max(1, combat.wavesPerBoss) == 0;
             var zone = GameServices.Instance.Catalog.ZoneAt(GameServices.Instance.Save.Profile.zone);
-            PlayZoneMusic(zone);
+            PlayZoneMusic(zone, _bossWave);
             if (_bossWave)
             {
                 _spawner.Clear();
@@ -267,11 +270,10 @@ namespace MyClicker.Combat
                 if (looped)
                 {
                     int stars = services.Economy.GrantLoopStar();
-                    sting = "Endless Road  " + services.Save.Profile.cycle + "  ·  +" + stars + " Star";
+                    sting = "Endless " + services.Save.Profile.cycle + "  ·  +" + stars + " Star";
                     if (stars != 1)
                         sting += "s";
-                    if (services.Economy.ConsumeStarHint())
-                        sting += "\nForge → Stars";
+                    sting += "  ·  Forge → Stars";
                     if (shard && cleared != null)
                         sting += "  ·  " + cleared.displayName + " shard";
                 }
@@ -381,6 +383,8 @@ namespace MyClicker.Combat
                 damage *= services.Economy.CritMultiplier;
             AnimateHero(enemy);
             Vector3 pos = enemy.transform.position;
+            if (crit)
+                FxDirector.Ensure().Crit(pos);
             ApplyHit(enemy, damage, crit, tap);
             float cleave = services.Economy.CleaveFraction;
             if (cleave <= 0f)
@@ -473,7 +477,7 @@ namespace MyClicker.Combat
                 return;
             services.Save.AddGold(gold);
             string toast = "While you were away\n+" + NumberFmt.Compact(gold) + " gold";
-            int potionAt = services.Economy.HasStar(StarIds.Sleepless) ? 10 * 60 : 15 * 60;
+            int potionAt = services.Economy.HasStar(StarIds.Sleepless) ? 6 * 60 : 15 * 60;
             if (away >= potionAt)
             {
                 string potion = OfflinePotion();
@@ -564,9 +568,13 @@ namespace MyClicker.Combat
             FxDirector.Ensure().SetFury(_hero != null ? _hero.transform : null, on);
         }
 
-        static void PlayZoneMusic(ZoneDef zone)
+        static void PlayZoneMusic(ZoneDef zone, bool boss)
         {
-            string cue = zone != null && !string.IsNullOrEmpty(zone.battleCue) ? zone.battleCue : "battle";
+            string cue;
+            if (boss)
+                cue = zone != null && !string.IsNullOrEmpty(zone.bossCue) ? zone.bossCue : "boss";
+            else
+                cue = zone != null && !string.IsNullOrEmpty(zone.battleCue) ? zone.battleCue : "battle";
             AudioDirector.Ensure().PlayZone(cue);
         }
 

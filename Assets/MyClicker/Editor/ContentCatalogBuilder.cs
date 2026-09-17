@@ -437,10 +437,14 @@ namespace MyClicker.Editor
 
         static ZoneDef[] BuildZones()
         {
-            var bg = FirstSprite("Asset4u_HD", "2D Casual backgorund/Sprite");
+            var slices = AllBackgroundSlices();
             var list = new List<ZoneDef>();
+            int z = 0;
             foreach (var zone in Zones)
             {
+                Sprite bg = slices != null && slices.Length > 0
+                    ? slices[z % slices.Length]
+                    : FirstSprite("Asset4u_HD", "2D Casual backgorund/Sprite");
                 list.Add(new ZoneDef
                 {
                     id = zone.id,
@@ -453,6 +457,7 @@ namespace MyClicker.Editor
                     battleCue = BattleCueFor(zone.id),
                     bossCue = "boss"
                 });
+                z++;
             }
 
             return list.ToArray();
@@ -635,7 +640,7 @@ namespace MyClicker.Editor
                     baseCost = 50,
                     costGrowth = 1.25f,
                     perLevel = 0.02f,
-                    maxLevel = 30
+                    maxLevel = 40
                 },
                 new UpgradeDef
                 {

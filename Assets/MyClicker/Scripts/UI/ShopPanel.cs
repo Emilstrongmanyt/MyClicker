@@ -34,6 +34,7 @@ namespace MyClicker.UI
         public System.Action RequestGlory;
         public System.Action RequestStars;
         Button _starsBtn;
+        Button _gloryBtn;
 
         public void Build(Transform parent, GameConfig.UiSkin skin)
         {
@@ -46,8 +47,8 @@ namespace MyClicker.UI
 
             _starsBtn = StoneUi.Button(panel.transform, "StarsBtn", "Stars", skin, () => RequestStars?.Invoke());
             StoneUi.Place(_starsBtn, 0.32f, 0.88f, 0.54f, 0.98f);
-            var glory = StoneUi.Button(panel.transform, "GloryBtn", "Glory", skin, () => RequestGlory?.Invoke());
-            StoneUi.Place(glory, 0.56f, 0.88f, 0.78f, 0.98f);
+            _gloryBtn = StoneUi.Button(panel.transform, "GloryBtn", "Glory", skin, () => RequestGlory?.Invoke());
+            StoneUi.Place(_gloryBtn, 0.56f, 0.88f, 0.78f, 0.98f);
             var close = StoneUi.Button(panel.transform, "Close", "X", skin, Hide);
             StoneUi.Place(close, 0.82f, 0.88f, 0.96f, 0.98f);
 
@@ -118,15 +119,22 @@ namespace MyClicker.UI
         {
             if (!_open)
                 return;
+            var services = GameServices.Instance;
+            var profile = services != null && services.Save != null ? services.Save.Profile : null;
             if (_starsBtn != null)
             {
-                var services = GameServices.Instance;
-                int stars = services != null && services.Save != null
-                    ? StarTree.Unspent(services.Save.Profile)
-                    : 0;
+                int stars = profile != null ? StarTree.Unspent(profile) : 0;
                 var label = _starsBtn.GetComponentInChildren<Text>();
                 if (label != null)
                     label.text = stars > 0 ? "Stars " + stars : "Stars";
+            }
+
+            if (_gloryBtn != null)
+            {
+                int glory = profile != null ? profile.glory : 0;
+                var label = _gloryBtn.GetComponentInChildren<Text>();
+                if (label != null)
+                    label.text = glory > 0 ? "Glory " + glory : "Glory";
             }
 
             for (int i = 0; i < _rows.Length; i++)
@@ -172,19 +180,22 @@ namespace MyClicker.UI
             if (services == null)
                 return;
             var economy = services.Economy;
-            float tap = economy.TapDamage;
+            float tap = economy.TapStrike;
             float auto = economy.AutoInterval;
             float crit = economy.CritChance;
+            float critMul = economy.CritMultiplier;
             if (!economy.TryBuy(id, _buyMode))
                 return;
             MyClicker.Audio.AudioDirector.Ensure().PlaySfx("forge");
             var battle = Object.FindFirstObjectByType<MyClicker.Combat.TapCombatController>();
-            if (id == ContentIds.Might && economy.TapDamage > tap + 0.2f)
-                battle?.Announce("Might  Tap " + Mathf.RoundToInt(economy.TapDamage), 1.6f);
+            if (id == ContentIds.Might && economy.TapStrike > tap + 0.2f)
+                battle?.Announce("Might  Tap " + Mathf.RoundToInt(economy.TapStrike), 1.6f);
             else if (id == ContentIds.Swift && economy.AutoInterval < auto - 0.005f)
                 battle?.Announce("Swift  Auto " + economy.AutoInterval.ToString("0.00") + "s", 1.6f);
             else if (id == ContentIds.Crit && economy.CritChance > crit + 0.001f)
                 battle?.Announce("Crit  " + Mathf.RoundToInt(economy.CritChance * 100f) + "%", 1.6f);
+            else if (id == ContentIds.Crit && economy.CritMultiplier > critMul + 0.001f)
+                battle?.Announce("Crit  x" + economy.CritMultiplier.ToString("0.#"), 1.6f);
             else if (id == ContentIds.Fortune)
                 battle?.Announce("Fortune  Gold x" + economy.GoldMultiplier.ToString("0.00"), 1.6f);
             Refresh();
@@ -249,8 +260,8 @@ namespace MyClicker.UI
             switch (id)
             {
                 case ContentIds.Might:
-                    return "Tap  " + NumberFmt.Compact(economy.TapDamage) +
-                           (maxed ? cap : "   next +" + Mathf.RoundToInt(GameServices.Instance.Config.economy.mightPerLevel));
+                    return "Tap hit  " + NumberFmt.Compact(economy.TapStrike) +
+                           (maxed ? cap : "   next +" + Mathf.RoundToInt(GameServices.Instance.Config.economy.mightPerLevel * EconomyService.TapStrikeMul));
                 case ContentIds.Fortune:
                     return "Gold  x" + economy.GoldMultiplier.ToString("0.00") +
                            (maxed ? cap : "   next +12%");
@@ -286,12 +297,23 @@ namespace MyClicker.UI
                     return "Crit damage  x" + economy.CritMultiplier.ToString("0.00") +
                            (maxed ? cap : "   next +0.25");
                 case ContentIds.Harvest:
-                    return "More dust and potion drops each rank" + cap;
+                    {
+                        float dust = economy.HarvestDustChance;
+                        float potion = economy.HarvestPotionChance(false);
+                        string dustBit = dust >= 1f
+                            ? "Dust  " + dust.ToString("0.0") + "/kill"
+                            : "Dust  " + Mathf.RoundToInt(dust * 100f) + "%";
+                        string potionBit = potion >= 1f
+                            ? "potions  " + potion.ToString("0.0") + "/kill"
+                            : "potions  " + Mathf.RoundToInt(potion * 100f) + "%";
+                        return dustBit + "   " + potionBit +
+                               (maxed ? cap : dust >= 1f ? "   next +dust" : "   next +drops");
+                    }
                 case ContentIds.OathTithe:
                     return "Gold  x" + economy.GoldMultiplier.ToString("0.00") +
                            (maxed ? cap : "   +8% gold per rank");
                 case ContentIds.OathVow:
-                    return "Tap  " + NumberFmt.Compact(economy.TapDamage) +
+                    return "Tap hit  " + NumberFmt.Compact(economy.TapStrike) +
                            (maxed ? cap : "   +8% tap and auto per rank");
                 case ContentIds.OathOverclock:
                     return "Auto  x" + economy.OverclockMul.ToString("0.00") +

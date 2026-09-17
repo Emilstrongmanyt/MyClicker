@@ -51,6 +51,8 @@ namespace MyClicker.App
         public bool seenTapHint;
         public bool seenArmoryHint;
         public bool seenStarHint;
+        public bool muteMusic;
+        public bool muteSfx;
         public int bestZone;
         public int forgeBought;
         public bool usedSlam;

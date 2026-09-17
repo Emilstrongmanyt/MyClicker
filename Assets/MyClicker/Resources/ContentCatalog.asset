@@ -5278,7 +5278,7 @@ MonoBehaviour:
     baseCost: 50
     costGrowth: 1.25
     perLevel: 0.02
-    maxLevel: 30
+    maxLevel: 40
     requiresId: 
     requiresLevel: 0
   - id: cleave

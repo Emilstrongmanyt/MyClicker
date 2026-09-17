@@ -92,21 +92,35 @@ namespace MyClicker.UI
                     int col = Mathf.RoundToInt(economy.CollectionBonus * 100f);
                     int shard = Mathf.RoundToInt(economy.ShardBonus * 100f);
                     int relics = economy.Relics;
-                    string next = relics >= 24
-                        ? "Collection max"
-                        : relics >= 16
-                            ? "Next  24 relics  +20%"
-                            : relics >= 12
-                                ? "Next  16 relics  +15%"
-                                : relics >= 8
-                                    ? "Next  12 relics  +10%"
-                                    : relics >= 4
-                                        ? "Next  8 relics  +5%"
-                                        : "Next  4 relics  +2%";
-                    _summary.text = "Relics  " + relics + "  Collection +" + col +
+                    int[] marks = { 4, 8, 12, 16, 24 };
+                    string strip = "Collection  ";
+                    for (int m = 0; m < marks.Length; m++)
+                    {
+                        if (m > 0)
+                            strip += "  ";
+                        strip += relics >= marks[m] ? "[" + marks[m] + "]" : marks[m].ToString();
+                    }
+
+                    string next;
+                    if (relics >= 24)
+                    {
+                        int step = 24 + ((relics - 24) / 4 + 1) * 4;
+                        next = "Next  " + step + " relics  +" + (col + 1) + "%";
+                    }
+                    else if (relics >= 16)
+                        next = "Next  24 relics  +20%";
+                    else if (relics >= 12)
+                        next = "Next  16 relics  +15%";
+                    else if (relics >= 8)
+                        next = "Next  12 relics  +10%";
+                    else if (relics >= 4)
+                        next = "Next  8 relics  +5%";
+                    else
+                        next = "Next  4 relics  +2%";
+                    _summary.text = "Relics  " + relics + "  +" + col +
                                     "%    Shards  " + economy.Shards + "/" + economy.ShardCap +
-                                    "  +" + shard + "% tap and gold\n" + next +
-                                    ". Slot relics share stats; looks are cosmetic.";
+                                    "  +" + shard + "% tap and gold\n" + strip + "    " + next +
+                                    ". Looks cosmetic; slot stats match.";
                 }
             }
 
@@ -180,9 +194,10 @@ namespace MyClicker.UI
             int owned = gear.OwnedCount(row.slot);
             bool canCycle = gear.CanCycle(row.slot);
             row.name.text = row.slot + "  " + gear.Label(row.slot);
+            string next = gear.NextTemperText(row.slot);
             row.detail.text = owned <= 0
                 ? gear.BonusText(row.slot)
-                : gear.BonusText(row.slot) + "  T" + rank + "  " + owned + " looks";
+                : gear.BonusText(row.slot) + "  T" + rank + "  " + owned + " looks  ·  " + next;
             if (row.price != null)
                 row.price.Set(NumberFmt.Compact(gear.TemperCost(row.slot)), DustIcon());
             row.temper.interactable = GameServices.Instance.Save.Profile.dust >= gear.TemperCost(row.slot);

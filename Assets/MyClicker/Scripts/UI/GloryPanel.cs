@@ -94,7 +94,7 @@ namespace MyClicker.UI
 
             AddHeader(content, "Glory", y, headerH);
             y -= headerH;
-            AddNote(content, "Respec refunds Glory spent on talents. Mutations stay. Swap Reaper Sweep for horde Sweep any time.", y, noteH);
+            AddNote(content, "Ascend prestige. Forge is this run. Stars are Endless. Respec refunds Glory talents; Mutations stay. Swap Reaper Sweep any time.", y, noteH);
             y -= noteH;
             _nodes = new NodeRow[nodes];
             int written = 0;
@@ -181,6 +181,14 @@ namespace MyClicker.UI
                 {
                     if (!economy.CanAscend())
                         label.text = "Beat a boss to ascend";
+                    else if (profile.cycle > 0 && !economy.KeepsCycle)
+                        label.text = economy.PendingGlory > 0
+                            ? "Ascend — +" + economy.PendingGlory + " Glory, drop Endless " + profile.cycle
+                            : "Ascend — drop Endless " + profile.cycle;
+                    else if (profile.cycle > 0 && economy.KeepsCycle)
+                        label.text = economy.PendingGlory > 0
+                            ? "Ascend — +" + economy.PendingGlory + " Glory, keep Endless"
+                            : "Ascend — keep Endless " + profile.cycle;
                     else if (economy.PendingGlory > 0)
                         label.text = "Ascend — +" + economy.PendingGlory + " Glory";
                     else
@@ -326,8 +334,15 @@ namespace MyClicker.UI
                 ? new Vector3(0f, -2.2f, 0f)
                 : Vector3.zero;
             MyClicker.Audio.FxDirector.Ensure().Ascend(at);
-            if (gained > 0)
+            MyClicker.Audio.AudioDirector.Ensure().PlaySfx("ascend");
+            var profile = services.Save.Profile;
+            if (profile.ascendCount == 1)
+                battle?.Announce((gained > 0 ? "+" + gained + " Glory  ·  " : "") +
+                                 "prestige  ·  Forge resets  ·  open Glory in Forge", 4.2f, false);
+            else if (gained > 0)
                 battle?.Announce("Ascended — +" + gained + " Glory", 3.2f);
+            else
+                battle?.Announce("Ascended", 2.4f, false);
             battle?.RestartRun();
             Hide();
         }

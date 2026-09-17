@@ -55,9 +55,7 @@ namespace MyClicker.Economy
         public const string Tap = "tap";
         public const string Auto = "auto";
         public const string Gold = "gold";
-        public const string Crit = "crit";
         public const string Regen = "regen";
-        public const string Offline = "offline";
         public const string Relic = "relic";
         public const string BossGold = "boss_gold";
     }
@@ -232,6 +230,127 @@ namespace MyClicker.Economy
         {
             var node = Find(id);
             return node != null ? node.title : id;
+        }
+
+        public static bool PruneUnknown(PlayerProfile profile)
+        {
+            Ensure();
+            if (profile == null || profile.starNodes == null || profile.starNodes.Length == 0)
+                return false;
+            int keep = 0;
+            for (int i = 0; i < profile.starNodes.Length; i++)
+            {
+                if (Find(profile.starNodes[i]) != null)
+                    keep++;
+            }
+
+            if (keep == profile.starNodes.Length)
+                return false;
+            var next = new string[keep];
+            int w = 0;
+            for (int i = 0; i < profile.starNodes.Length; i++)
+            {
+                if (Find(profile.starNodes[i]) == null)
+                    continue;
+                next[w++] = profile.starNodes[i];
+            }
+
+            profile.starNodes = next;
+            return true;
+        }
+
+        public static int PathCost(PlayerProfile profile, string id)
+        {
+            Ensure();
+            var target = Find(id);
+            if (profile == null || target == null)
+                return -1;
+            if (Has(profile, id))
+                return 0;
+
+            var dist = new Dictionary<string, int>();
+            var q = new Queue<string>();
+            if (profile.starNodes != null)
+            {
+                for (int i = 0; i < profile.starNodes.Length; i++)
+                {
+                    string owned = profile.starNodes[i];
+                    if (string.IsNullOrEmpty(owned) || Find(owned) == null)
+                        continue;
+                    dist[owned] = 0;
+                    q.Enqueue(owned);
+                }
+            }
+
+            if (dist.Count == 0 && profile.starEarned > 0)
+            {
+                dist[StarIds.FirstLight] = 0;
+                q.Enqueue(StarIds.FirstLight);
+            }
+
+            int best = int.MaxValue;
+            while (q.Count > 0)
+            {
+                string cur = q.Dequeue();
+                int d;
+                if (!dist.TryGetValue(cur, out d) || d >= best)
+                    continue;
+                var node = Find(cur);
+                if (node == null || node.neighbors == null)
+                    continue;
+                for (int i = 0; i < node.neighbors.Length; i++)
+                {
+                    var next = Find(node.neighbors[i]);
+                    if (next == null)
+                        continue;
+                    if (!string.IsNullOrEmpty(next.exclusiveWith) && Has(profile, next.exclusiveWith))
+                        continue;
+                    int extra = Has(profile, next.id) ? 0 : Mathf.Max(0, next.cost);
+                    int nd = d + extra;
+                    if (next.id == target.id && nd < best)
+                        best = nd;
+                    int old;
+                    if (dist.TryGetValue(next.id, out old) && old <= nd)
+                        continue;
+                    dist[next.id] = nd;
+                    q.Enqueue(next.id);
+                }
+            }
+
+            return best == int.MaxValue ? -1 : best;
+        }
+
+        public static StarNode NearestNotable(PlayerProfile profile, StarNode from)
+        {
+            Ensure();
+            if (from == null)
+                return null;
+            if (from.kind != StarKind.Minor)
+                return null;
+            var seen = new HashSet<string> { from.id };
+            var q = new Queue<string>();
+            q.Enqueue(from.id);
+            while (q.Count > 0)
+            {
+                var node = Find(q.Dequeue());
+                if (node == null || node.neighbors == null)
+                    continue;
+                for (int i = 0; i < node.neighbors.Length; i++)
+                {
+                    string id = node.neighbors[i];
+                    if (seen.Contains(id))
+                        continue;
+                    seen.Add(id);
+                    var next = Find(id);
+                    if (next == null)
+                        continue;
+                    if (next.kind != StarKind.Minor && (profile == null || !Has(profile, next.id)))
+                        return next;
+                    q.Enqueue(id);
+                }
+            }
+
+            return null;
         }
     }
 }

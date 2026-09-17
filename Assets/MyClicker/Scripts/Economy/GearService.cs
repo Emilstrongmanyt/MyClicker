@@ -114,12 +114,24 @@ namespace MyClicker.Economy
             }
         }
 
+        public string NextTemperText(string slot)
+        {
+            switch (slot)
+            {
+                case Slot.Weapon: return "next +3 tap";
+                case Slot.Armor: return "next +1.2 tap +2% gold";
+                case Slot.Helmet: return "next +0.06 crit mul +3% regen";
+                case Slot.Cape: return "next +3% auto";
+                default: return "";
+            }
+        }
+
         public int TemperCost(string slot)
         {
             int rank = Profile.TemperLevel(slot);
             float cost = Eco.temperBaseCost * Mathf.Pow(Eco.temperCostGrowth, rank);
             if (_services.Economy != null && _services.Economy.HasStar(StarIds.Smith))
-                cost *= 0.85f;
+                cost *= 0.70f;
             return Mathf.Max(1, Mathf.RoundToInt(cost));
         }
 
@@ -175,9 +187,9 @@ namespace MyClicker.Economy
                 if (_services.Economy != null && _services.Economy.HasGlory(GloryIds.RelicSense))
                     chance *= 1.25f;
                 if (_services.Economy != null && _services.Economy.HasStar(StarIds.RelicMagnet))
-                    chance *= 1.10f;
+                    chance *= 1.30f;
                 if (_services.Economy != null)
-                    chance *= 1f + 0.025f * StarTree.MinorRank(Profile, StarTags.Relic);
+                    chance *= 1f + 0.08f * StarTree.MinorRank(Profile, StarTags.Relic);
                 if (UnityEngine.Random.value > chance)
                     return null;
             }

@@ -14,6 +14,7 @@ namespace MyClicker.Audio
         string _currentCue;
         AudioSource _slice;
         float _sliceUntil;
+        bool _muteSfx;
 
         public static AudioDirector Ensure()
         {
@@ -69,9 +70,21 @@ namespace MyClicker.Audio
             EnsureSource();
             _music.clip = clip;
             _music.loop = true;
-            _music.volume = 0.42f;
             _music.Play();
             _currentCue = cue;
+            ApplyMix();
+        }
+
+        public void ApplyMix()
+        {
+            EnsureSource();
+            var profile = GameServices.Instance != null && GameServices.Instance.Save != null
+                ? GameServices.Instance.Save.Profile
+                : null;
+            bool muteMusic = profile != null && profile.muteMusic;
+            _muteSfx = profile != null && profile.muteSfx;
+            if (_music != null)
+                _music.volume = muteMusic ? 0f : 0.42f;
         }
 
         public void PlayCreate() => PlayCue("create");
@@ -88,6 +101,8 @@ namespace MyClicker.Audio
 
         public void PlaySfx(string cue, float volume = 0.7f)
         {
+            if (_muteSfx)
+                return;
             var def = Sfx(cue);
             if (def.clip == null)
                 return;
@@ -104,6 +119,8 @@ namespace MyClicker.Audio
 
         public void PlaySting(string resourceName, float volume = 0.55f)
         {
+            if (_muteSfx)
+                return;
             var clip = Resources.Load<AudioClip>(resourceName);
             if (clip == null)
                 return;
@@ -157,6 +174,8 @@ namespace MyClicker.Audio
                 source.priority = 80;
                 _sfx[i] = source;
             }
+
+            ApplyMix();
         }
 
         AudioSource NextSfx()

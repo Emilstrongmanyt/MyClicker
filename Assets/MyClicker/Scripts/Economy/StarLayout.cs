@@ -8,7 +8,7 @@ namespace MyClicker.Economy
         const float Spoke = 175f;
         const float Wheel = 160f;
         const float Clear = 55f;
-        const int SpokeCount = 7;
+        const int SpokeCount = 5;
         const int OuterTravel = 5;
 
         struct Region
@@ -52,7 +52,7 @@ namespace MyClicker.Economy
             var nodes = new List<StarNode>(220);
             var links = new List<string>(400);
 
-            var origin = Place(StarIds.FirstLight, "First Light", "The center of the Star Chart. Clear waves to earn Stars.",
+            var origin = Place(StarIds.FirstLight, "First Light", "+5% tap. The center of the Star Chart.",
                 "laurel", null, StarKind.Keystone, 0, 0f, 0f);
             nodes.Add(origin);
 
@@ -82,7 +82,7 @@ namespace MyClicker.Economy
                 float dist = Spoke * (i + 1);
                 var p = Polar(region.ang, dist);
                 string id = region.id + "_s" + i;
-                nodes.Add(Place(id, "Star", "+2.5% " + Label(region.tag) + ".", region.minorIcon, region.tag,
+                nodes.Add(Place(id, "Star", "+8% " + Label(region.tag) + ".", region.minorIcon, region.tag,
                     StarKind.Minor, 1, p.x, p.y));
                 Join(links, prev, id);
                 prev = id;
@@ -115,7 +115,7 @@ namespace MyClicker.Economy
                 else
                 {
                     id = region.id + "_iw" + i;
-                    nodes.Add(Place(id, "Star", "+2.5% " + Label(region.tag) + ".", region.minorIcon, region.tag,
+                    nodes.Add(Place(id, "Star", "+8% " + Label(region.tag) + ".", region.minorIcon, region.tag,
                         StarKind.Minor, 1, p.x, p.y));
                 }
 
@@ -133,7 +133,7 @@ namespace MyClicker.Economy
                 float dist = outerStart + Spoke * (i + 1);
                 var p = Polar(region.ang, dist);
                 string id = region.id + "_o" + i;
-                nodes.Add(Place(id, "Star", "+2.5% " + Label(region.tag) + ".", region.minorIcon, region.tag,
+                nodes.Add(Place(id, "Star", "+8% " + Label(region.tag) + ".", region.minorIcon, region.tag,
                     StarKind.Minor, 1, p.x, p.y));
                 Join(links, prev, id);
                 prev = id;
@@ -164,7 +164,7 @@ namespace MyClicker.Economy
                 else
                 {
                     id = region.id + "_ow" + i;
-                    nodes.Add(Place(id, "Star", "+2.5% " + Label(region.tag) + ".", region.minorIcon, region.tag,
+                    nodes.Add(Place(id, "Star", "+8% " + Label(region.tag) + ".", region.minorIcon, region.tag,
                         StarKind.Minor, 1, p.x, p.y));
                 }
 
@@ -207,60 +207,60 @@ namespace MyClicker.Economy
                 new Region
                 {
                     id = "tap", ang = 0f, tag = StarTags.Tap, minorIcon = "picto_sword",
-                    innerId = StarIds.HeavyTap, innerTitle = "Heavy Tap", innerBlurb = "+8% tap vs bosses.", innerIcon = "sword_a",
-                    outerId = StarIds.CritSpark, outerTitle = "Crit Spark", outerBlurb = "+0.15 crit mul on taps.", outerIcon = "target",
-                    keyId = StarIds.Godhand, keyTitle = "Godhand", keyBlurb = "+15% tap, −10% auto.", keyIcon = "energy",
-                    forkA = StarIds.Pulse, forkATitle = "Pulse", forkABlurb = "Taps splash 15% to a nearby foe.", forkAIcon = "bomb",
-                    forkB = StarIds.Nail, forkBTitle = "Nail", forkBBlurb = "+10% tap.", forkBIcon = "sword_b",
-                    extraId = StarIds.TapEdge, extraTitle = "Edge", extraBlurb = "+6% tap.", extraIcon = "sword_b",
-                    extra2Id = StarIds.IronFinger, extra2Title = "Iron Finger", extra2Blurb = "+6% tap.", extra2Icon = "sword_a"
+                    innerId = StarIds.HeavyTap, innerTitle = "Heavy Tap", innerBlurb = "+25% tap vs bosses.", innerIcon = "sword_a",
+                    outerId = StarIds.CritSpark, outerTitle = "Crit Spark", outerBlurb = "+0.40 crit mul on taps.", outerIcon = "target",
+                    keyId = StarIds.Godhand, keyTitle = "Godhand", keyBlurb = "+35% tap, −15% auto.", keyIcon = "energy",
+                    forkA = StarIds.Pulse, forkATitle = "Pulse", forkABlurb = "Taps splash 35% to a nearby foe.", forkAIcon = "bomb",
+                    forkB = StarIds.Nail, forkBTitle = "Nail", forkBBlurb = "+25% tap.", forkBIcon = "sword_b",
+                    extraId = StarIds.TapEdge, extraTitle = "Edge", extraBlurb = "+15% tap.", extraIcon = "sword_b",
+                    extra2Id = StarIds.IronFinger, extra2Title = "Iron Finger", extra2Blurb = "+15% tap.", extra2Icon = "sword_a"
                 },
                 new Region
                 {
                     id = "auto", ang = 60f, tag = StarTags.Auto, minorIcon = "picto_time",
-                    innerId = StarIds.Tick, innerTitle = "Tick", innerBlurb = "+6% auto.", innerIcon = "talaria",
-                    outerId = StarIds.Overspin, outerTitle = "Overspin", outerBlurb = "+8% Overclock.", outerIcon = "timer",
-                    keyId = StarIds.Sleepless, keyTitle = "Sleepless", keyBlurb = "+10% auto. Away potion from 10m.", keyIcon = "sandglass",
-                    forkA = StarIds.Metronome, forkATitle = "Metronome", forkABlurb = "Auto floor 0.26s.", forkAIcon = "horner",
-                    forkB = StarIds.Anvil, forkBTitle = "Anvil", forkBBlurb = "+12% auto. Keeps the 0.28s floor.", forkBIcon = "anvil",
-                    extraId = StarIds.AutoEdge, extraTitle = "Idle Edge", extraBlurb = "+6% auto.", extraIcon = "timer"
+                    innerId = StarIds.Tick, innerTitle = "Tick", innerBlurb = "+18% auto.", innerIcon = "talaria",
+                    outerId = StarIds.Overspin, outerTitle = "Overspin", outerBlurb = "+20% Overclock.", outerIcon = "timer",
+                    keyId = StarIds.Sleepless, keyTitle = "Sleepless", keyBlurb = "+25% auto. Away potion from 6m.", keyIcon = "sandglass",
+                    forkA = StarIds.Metronome, forkATitle = "Metronome", forkABlurb = "Auto floor 0.22s.", forkAIcon = "horner",
+                    forkB = StarIds.Anvil, forkBTitle = "Anvil", forkBBlurb = "+28% auto. Keeps the 0.28s floor.", forkBIcon = "anvil",
+                    extraId = StarIds.AutoEdge, extraTitle = "Idle Edge", extraBlurb = "+18% auto.", extraIcon = "timer"
                 },
                 new Region
                 {
                     id = "endless", ang = 120f, tag = StarTags.BossGold, minorIcon = "picto_star",
                     innerId = StarIds.RoadMark, innerTitle = "Road Mark", innerBlurb = "After a loop, ascend starts in Endless 1.", innerIcon = "laurel",
-                    outerId = StarIds.DepthSense, outerTitle = "Depth Sense", outerBlurb = "+4% gold on Endless.", outerIcon = "mission",
-                    keyId = StarIds.SecondLoop, keyTitle = "Second Loop", keyBlurb = "Every other loop grants an extra Star.", keyIcon = "crown",
-                    forkA = StarIds.Thick, forkATitle = "Thick", forkABlurb = "+1 spawn cap, −4% tap.", forkAIcon = "skull",
-                    forkB = StarIds.Thin, forkBTitle = "Thin", forkBBlurb = "−1 spawn cap, +8% tap.", forkBIcon = "trophy",
-                    extraId = StarIds.CycleGold, extraTitle = "Cycle Gold", extraBlurb = "+5% gold on Endless.", extraIcon = "gold"
+                    outerId = StarIds.DepthSense, outerTitle = "Depth Sense", outerBlurb = "+15% gold on Endless.", outerIcon = "mission",
+                    keyId = StarIds.SecondLoop, keyTitle = "Second Loop", keyBlurb = "Loop Stars are 50% more.", keyIcon = "crown",
+                    forkA = StarIds.Thick, forkATitle = "Thick", forkABlurb = "+1 spawn cap, −8% tap.", forkAIcon = "skull",
+                    forkB = StarIds.Thin, forkBTitle = "Thin", forkBBlurb = "−1 spawn cap, +20% tap.", forkBIcon = "trophy",
+                    extraId = StarIds.CycleGold, extraTitle = "Cycle Gold", extraBlurb = "+18% gold on Endless.", extraIcon = "gold"
                 },
                 new Region
                 {
                     id = "focus", ang = 180f, tag = StarTags.Regen, minorIcon = "picto_flask",
-                    innerId = StarIds.Wellspring, innerTitle = "Wellspring", innerBlurb = "+8% Focus regen.", innerIcon = "potion_red",
-                    outerId = StarIds.CheapSlam, outerTitle = "Cheap Slam", outerBlurb = "Slam costs 4 less Focus.", outerIcon = "potion_purple",
-                    keyId = StarIds.Flow, keyTitle = "Flow", keyBlurb = "Ascend with 30 Focus.", keyIcon = "candle",
-                    forkA = StarIds.Wide, forkATitle = "Wide", forkABlurb = "+10% Sweep.", forkAIcon = "skull",
-                    forkB = StarIds.Point, forkBTitle = "Point", forkBBlurb = "Reaper Sweep ×2.0, or +12% Slam.", forkBIcon = "energy",
-                    extraId = StarIds.LongFury, extraTitle = "Long Fury", extraBlurb = "+12% Fury duration.", extraIcon = "candle",
-                    extra2Id = StarIds.FocusEdge, extra2Title = "Focus Edge", extra2Blurb = "+6% Focus regen.", extra2Icon = "potion_red"
+                    innerId = StarIds.Wellspring, innerTitle = "Wellspring", innerBlurb = "+25% Focus regen.", innerIcon = "potion_red",
+                    outerId = StarIds.CheapSlam, outerTitle = "Cheap Slam", outerBlurb = "Slam costs 12 less Focus.", outerIcon = "potion_purple",
+                    keyId = StarIds.Flow, keyTitle = "Flow", keyBlurb = "Ascend with 50 Focus.", keyIcon = "candle",
+                    forkA = StarIds.Wide, forkATitle = "Wide", forkABlurb = "+30% Sweep.", forkAIcon = "skull",
+                    forkB = StarIds.Point, forkBTitle = "Point", forkBBlurb = "Reaper Sweep ×2.50, or +30% Slam.", forkBIcon = "energy",
+                    extraId = StarIds.LongFury, extraTitle = "Long Fury", extraBlurb = "+40% Fury duration.", extraIcon = "candle",
+                    extra2Id = StarIds.FocusEdge, extra2Title = "Focus Edge", extra2Blurb = "+18% Focus regen.", extra2Icon = "potion_red"
                 },
                 new Region
                 {
                     id = "gold", ang = 240f, tag = StarTags.Gold, minorIcon = "picto_gold",
-                    innerId = StarIds.Tithe, innerTitle = "Tithe", innerBlurb = "+5% gold.", innerIcon = "gold",
-                    outerId = StarIds.BossPurse, outerTitle = "Boss Purse", outerBlurb = "+12% boss gold.", outerIcon = "treasure",
-                    keyId = StarIds.HoardStar, keyTitle = "Hoard Star", keyBlurb = "Collection 16+ and 24 get +2%.", keyIcon = "gem",
-                    forkA = StarIds.Merchant, forkATitle = "Merchant", forkABlurb = "+20% potion drops.", forkAIcon = "clover",
-                    forkB = StarIds.Smith, forkBTitle = "Smith", forkBBlurb = "Temper costs 15% less Dust.", forkBIcon = "hammer"
+                    innerId = StarIds.Tithe, innerTitle = "Tithe", innerBlurb = "+15% gold.", innerIcon = "gold",
+                    outerId = StarIds.BossPurse, outerTitle = "Boss Purse", outerBlurb = "+30% boss gold.", outerIcon = "treasure",
+                    keyId = StarIds.HoardStar, keyTitle = "Hoard Star", keyBlurb = "Collection 16+ and 24 get +10%.", keyIcon = "gem",
+                    forkA = StarIds.Merchant, forkATitle = "Merchant", forkABlurb = "+50% potion drops.", forkAIcon = "clover",
+                    forkB = StarIds.Smith, forkBTitle = "Smith", forkBBlurb = "Temper costs 30% less Dust.", forkBIcon = "hammer"
                 },
                 new Region
                 {
                     id = "craft", ang = 300f, tag = StarTags.Relic, minorIcon = "picto_hammer",
-                    innerId = StarIds.RelicMagnet, innerTitle = "Relic Magnet", innerBlurb = "+10% relic drops.", innerIcon = "key",
-                    outerId = StarIds.GoldEdge, outerTitle = "Gold Edge", outerBlurb = "+5% gold.", outerIcon = "purplegem",
-                    keyId = StarIds.NightShift, keyTitle = "Night Shift", keyBlurb = "+12% away gold.", keyIcon = "shield_a"
+                    innerId = StarIds.RelicMagnet, innerTitle = "Relic Magnet", innerBlurb = "+30% relic drops.", innerIcon = "key",
+                    outerId = StarIds.GoldEdge, outerTitle = "Gold Edge", outerBlurb = "+15% gold.", outerIcon = "purplegem",
+                    keyId = StarIds.NightShift, keyTitle = "Night Shift", keyBlurb = "+35% away gold.", keyIcon = "shield_a"
                 }
             };
         }
@@ -339,8 +339,6 @@ namespace MyClicker.Economy
                 case StarTags.Regen: return "Focus regen";
                 case StarTags.Relic: return "relic chance";
                 case StarTags.BossGold: return "boss gold";
-                case StarTags.Offline: return "away gold";
-                case StarTags.Crit: return "crit";
                 default: return "power";
             }
         }

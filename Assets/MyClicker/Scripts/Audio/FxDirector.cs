@@ -11,7 +11,9 @@ namespace MyClicker.Audio
         GameObject _furyFire;
         Transform _furyHero;
         float _killGate;
+        float _critGate;
         int _live;
+        static Material _sparkMat;
 
         public static FxDirector Ensure()
         {
@@ -90,7 +92,19 @@ namespace MyClicker.Audio
             Play(Prefab(c => c.killPoof), world, 0.45f);
         }
 
-        public void Slam(Vector3 world) => Play(Prefab(c => c.slamHit), world, 0.7f);
+        public void Slam(Vector3 world)
+        {
+            Play(Prefab(c => c.slamHit), world, 0.7f);
+            Spark(world, new Color(1f, 0.82f, 0.35f, 0.95f), 18, 0.55f);
+        }
+
+        public void Crit(Vector3 world)
+        {
+            if (Time.unscaledTime < _critGate)
+                return;
+            _critGate = Time.unscaledTime + 0.07f;
+            Spark(world, new Color(1f, 0.86f, 0.28f, 0.95f), 12, 0.42f);
+        }
 
         public void Sweep(Vector3 world) => Play(Prefab(c => c.sweepTrail), world, 0.55f);
 
@@ -111,6 +125,49 @@ namespace MyClicker.Audio
         public void ZoneChange(Vector3 world) => Play(Prefab(c => c.zoneGlow), world, 0.85f);
 
         public void Ascend(Vector3 world) => Play(Prefab(c => c.ascendBurst), world, 0.9f);
+
+        void Spark(Vector3 world, Color color, int count, float scale)
+        {
+            var go = new GameObject("HitSpark");
+            go.transform.position = world;
+            var ps = go.AddComponent<ParticleSystem>();
+            var main = ps.main;
+            main.loop = false;
+            main.playOnAwake = true;
+            main.duration = 0.16f;
+            main.startLifetime = 0.2f;
+            main.startSpeed = 2.6f * scale;
+            main.startSize = 0.06f * scale;
+            main.startColor = color;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            main.maxParticles = count;
+            var emission = ps.emission;
+            emission.rateOverTime = 0f;
+            emission.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)count) });
+            var shape = ps.shape;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 0.1f;
+            var over = ps.colorOverLifetime;
+            over.enabled = true;
+            var grad = new Gradient();
+            grad.SetKeys(
+                new[] { new GradientColorKey(color, 0f), new GradientColorKey(color, 1f) },
+                new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0f, 1f) });
+            over.color = grad;
+            var render = go.GetComponent<ParticleSystemRenderer>();
+            render.sortingOrder = 12;
+            if (_sparkMat == null)
+            {
+                var shader = Shader.Find("Sprites/Default") ?? Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
+                if (shader != null)
+                    _sparkMat = new Material(shader);
+            }
+
+            if (_sparkMat != null)
+                render.sharedMaterial = _sparkMat;
+            ps.Play(true);
+            Destroy(go, 0.45f);
+        }
 
         void Play(GameObject prefab, Vector3 world, float scale)
         {

@@ -60,7 +60,36 @@ namespace MyClicker.World
             }
 
             var world = services.Config != null ? services.Config.world : new GameConfig.WorldSettings();
+            PlaceBackdrop(zone, world, catalog, cam);
             BuildTopDown(zone, world, cam);
+        }
+
+        void PlaceBackdrop(int zone, GameConfig.WorldSettings world, ContentCatalog catalog, Camera cam)
+        {
+            Sprite sprite = null;
+            if (world != null && world.backgroundSprites != null && world.backgroundSprites.Length > 1)
+                sprite = world.backgroundSprites[Mathf.Abs(zone) % world.backgroundSprites.Length];
+            if (sprite == null && catalog != null)
+            {
+                var def = catalog.ZoneAt(zone);
+                if (def != null)
+                    sprite = def.background;
+            }
+
+            if (sprite == null && world != null && world.backgroundSprites != null && world.backgroundSprites.Length > 0)
+                sprite = world.backgroundSprites[Mathf.Abs(zone) % world.backgroundSprites.Length];
+            if (sprite == null || cam == null)
+                return;
+
+            float worldH = cam.orthographicSize * 2f;
+            float worldW = worldH * cam.aspect;
+            float sx = worldW / Mathf.Max(0.25f, sprite.bounds.size.x);
+            float sy = worldH / Mathf.Max(0.25f, sprite.bounds.size.y);
+            float scale = Mathf.Max(sx, sy) * 1.08f;
+            var tint = GroundTint[Mathf.Clamp(zone, 0, GroundTint.Length - 1)];
+            tint = Color.Lerp(Color.white, tint, 0.35f);
+            tint.a = 1f;
+            Place(sprite, 0f, 0f, -48, scale, tint, false);
         }
 
         void BuildTopDown(int zone, GameConfig.WorldSettings world, Camera cam)

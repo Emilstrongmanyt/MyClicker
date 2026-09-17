@@ -45,6 +45,8 @@ namespace MyClicker.Economy
             new DeedDef { id = "relic_4", title = "Collector", hint = "Own 4 relics.", kind = DeedKind.Relics, need = 4 },
             new DeedDef { id = "relic_8", title = "Hoard", hint = "Own 8 relics.", kind = DeedKind.Relics, need = 8 },
             new DeedDef { id = "relic_12", title = "Archive", hint = "Own 12 relics.", kind = DeedKind.Relics, need = 12 },
+            new DeedDef { id = "relic_16", title = "Vault", hint = "Own 16 relics.", kind = DeedKind.Relics, need = 16 },
+            new DeedDef { id = "relic_24", title = "Museum", hint = "Own 24 relics.", kind = DeedKind.Relics, need = 24 },
             new DeedDef { id = "forge_10", title = "Apprentice", hint = "Buy 10 Forge ranks.", kind = DeedKind.ForgeBought, need = 10 },
             new DeedDef { id = "forge_50", title = "Smith", hint = "Buy 50 Forge ranks.", kind = DeedKind.ForgeBought, need = 50 },
             new DeedDef { id = "forge_100", title = "Master Smith", hint = "Buy 100 Forge ranks.", kind = DeedKind.ForgeBought, need = 100 },

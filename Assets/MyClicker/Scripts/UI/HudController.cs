@@ -29,6 +29,7 @@ namespace MyClicker.UI
         DeedPanel _deeds;
         PotionTray _potions;
         StatsPanel _stats;
+        SettingsPanel _settings;
         StoneUi.HealthBarView _focus;
         Button _slam;
         Button _fury;
@@ -88,6 +89,15 @@ namespace MyClicker.UI
             _sweep = StoneUi.Button(parent, "Sweep", "Sweep", skin, null);
             StoneUi.Place(_sweep, 0.82f, 0.155f, 0.97f, 0.212f);
 
+            var settingsBtn = StoneUi.Button(parent, "SettingsButton", "Set", skin, () =>
+            {
+                HideMeta();
+                _settings.Toggle();
+            });
+            StoneUi.Place(settingsBtn, 0.43f, 0.952f, 0.56f, 0.990f);
+            var settingsIcon = StoneUi.Icon(settingsBtn.transform, "Icon", icons != null ? icons.settings : null);
+            StoneUi.Place(settingsIcon, 0.08f, 0.18f, 0.32f, 0.82f);
+
             var armoryBtn = StoneUi.Button(parent, "ArmoryButton", "Armory", skin, () =>
             {
                 HideMeta();
@@ -139,6 +149,8 @@ namespace MyClicker.UI
             _deeds.Build(parent, skin);
             _stats = gameObject.AddComponent<StatsPanel>();
             _stats.Build(parent, skin);
+            _settings = gameObject.AddComponent<SettingsPanel>();
+            _settings.Build(parent, skin);
             _shop.RequestGlory = () =>
             {
                 HideMeta();
@@ -252,7 +264,7 @@ namespace MyClicker.UI
             if (_dps != null)
                 _dps.text = NumberFmt.Compact(_battle != null ? _battle.DamagePerSecond : 0f) + " dmg/s";
             if (_gps != null)
-                _gps.text = NumberFmt.Compact(Math.Max(0d, economy.GoldPerSecond)) + " g/s";
+                _gps.text = NumberFmt.Compact(Math.Max(0d, economy.GoldPerSecond)) + " idle g/s";
 
             string toast = _battle != null ? _battle.ToastMessage : null;
             string drop = services.Gear != null && services.Gear.LastDropLife > 0f
@@ -299,6 +311,7 @@ namespace MyClicker.UI
             _deeds?.Refresh();
             _stats?.Refresh();
             _potions?.Refresh();
+            _settings?.Refresh();
         }
 
         void HideMeta()
@@ -309,6 +322,7 @@ namespace MyClicker.UI
             _stars?.Hide();
             _deeds.Hide();
             _stats.Hide();
+            _settings?.Hide();
         }
 
         void BindFocusTips()

@@ -87,12 +87,13 @@ namespace MyClicker.UI
 
             int nodes = profile.gloryNodes != null ? profile.gloryNodes.Length : 0;
             _body.text =
-                "Tap  " + NumberFmt.Compact(eco.TapDamage) +
-                "\nAuto  " + eco.AutoInterval.ToString("0.00") + "s   DPS " + NumberFmt.Compact(eco.AutoDps) +
+                "Tap hit  " + NumberFmt.Compact(eco.TapStrike) +
+                "   base  " + NumberFmt.Compact(eco.TapDamage) +
+                "\nAuto  " + eco.AutoInterval.ToString("0.00") + "s   idle DPS " + NumberFmt.Compact(eco.AutoDps) +
                 "\nOverclock  x" + eco.OverclockMul.ToString("0.00") +
                 "\nCrit  " + Mathf.RoundToInt(eco.CritChance * 100f) + "%  x" + eco.CritMultiplier.ToString("0.#") +
                 "\nCleave  " + Mathf.RoundToInt(eco.CleaveFraction * 100f) + "%" +
-                "\nGold  x" + eco.GoldMultiplier.ToString("0.00") + "   " + NumberFmt.Compact(eco.GoldPerSecond) + " g/s" +
+                "\nGold  x" + eco.GoldMultiplier.ToString("0.00") + "   idle  " + NumberFmt.Compact(eco.GoldPerSecond) + " g/s" +
                 "\nFocus  " + Mathf.RoundToInt(eco.Focus) + " / " + Mathf.RoundToInt(eco.FocusMax) +
                 "   regen " + eco.FocusRegen.ToString("0.0") + "/s" +
                 "\nSlam  x" + eco.SlamMul.ToString("0.0") +
@@ -101,7 +102,8 @@ namespace MyClicker.UI
                 "\nRenown  +" + Mathf.RoundToInt(services.Deeds != null ? services.Deeds.Renown * 100f : 0f) + "%" +
                 "\nCollection  +" + Mathf.RoundToInt(eco.CollectionBonus * 100f) +
                 "%   Shards  " + eco.Shards + "/" + eco.ShardCap + "  +" + Mathf.RoundToInt(eco.ShardBonus * 100f) + "%" +
-                "\nRelics  " + eco.Relics + "  (looks cosmetic; helmet crit mul, cape auto dmg)" +
+                "\nRelics  " + eco.Relics +
+                "  (slot stats: weapon tap, armor gold, helmet crit/Focus, cape auto. Looks only.)" +
                 "\nGlory  " + profile.glory + "   pending  " + eco.PendingGlory +
                 "\nAscensions  " + profile.ascendCount + "   Endless  " + profile.cycle +
                 "   best  " + profile.bestCycle +

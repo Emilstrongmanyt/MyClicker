@@ -92,7 +92,7 @@ namespace MyClicker.Data
                 new UpgradeDef { id = ContentIds.Might, displayName = "Might", description = "Tap and auto damage.", baseCost = 15, costGrowth = 1.18f, perLevel = 4f, requiresId = "", requiresLevel = 0 },
                 new UpgradeDef { id = ContentIds.Fortune, displayName = "Fortune", description = "More gold from every kill.", baseCost = 25, costGrowth = 1.20f, perLevel = 0.12f },
                 new UpgradeDef { id = ContentIds.Swift, displayName = "Swift", description = "Faster automatic swings.", baseCost = 40, costGrowth = 1.22f, perLevel = 0.07f },
-                new UpgradeDef { id = ContentIds.Crit, displayName = "Crit", description = "Chance for triple damage.", baseCost = 50, costGrowth = 1.25f, perLevel = 0.02f },
+                new UpgradeDef { id = ContentIds.Crit, displayName = "Crit", description = "Chance for triple damage. Extra chance past the cap raises crit multiplier.", baseCost = 50, costGrowth = 1.25f, perLevel = 0.02f, maxLevel = 40 },
                 new UpgradeDef { id = ContentIds.Cleave, displayName = "Cleave", description = "Strikes splash to a nearby foe.", baseCost = 80, costGrowth = 1.23f, perLevel = 0.05f, requiresId = ContentIds.Might, requiresLevel = 6 },
                 new UpgradeDef { id = ContentIds.Fury, displayName = "Fury", description = "Critical hits hit even harder.", baseCost = 90, costGrowth = 1.26f, perLevel = 0.25f, requiresId = ContentIds.Crit, requiresLevel = 5 },
                 new UpgradeDef { id = ContentIds.Harvest, displayName = "Harvest", description = "More dust and potion drops.", baseCost = 70, costGrowth = 1.22f, perLevel = 0.04f, requiresId = ContentIds.Fortune, requiresLevel = 6 },

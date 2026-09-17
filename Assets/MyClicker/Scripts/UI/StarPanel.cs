@@ -136,7 +136,7 @@ namespace MyClicker.UI
             int unspent = StarTree.Unspent(profile);
             int spent = StarTree.Spent(profile);
             if (_summary != null)
-                _summary.text = unspent + "★ to spend   ·   tap a lit star to allocate   ·   pinch or +/−";
+                _summary.text = "Endless path. " + unspent + "★ to spend   ·   tap a lit star   ·   pinch or +/−";
             if (_respec != null)
             {
                 var label = _respec.GetComponentInChildren<Text>();
@@ -184,7 +184,7 @@ namespace MyClicker.UI
             rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.sizeDelta = new Vector2(280f, 56f);
-            rt.anchoredPosition = new Vector2(Mathf.Sin(rad), Mathf.Cos(rad)) * 780f;
+            rt.anchoredPosition = new Vector2(Mathf.Sin(rad), Mathf.Cos(rad)) * 1320f;
             label.color = new Color(1f, 0.9f, 0.62f, 0.92f);
             label.raycastTarget = false;
             label.transform.SetAsLastSibling();
@@ -382,7 +382,30 @@ namespace MyClicker.UI
             if (_detail != null)
             {
                 string cost = node.cost <= 0 ? "Free" : node.cost + "★";
+                string path = "";
+                if (!owned)
+                {
+                    int need = StarTree.PathCost(profile, node.id);
+                    if (need > node.cost)
+                        path = "\nPath  " + need + "★ from your stars";
+                    else if (need == node.cost && !can)
+                        path = "\nPath  " + need + "★";
+                }
+
+                if (node.kind == StarKind.Minor)
+                {
+                    var next = StarTree.NearestNotable(profile, node);
+                    if (next != null)
+                    {
+                        int nCost = StarTree.PathCost(profile, next.id);
+                        path += "\nNext notable  " + next.title;
+                        if (nCost > 0)
+                            path += "  " + nCost + "★";
+                    }
+                }
+
                 _detail.text = node.title + "  ·  " + kind + "  ·  " + cost + "\n" + node.blurb +
+                               path +
                                (string.IsNullOrEmpty(lockReason) ? "" : "\n" + lockReason);
             }
 
