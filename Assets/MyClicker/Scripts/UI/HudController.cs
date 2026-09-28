@@ -49,12 +49,29 @@ namespace MyClicker.UI
             var skin = services.Config != null ? services.Config.ui : new GameConfig.UiSkin();
             var icons = services.Catalog.icons;
 
+            var settingsBtn = StoneUi.Button(parent, "SettingsButton", "", skin, () =>
+            {
+                HideMeta();
+                _settings.Toggle();
+            });
+            StoneUi.HideDefaultLabel(settingsBtn);
+            StoneUi.Place(settingsBtn, 0.012f, 0.948f, 0.078f, 0.992f);
+            var settingsFrame = settingsBtn.GetComponent<Image>();
+            if (settingsFrame != null)
+            {
+                settingsFrame.color = new Color(1f, 1f, 1f, 0f);
+                settingsFrame.raycastTarget = true;
+            }
+
+            var settingsIcon = StoneUi.Icon(settingsBtn.transform, "Icon", icons != null ? icons.settings : null);
+            StoneUi.Place(settingsIcon, 0.06f, 0.06f, 0.94f, 0.94f);
+
             _name = StoneUi.OutlineLabel(parent, "Name", "", 26, TextAnchor.MiddleLeft);
-            StoneUi.Place(_name, 0.03f, 0.952f, 0.42f, 0.990f);
+            StoneUi.Place(_name, 0.09f, 0.952f, 0.50f, 0.990f);
             _zone = StoneUi.OutlineLabel(parent, "Zone", "", 20, TextAnchor.MiddleLeft);
-            StoneUi.Place(_zone, 0.03f, 0.916f, 0.42f, 0.954f);
+            StoneUi.Place(_zone, 0.09f, 0.916f, 0.50f, 0.954f);
             _wave = StoneUi.OutlineLabel(parent, "Wave", "", 20, TextAnchor.MiddleLeft);
-            StoneUi.Place(_wave, 0.03f, 0.880f, 0.42f, 0.918f);
+            StoneUi.Place(_wave, 0.09f, 0.880f, 0.50f, 0.918f);
 
             _goldIcon = StoneUi.Icon(parent, "GoldIcon", icons != null ? icons.gold : skin.coinIcon);
             StoneUi.Place(_goldIcon, 0.80f, 0.952f, 0.855f, 0.990f);
@@ -88,15 +105,6 @@ namespace MyClicker.UI
             StoneUi.Place(_fury, 0.66f, 0.155f, 0.81f, 0.212f);
             _sweep = StoneUi.Button(parent, "Sweep", "Sweep", skin, null);
             StoneUi.Place(_sweep, 0.82f, 0.155f, 0.97f, 0.212f);
-
-            var settingsBtn = StoneUi.Button(parent, "SettingsButton", "Set", skin, () =>
-            {
-                HideMeta();
-                _settings.Toggle();
-            });
-            StoneUi.Place(settingsBtn, 0.43f, 0.952f, 0.56f, 0.990f);
-            var settingsIcon = StoneUi.Icon(settingsBtn.transform, "Icon", icons != null ? icons.settings : null);
-            StoneUi.Place(settingsIcon, 0.08f, 0.18f, 0.32f, 0.82f);
 
             var armoryBtn = StoneUi.Button(parent, "ArmoryButton", "Armory", skin, () =>
             {
